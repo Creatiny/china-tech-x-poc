@@ -1,44 +1,90 @@
 # Daily Runbook
 
-## Daily Target
+## Daily Objective
 
-Complete one operating cycle within 30 minutes.
+Complete one evidence-producing operating cycle within 30 minutes.
 
-## Step 1 - Signal Discovery (10 min)
+The objective is not to satisfy a posting quota. The objective is to act on the best available China Tech opportunity while preserving account quality.
 
-Use X and Eden to find China Tech signals.
+## Step 1 — Review Live Opportunities (5 min)
 
-Save:
-- 5 candidate signals
-- Important creators
-- Potential original angles
+Open the Radar opportunity inbox and review P0 and P1 items.
 
-## Step 2 - Reply (10 min)
+For each candidate, confirm:
 
-Publish 2-3 high-quality replies.
+- original source and timestamp;
+- relevance to the China Tech positioning;
+- whether the X conversation is still timely;
+- whether the account can add a non-generic fact, interpretation, comparison, or China-specific context;
+- remaining opportunity lifetime.
 
-Requirements:
-- Add original insight
-- Avoid generic praise
-- Match China Tech positioning
+Do not publish from an alert that lacks a traceable source or direct target link.
 
-## Step 3 - Original Post (8 min)
+## Step 2 — Reply or Skip Deliberately (15 min)
 
-Publish at least 1 original post.
+Select up to 2–5 qualified reply opportunities.
 
-Source:
-Signal -> Analysis -> Opinion -> Post
+A reply is qualified only when it:
 
-## Step 4 - Memory (2 min)
+- adds original value;
+- fits the account positioning;
+- is timely enough to have a realistic distribution opportunity;
+- avoids generic praise, repetition, and unsupported claims;
+- can be written in a natural, non-AI voice.
+
+If no qualified opportunity exists, publish no reply rather than lowering the threshold.
+
+Record one outcome for every reviewed P0/P1 item:
+
+- `POSTED`
+- `SKIPPED`
+- `FALSE_POSITIVE`
+- `EXPIRED`
+- `SAVE_FOR_ORIGINAL`
+
+## Step 3 — Conditional Original Post (5 min)
+
+An original post is optional.
+
+Publish only when at least one condition is true:
+
+- the account is early to a material signal;
+- there is unique data or a useful synthesis;
+- there is a differentiated thesis;
+- a reply opportunity has matured into a standalone point;
+- a recurring theme has enough evidence to support a concise view.
+
+Do not create filler to satisfy a daily count.
+
+## Step 4 — Record Outcome and Learning (5 min)
 
 Record:
-- Best signal
-- Best reply
-- Learning
-- Potential repeatable format
+
+- target post URL and target account;
+- target post age when the reply was published;
+- actual reply or original post text;
+- signal source and canonical event;
+- posted/skipped/false-positive decision;
+- available impressions, engagements, profile visits, and follower change;
+- one learning or scoring adjustment hypothesis.
 
 ## Daily Minimum
 
-- 1 Original Post
-- 2 Quality Replies
-- Signal capture completed
+A day is complete when:
+
+- all P0 items received during the operating window are reviewed;
+- at least the top three P1 candidates are reviewed, when available;
+- decisions and outcomes are recorded;
+- no paid X API call or automated publishing occurred outside an approved gate.
+
+Publishing is not mandatory when the system produces no qualified opportunity.
+
+## Weekly Review
+
+Once per week:
+
+1. compare reply age, impressions, engagement, profile visits, and follows with the prior baseline;
+2. identify the sources and target accounts that produced qualified opportunities;
+3. identify false-positive and expired-alert causes;
+4. propose scoring or source changes through normal change control;
+5. decide whether evidence supports entering the blocked X API pilot.

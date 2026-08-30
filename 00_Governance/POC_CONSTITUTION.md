@@ -1,4 +1,4 @@
-# China Tech X POC Constitution v1.0
+# China Tech X POC Constitution v1.1
 
 ## 1. North Star
 
@@ -22,9 +22,11 @@ Future AI Marketing OS and OPC learning.
 
 1. Revenue and growth validation always outrank tool exploration.
 2. No tool is adopted without solving a proven bottleneck.
-3. No strategy change without data or experiment evidence.
+3. No strategy change without data or experiment evidence recorded through change control.
 4. The account positioning is frozen during the 30-day POC.
-5. Research cannot replace publishing.
+5. Research cannot replace publishing, but publishing quotas cannot replace qualified distribution opportunities.
+6. Posts and replies remain human-published unless a separate publishing-authority gate is approved.
+7. Paid data access requires an evidence-backed budget gate and an automatic hard stop.
 
 ## 4. Account Positioning
 
@@ -44,20 +46,35 @@ Explain what is happening in China tech and why it matters globally.
 Human:
 - Final judgment
 - Original insight
-- Publishing approval
+- Publishing approval and execution
+- Requirement, architecture, paid-spend, and publishing-authority decisions
 
 ChatGPT:
 - Analysis
 - Content refinement
 - Experiment review
+- Evidence-backed operating recommendations
+
+Horizon, TrendRadar, RSS, and GitHub:
+- Foundation information-source classes, subject to fact verification and source health monitoring
 
 Eden:
-- Signal discovery
-- Research library
-- Analytics support
+- Research and memory layer
+- Creator intelligence and historical content analysis
+- Retrospective analytics support
+- Not the sole real-time signal-discovery or alerting system
+
+China Tech Radar:
+- Signal normalization, provenance, deduplication, event clustering, opportunity scoring, alerting, feedback, and outcome tracking
+
+MomentGrid OPC:
+- External control plane for implementation, verification, deployment governance, budget gates, and review
+- Referenced from this repository; not copied into it
+- Not placed in the raw-signal runtime path
 
 X:
 - Distribution and market feedback
+- No paid API use before the approved X API pilot gate
 
 ## 7. Tool Rule
 
@@ -68,6 +85,7 @@ Expected impact:
 Cost:
 Success metric:
 Failure condition:
+Exit or migration path:
 
 ## 8. Self Check Before Any Action
 
@@ -77,5 +95,7 @@ Before execution ask:
 2. Does this improve growth probability?
 3. Does this reduce operating time?
 4. Is this necessary now?
+5. Is the capability verified rather than inferred from a feature list?
+6. Does it cross a requirement, architecture, paid-spend, publishing-authority, secret-access, or irreversible external gate?
 
-If not, move to backlog.
+If the first four answers are no, move the action to backlog. If the sixth answer is yes, stop at the corresponding Human Gate.

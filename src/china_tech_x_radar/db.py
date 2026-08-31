@@ -97,7 +97,17 @@ def migrate(con: sqlite3.Connection) -> None:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             signal_id INTEGER NOT NULL REFERENCES signal(id) ON DELETE CASCADE,
             action_type TEXT NOT NULL DEFAULT 'REPLY',
+            event_type TEXT,
             target_url TEXT,
+            target_account TEXT,
+            target_account_followers INTEGER,
+            target_posted_at TEXT,
+            target_post_age_minutes REAL,
+            target_post_impressions_at_reply INTEGER,
+            angle_type TEXT,
+            hook_type TEXT,
+            media_type TEXT NOT NULL DEFAULT 'NONE',
+            has_external_link INTEGER NOT NULL DEFAULT 0,
             published_url TEXT UNIQUE,
             published_text TEXT,
             posted_at TEXT NOT NULL
@@ -110,6 +120,12 @@ def migrate(con: sqlite3.Connection) -> None:
             captured_at TEXT NOT NULL,
             impressions INTEGER,
             engagements INTEGER,
+            likes INTEGER,
+            replies INTEGER,
+            reposts INTEGER,
+            quotes INTEGER,
+            bookmarks INTEGER,
+            profile_visits INTEGER,
             notes TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_outcome_action ON outcome_snapshot(action_id, captured_at);
@@ -172,8 +188,30 @@ def migrate(con: sqlite3.Connection) -> None:
     if "score" not in cols:
         con.execute("ALTER TABLE signal ADD COLUMN score INTEGER NOT NULL DEFAULT 0")
     action_cols = {r[1] for r in con.execute("PRAGMA table_info(published_action)")}
-    if "action_type" not in action_cols:
-        con.execute("ALTER TABLE published_action ADD COLUMN action_type TEXT NOT NULL DEFAULT 'REPLY'")
+    action_migrations = {
+        "action_type": "TEXT NOT NULL DEFAULT 'REPLY'",
+        "event_type": "TEXT",
+        "target_account": "TEXT",
+        "target_account_followers": "INTEGER",
+        "target_posted_at": "TEXT",
+        "target_post_age_minutes": "REAL",
+        "target_post_impressions_at_reply": "INTEGER",
+        "angle_type": "TEXT",
+        "hook_type": "TEXT",
+        "media_type": "TEXT NOT NULL DEFAULT 'NONE'",
+        "has_external_link": "INTEGER NOT NULL DEFAULT 0",
+    }
+    for name, decl in action_migrations.items():
+        if name not in action_cols:
+            con.execute(f"ALTER TABLE published_action ADD COLUMN {name} {decl}")
+    outcome_cols = {r[1] for r in con.execute("PRAGMA table_info(outcome_snapshot)")}
+    outcome_migrations = {
+        "likes": "INTEGER", "replies": "INTEGER", "reposts": "INTEGER", "quotes": "INTEGER",
+        "bookmarks": "INTEGER", "profile_visits": "INTEGER",
+    }
+    for name, decl in outcome_migrations.items():
+        if name not in outcome_cols:
+            con.execute(f"ALTER TABLE outcome_snapshot ADD COLUMN {name} {decl}")
     con.commit()
 
 

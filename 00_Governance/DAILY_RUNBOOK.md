@@ -105,3 +105,9 @@ At the end of each day:
 8. if KPI is AMBER/RED, change at most one business variable plus one instrumentation fix before the next review.
 
 A daily review with missing outcome metrics must report `MEASUREMENT_GAP`; unknown metrics may never be treated as zero.
+
+## Growth Formula Capture — v1.2 Addendum
+
+For every published reply/original, capture the variables in `00_Governance/GROWTH_FORMULA.md`. For replies, target account and target-post age are especially important.
+
+At each daily review, run the formula report, compare strong vs weak actions, and select at most one variable to bias/test the next day. Do not increase low-quality posting merely to create samples.

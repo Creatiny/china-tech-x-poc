@@ -6,13 +6,13 @@
 
 ## Current Phase
 
-`BUSINESS_VALIDATION_FIRST / MAC_FACT_AUDIT_COMPLETE / MVP_BUILD_READY`
+`BUSINESS_VALIDATION_FIRST / SHADOW_TEST_DAY_1_RUNNING / NATIVE_MVP_LIVE`
 
 The prior `EXECUTION_BLOCKED` state caused by MomentGrid Stability Gate and external-pack intake is superseded by CP-002. OPC is no longer a prerequisite for the China Tech business experiment.
 
 ## Current Objective
 
-Launch the smallest reliable signal -> mobile alert -> human reply -> outcome evidence loop on the Mac mini, then run seven consecutive valid days before adding infrastructure.
+Run the live signal -> Feishu alert -> human X reply -> outcome evidence loop, review business KPI every day, and use Day 3 / 7 / 10 / 15 / 30 gates to decide whether to continue, correct, or change direction.
 
 ## Business Baseline
 
@@ -56,7 +56,20 @@ Detailed evidence: `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md`.
 
 ### EXP-001 — Zero-New-Spend Business Validation Shadow Test
 
-Status: `READY_FOR_MVP_BUILD / SHADOW_CLOCK_NOT_STARTED`
+Status: `DAY_1_RUNNING`
+
+Shadow Test start: `2026-08-31T09:25:41.405504Z`.
+
+First production cycle: 5/5 enabled sources succeeded, 71 signals were accepted, 3 recent P1 bootstrap opportunities were delivered to the real Feishu operator channel, and no source error occurred.
+
+Production service: `/Users/jh/services/china-tech-x-radar`.
+
+launchd:
+
+- `com.creatiny.china-tech-x-radar` — 5-minute polling;
+- `com.creatiny.china-tech-x-daily-review` — daily KPI review at 22:30 local time.
+
+KPI authority: `00_Governance/OPERATING_KPI.md`.
 
 The seven-day clock starts only after:
 
@@ -76,22 +89,20 @@ The existing X API pilot remains `BLOCKED` with authorized spend `$0` and charge
 
 ## Current Known Gaps
 
-1. No China Tech-specific runtime has yet been implemented in this repository.
-2. No mobile receive target has been verified. Feishu application credentials exist, but the operator receive ID/chat ID/webhook is not present in the inspected configuration.
-3. Direct X target-post discovery is not automated. The MVP may send a source link plus an X live-search link; only a verified direct target counts as an executable reply opportunity.
-4. The current TrendRadar configuration is not China Tech-focused and its Docker/Colima runtime is unhealthy after restart.
-5. The exact source allowlist and entity/topic rules still need to be tuned for China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global-business impact.
+1. Direct X target-post discovery remains human-assisted; the first three alerts include live X search links, and target-search time must now be measured.
+2. Operator decisions and X outcome metrics have not yet been entered for Day 1; this is the next business evidence dependency.
+3. Source coverage is intentionally narrow and must expand only when a daily review records a specific missed event/source class.
+4. TrendRadar/Colima remain deferred and non-blocking.
+5. The active deterministic rule set will be tuned from false-positive/miss evidence, not from feature ambition.
 
 ## Next Executable Sequence
 
-1. Implement one native Python `run_cycle` with RSS/Atom + GitHub adapters, SQLite exact dedupe, deterministic filtering, and structured logs.
-2. Add a small China Tech source allowlist and entity/topic rules; do not attempt broad platform coverage yet.
-3. Implement Feishu alert delivery behind configuration. If no valid receive target can be obtained from existing credentials, use one explicitly approved alternative mobile webhook rather than building a notification platform.
-4. Add a one-command/manual decision and outcome recorder; no web UI yet.
-5. Run a real end-to-end smoke: live source -> stored signal -> qualified alert -> mobile delivery -> manual decision record.
-6. Start the seven-day Shadow Test immediately after the smoke passes.
-7. At day seven, decide from evidence whether the next bottleneck is source coverage, direct X target discovery, scoring quality, operator workflow, or account/content strategy.
-8. Only then decide whether to repair TrendRadar/Colima, add model scoring, add a web inbox, use Eden more heavily, pilot paid X-native data, or reconnect OPC.
+1. Keep the 5-minute native runtime live and observe source/alert health.
+2. For each delivered P0/P1, record `worth_reviewing`, direct X target URL when found, target-search minutes, and posted/skipped outcome.
+3. Record impressions/engagement for published actions and a daily follower/profile snapshot when available.
+4. Generate the daily KPI review; GREEN continues the direction, AMBER/RED diagnoses the first broken funnel stage before any tool expansion.
+5. Evaluate Day 3, 7, 10, 15, and 30 against `OPERATING_KPI.md`.
+6. Admit TrendRadar, model scoring, browser/X-native target discovery, UI, or OPC only when a KPI review names the specific bottleneck they solve.
 
 ## Stop Gates
 

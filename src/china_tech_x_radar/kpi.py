@@ -57,7 +57,11 @@ def collect_metrics(con: sqlite3.Connection, start_at: str, as_of: date) -> dict
     latencies: list[float] = []
     for r in alerts:
         sent = _dt(r["sent_at"])
-        origin = _dt(r["published_at"]) or _dt(r["discovered_at"])
+        published = _dt(r["published_at"])
+        discovered = _dt(r["discovered_at"])
+        # Bootstrap items published before the experiment existed cannot be charged as runtime latency.
+        # Once the experiment is live, new source items are measured from source publish time.
+        origin = published if published and published >= start else discovered
         if sent and origin:
             latencies.append(max(0.0, (sent - origin).total_seconds() / 60.0))
 

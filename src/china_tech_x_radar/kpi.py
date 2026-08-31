@@ -216,11 +216,27 @@ def evaluate_gate(day: int, metrics: dict[str, Any], kpi: dict[str, Any]) -> dic
 
 def diagnose(metrics: dict[str, Any], gate: dict[str, Any]) -> dict[str, Any]:
     t = gate["targets"]
-    if metrics["cycle_count"] < 5:
-        return {"bottleneck": "RUNTIME_OR_MEASUREMENT", "actions": ["Verify launchd cycles and review DB path before changing content strategy.", "Do not add sources until runtime evidence is complete."]}
+    # Before a milestone is due, judge pace rather than demanding the full future cumulative target.
+    # Runtime is considered evidenced after at least one successful source-bearing cycle; do not let empty scheduled cycles mask that.
+    if metrics["cycle_count"] == 0 or metrics["cycle_success_rate"] is None:
+        return {"bottleneck": "RUNTIME_OR_MEASUREMENT", "actions": ["Verify launchd cycles and the production DB path before changing business strategy.", "Do not add sources until a successful live cycle is recorded."]}
     if metrics["cycle_success_rate"] is not None and metrics["cycle_success_rate"] < float(t.get("cycle_success_rate_min", 0)):
         return {"bottleneck": "RUNTIME_RELIABILITY", "actions": ["Fix the top recurring source/runtime error; keep other healthy sources running.", "Do not change scoring/content until cycle reliability recovers."]}
-    if metrics["qualified_alerts_total"] < int(t.get("qualified_alerts_total_min", 0)):
+    if not gate.get("milestone_is_due"):
+        eval_day = max(1, int(gate.get("evaluated_milestone_day", 1)))
+        current_day = max(1, int(gate.get("experiment_day", 1)))
+        def paced(target_key: str) -> int:
+            target = int(t.get(target_key, 0))
+            return max(1, (target * current_day + eval_day - 1) // eval_day) if target else 0
+        if metrics["qualified_alerts_total"] < paced("qualified_alerts_total_min"):
+            return {"bottleneck": "SOURCE_COVERAGE_PACE", "actions": ["Inspect concrete missed China Tech events before adding any source; current alert pace is below the next milestone trajectory.", "Add or tune only the source class that would have caught a documented miss."]}
+        if metrics["reviewed_total"] == 0 and metrics["qualified_alerts_total"] > 0:
+            return {"bottleneck": "OPERATOR_REVIEW_PENDING", "actions": ["Review the delivered P0/P1 alerts now and record worth_reviewing for each one.", "For alerts worth acting on, record a direct X target and target-search minutes; this is the current business evidence dependency."]}
+        if metrics["executable_opportunities_total"] < paced("executable_opportunities_total_min"):
+            return {"bottleneck": "TARGET_DISCOVERY", "actions": ["Turn the best reviewed signals into direct X target posts and measure target-search time.", "Do not add X-native infrastructure unless repeated target-search evidence proves this stage is the bottleneck."]}
+        if metrics["published_actions_total"] < paced("published_actions_total_min"):
+            return {"bottleneck": "HUMAN_EXECUTION_OR_REPLY_SELECTION", "actions": ["Act on the highest-quality executable opportunity rather than increasing alert volume.", "Record the publish/skip reason so tomorrow's review can distinguish target quality from reply quality."]}
+    elif metrics["qualified_alerts_total"] < int(t.get("qualified_alerts_total_min", 0)):
         return {"bottleneck": "SOURCE_COVERAGE", "actions": ["Inspect missed China Tech events and add/tune only the source class that would have caught them.", "Do not broaden keywords indiscriminately; preserve precision."]}
     if metrics["review_worth_rate"] is not None and metrics["review_worth_rate"] < float(t.get("review_worth_rate_min", 0)):
         return {"bottleneck": "ALERT_PRECISION", "actions": ["Review false-positive reasons and tighten source/entity/material-event rules.", "Change at most one scoring/rule family before the next daily review."]}

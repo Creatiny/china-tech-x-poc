@@ -114,7 +114,7 @@ Targets:
 
 If Day 15 misses both distribution and follower growth after at least two documented corrective iterations, the next review must explicitly consider whether source/target/content strategy or account positioning is wrong. Infrastructure expansion is not the default answer.
 
-### Day 30 — business-direction validation
+### Day 30 — growth-mechanism validation
 
 Operational targets:
 
@@ -133,13 +133,19 @@ Distribution and growth targets:
 - at least `1` action `>=1,000 impressions`;
 - followers `>=20` from the starting baseline of 4.
 
+Original-content target:
+
+- at least `8` differentiated original posts during the 30-day window, unless the daily reviews document insufficient qualified signals;
+- original-post results must be reported separately from reply results;
+- at least one original post should materially exceed the Day-0 average-view baseline.
+
 Commercial-intent target:
 
 - at least `1` measurable monetization-intent signal: inbound collaboration, consulting/research inquiry, sponsor/partner interest, subscriber/lead intent, or another recorded willingness-to-pay/convert signal.
 
 Day 30 can be classified:
 
-- `BUSINESS_DIRECTION_VALIDATED`: distribution + growth + commercial-intent KPI pass;
+- `GROWTH_MECHANISM_VALIDATED`: reply acquisition + original distribution + growth evidence pass;
 - `DISTRIBUTION_VALIDATED_NOT_COMMERCIALIZED`: growth/distribution pass but no commercial intent;
 - `AUDIENCE_SIGNAL_WEAK`: operating loop works but distribution/growth fails;
 - `FUNNEL_NOT_VALIDATED`: upstream source/alert/target loop itself still fails.
@@ -212,3 +218,108 @@ For KPI purposes:
 - a new app/recipient pairing requires at least one explicit human-visible smoke confirmation;
 - app-scoped identity types such as Feishu `open_id` must never be reused across different applications;
 - misrouted messages are excluded from alert-count and latency KPI.
+
+## 10. KPI Basis and Success Horizon — 2026-08-31 Calibration
+
+### What the Day 3/7/10/15/30 KPI is
+
+These are **POC falsification and learning gates**, not an industry promise that the account is "successful" by Day 30.
+
+They are based on three evidence classes:
+
+1. **Own-account baseline**: 4 followers, 15 tracked posts, 396 provisional tracked views, or about 26.4 views per tracked post. Early distribution thresholds are deliberately set as multiples of this weak baseline rather than generic large-account averages.
+2. **Operating constraints**: <=30 minutes/day, <=10-minute live-source alert latency once warmed, and enough reviewed opportunities to diagnose the funnel rather than rely on a single lucky post.
+3. **External platform reality**: X is a high-variance network where most posts receive low engagement, consistent participation matters over months, and current X native monetization increasingly rewards original content rather than reply-only reach.
+
+Therefore Day 30 means **growth mechanism validated or falsified**, not "mature account achieved."
+
+### External benchmark context
+
+Current external research is used as context, not copied as a target for this tiny account:
+
+- Buffer's 2026 benchmark reports X median engagement around the low-single-digit percentage range, with text posts leading and substantial Premium/non-Premium distribution differences.
+- Buffer's consistency study found creators posting at least weekly for 20+ of 26 weeks earned materially more engagement per post than highly inconsistent creators; this supports a multi-month stabilization horizon.
+- X is highly skewed: typical posts can remain small while occasional posts produce very large distribution, so one viral post cannot validate the system by itself.
+
+### Current X native monetization constraint
+
+As of 2026-08-31, X is retiring Creator Revenue Sharing and moving toward Original Content Rewards.
+
+X's published Original Content Rewards eligibility currently requires, among other conditions:
+
+- active eligible Premium subscription;
+- at least **500 verified followers**;
+- at least **500,000 Home Timeline impressions from verified users in the last 90 days**;
+- **reply impressions are excluded** from that impressions threshold;
+- active original content.
+
+Implication: replies are a discovery/acquisition channel, but the account must develop an **original-content distribution engine** to become sustainably monetizable on X itself.
+
+### Required two-track measurement
+
+From Day 7 onward, reviews must separate:
+
+**Reply acquisition track**
+
+- target-post age;
+- reply impressions and engagement;
+- profile visits / follower conversion attributed when observable;
+- target accounts and topics producing follows.
+
+**Original distribution track**
+
+- number of differentiated original posts;
+- original-post impressions;
+- median and max original-post impressions;
+- verified-user/Home Timeline metrics when X exposes them;
+- follower/profile conversion;
+- recurring thesis/topic performance.
+
+A strategy that produces reply impressions but no growth in original-post distribution is not sufficient for long-term success.
+
+## 11. How Long Should Success Take?
+
+Use staged definitions rather than one date:
+
+### 0–30 days — mechanism validation
+
+Question: can this account repeatedly earn distribution above its own baseline and convert some of that attention into relevant followers/profile interest?
+
+This is the current experiment. Day 30 is a go/correct/stop decision, not mature success.
+
+### 31–90 days — audience traction
+
+If Day 30 is positive, the next 60 days should demonstrate that growth is repeatable across multiple topics and original posts, not dependent on one target account or viral event.
+
+The exact Day-90 follower target must be set from the observed Day-30 conversion rate rather than invented in advance. Planning bands may be used, but actual Day-30 data is the authority.
+
+### 3–6 months — credible niche account
+
+A successful path should by then show:
+
+- a repeatable source -> thesis -> original-post engine;
+- multiple posts with materially larger reach than the Day-0 baseline;
+- a meaningful base of relevant followers;
+- recurring profile/follower conversion;
+- at least early commercial-intent evidence if consulting/research/business monetization is part of the goal.
+
+This is the first realistic horizon for saying the account is "operating successfully" rather than merely showing a promising POC.
+
+### 6–12+ months — platform-scale monetization
+
+X-native monetization eligibility is a much higher bar because 500 verified followers alone is insufficient; the 90-day qualified original-content impression threshold is also required. The timeline depends strongly on whether original posts begin producing thousands to tens of thousands of Home Timeline impressions.
+
+Business monetization outside X's native payout programs may occur earlier with a smaller but high-value China Tech audience; this must be measured separately from X payout eligibility.
+
+## 12. Day-30 Interpretation Bands
+
+The existing `followers >=20` target is a **minimum direction signal**, not the definition of account success.
+
+At Day 30:
+
+- `<20 followers` plus weak distribution: growth mechanism has not been proven;
+- `20–49 followers` with several above-baseline posts: early signal, but trajectory is still too slow for near-term X-native monetization;
+- `50–99 followers` with repeatable original-post lift: strong cold-start evidence and a plausible multi-month path;
+- `>=100 followers` with repeatable original-post lift: strong Month-1 traction; scale the proven topic/target patterns while protecting quality.
+
+These bands are planning heuristics. They do not override actual follower quality, original-post reach, conversion, or commercial-intent evidence.

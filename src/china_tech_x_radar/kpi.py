@@ -82,8 +82,9 @@ def collect_metrics(con: sqlite3.Connection, start_at: str, as_of: date) -> dict
         (start.date().isoformat(), as_of.isoformat()),
     ).fetchall()
     latest_account = snapshots[-1] if snapshots else None
-    profile_visits = sum(int(r["profile_visits"] or 0) for r in snapshots)
-    monetization_signals = sum(int(r["monetization_signals"] or 0) for r in snapshots)
+    known_profile = [int(r["profile_visits"]) for r in snapshots if r["profile_visits"] is not None]
+    profile_visits = sum(known_profile) if known_profile else None
+    monetization_signals = sum(int(r["monetization_signals"] or 0) for r in snapshots) if snapshots else None
 
     ops = con.execute(
         "SELECT operator_minutes FROM daily_ops WHERE ops_date>=? AND ops_date<=? AND operator_minutes IS NOT NULL ORDER BY ops_date",

@@ -263,7 +263,7 @@ def build_parser() -> argparse.ArgumentParser:
     x = sub.add_parser("account-snapshot")
     x.add_argument("--date")
     x.add_argument("--followers", type=int)
-    x.add_argument("--profile-visits", type=int, default=0)
+    x.add_argument("--profile-visits", type=int)
     x.add_argument("--monetization-signals", type=int, default=0)
     x.add_argument("--notes")
     x.set_defaults(func=cmd_account)

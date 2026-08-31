@@ -152,3 +152,19 @@ Canonical consequence:
 - Day 30 target requires at least 2 paying customers and `>=¥2,000` cumulative X-attributable revenue;
 - direct China Tech research/intelligence monetization is P0; X-native creator payout is a later parallel track;
 - reply acquisition and original-content distribution must be measured separately because current X Original Content Rewards excludes reply impressions from its qualified-impression eligibility threshold.
+
+## 2026-08-31 Personal Feishu Routing / Shadow Clock
+
+The operator confirmed the group-chat test was visible but explicitly requires China Tech alerts to be delivered only to the operator personally.
+
+Current state:
+
+- group delivery is not an authorized production alert destination;
+- a matched Feishu application + `REPORT_DEFAULT_LEADER_OPEN_ID` personal route has been tested with provider API acceptance;
+- production local config now points only to that personal `open_id` with the matching application;
+- `CHINA_TECH_ALERTS_ENABLED=0` remains in effect until the operator explicitly confirms seeing the personal smoke message;
+- collection continues while outbound China Tech alerts remain paused;
+- the prior three misrouted records remain excluded from KPI;
+- the Shadow Test clock has been cleared/paused and will restart only after personal delivery is human-verified.
+
+Status: `COLLECTION_LIVE / PERSONAL_DELIVERY_UNVERIFIED / SHADOW_CLOCK_PAUSED / MONEY_FIRST_KPI_ACTIVE`.

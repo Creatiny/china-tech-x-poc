@@ -180,3 +180,13 @@ The human owner rejected premature money-first service monetization and clarifie
 `OPERATING_KPI.md` v3.0 supersedes the earlier money-first Day-15/Day-30 cash gates.
 
 The personal Feishu route has now been explicitly confirmed by the intended human recipient. Production alerts are enabled for personal Feishu only; group chat is prohibited. The Shadow Test clock restarts from the verified personal-delivery activation on 2026-08-31.
+
+## 2026-08-31 Growth Formula Discovery Activation
+
+The runtime now records the variables required to discover a repeatable follower-growth formula rather than relying on anecdotal post review.
+
+Formula authority: `00_Governance/GROWTH_FORMULA.md`.
+
+Tracked per action: event type, target account/size, target-post age, visible target impressions at reply time, reply/original angle, hook, media/link treatment, and later distribution/engagement outcomes. Daily follower snapshots are evaluated as cohorts so overlapping actions are not falsely assigned individual follower causality.
+
+Evidence standard: one breakout is anecdotal; >=3 repeated wins form a candidate formula; >=5 repeated wins plus follower-positive cohorts justify scaling the combination.

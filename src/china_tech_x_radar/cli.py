@@ -9,6 +9,7 @@ from pathlib import Path
 from .alerts import FeishuSender
 from .db import connect, iso
 from .kpi import build_review
+from .formula import build_formula_report
 from .runner import run_cycle
 
 
@@ -99,14 +100,36 @@ def cmd_decide(args: argparse.Namespace) -> int:
         if not args.published_url:
             raise SystemExit("POSTED requires --published-url")
         posted_at = args.posted_at or now
+        target_post_age_minutes = args.target_post_age_minutes
+        if target_post_age_minutes is None and args.target_posted_at:
+            try:
+                posted_dt = datetime.fromisoformat(posted_at.replace("Z", "+00:00"))
+                target_dt = datetime.fromisoformat(args.target_posted_at.replace("Z", "+00:00"))
+                target_post_age_minutes = max(0.0, (posted_dt - target_dt).total_seconds() / 60.0)
+            except Exception:
+                target_post_age_minutes = None
         con.execute(
             """
-            INSERT INTO published_action(signal_id,action_type,target_url,published_url,published_text,posted_at)
-            VALUES(?,?,?,?,?,?)
+            INSERT INTO published_action(
+              signal_id,action_type,event_type,target_url,target_account,target_account_followers,
+              target_posted_at,target_post_age_minutes,target_post_impressions_at_reply,angle_type,hook_type,
+              media_type,has_external_link,published_url,published_text,posted_at
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(published_url) DO UPDATE SET
-              action_type=excluded.action_type,target_url=excluded.target_url,published_text=excluded.published_text,posted_at=excluded.posted_at
+              action_type=excluded.action_type,event_type=excluded.event_type,target_url=excluded.target_url,
+              target_account=excluded.target_account,target_account_followers=excluded.target_account_followers,
+              target_posted_at=excluded.target_posted_at,target_post_age_minutes=excluded.target_post_age_minutes,
+              target_post_impressions_at_reply=excluded.target_post_impressions_at_reply,angle_type=excluded.angle_type,
+              hook_type=excluded.hook_type,media_type=excluded.media_type,has_external_link=excluded.has_external_link,
+              published_text=excluded.published_text,posted_at=excluded.posted_at
             """,
-            (args.signal_id, args.action_type.upper(), args.target_url, args.published_url, args.published_text, posted_at),
+            (
+              args.signal_id,args.action_type.upper(),args.event_type.upper() if args.event_type else None,args.target_url,
+              args.target_account,args.target_account_followers,args.target_posted_at,target_post_age_minutes,
+              args.target_post_impressions_at_reply,args.angle_type.upper() if args.angle_type else None,
+              args.hook_type.upper() if args.hook_type else None,args.media_type.upper(),1 if args.has_external_link else 0,
+              args.published_url,args.published_text,posted_at,
+            ),
         )
         row = con.execute("SELECT id FROM published_action WHERE published_url=?", (args.published_url,)).fetchone()
         action_id = row["id"] if row else None
@@ -125,8 +148,11 @@ def cmd_outcome(args: argparse.Namespace) -> int:
     if not action_id:
         raise SystemExit("provide --action-id or a known --published-url")
     con.execute(
-        "INSERT INTO outcome_snapshot(action_id,captured_at,impressions,engagements,notes) VALUES(?,?,?,?,?)",
-        (action_id, iso(), args.impressions, args.engagements, args.notes),
+        """INSERT INTO outcome_snapshot(
+             action_id,captured_at,impressions,engagements,likes,replies,reposts,quotes,bookmarks,profile_visits,notes
+           ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+        (action_id, iso(), args.impressions, args.engagements, args.likes, args.replies, args.reposts,
+         args.quotes, args.bookmarks, args.profile_visits, args.notes),
     )
     con.commit()
     print(json.dumps({"action_id": action_id, "recorded": True}, ensure_ascii=False))
@@ -195,6 +221,7 @@ def cmd_review(args: argparse.Namespace) -> int:
     con = connect(db_path(root))
     as_of = parse_day(args.date)
     review = build_review(con, root, as_of)
+    review["growth_formula"] = build_formula_report(con, min_samples=2)
     out_dir = Path(args.output_dir).expanduser() if args.output_dir else root / "artifacts" / "reviews"
     out_dir.mkdir(parents=True, exist_ok=True)
     json_path = out_dir / f"{as_of.isoformat()}.json"
@@ -245,6 +272,14 @@ def cmd_business_event(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_formula(args: argparse.Namespace) -> int:
+    root = project_root()
+    con = connect(db_path(root))
+    report = build_formula_report(con, min_samples=args.min_samples)
+    print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="china-tech-x-radar")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -269,6 +304,16 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--published-url")
     x.add_argument("--published-text")
     x.add_argument("--action-type", choices=["reply", "original"], default="reply")
+    x.add_argument("--event-type", choices=["model_release", "benchmark", "semiconductor", "robotics", "ev", "funding", "earnings", "policy", "product_launch", "global_expansion", "other"])
+    x.add_argument("--target-account")
+    x.add_argument("--target-account-followers", type=int)
+    x.add_argument("--target-posted-at")
+    x.add_argument("--target-post-age-minutes", type=float)
+    x.add_argument("--target-post-impressions-at-reply", type=int)
+    x.add_argument("--angle-type", choices=["fact_add", "china_context", "comparison", "data_point", "contrarian", "global_implication", "technical_explanation", "question", "other"])
+    x.add_argument("--hook-type", choices=["breaking", "number", "contrast", "why_it_matters", "thesis", "question", "none"], default="none")
+    x.add_argument("--media-type", choices=["none", "image", "video", "chart"], default="none")
+    x.add_argument("--has-external-link", action="store_true")
     x.add_argument("--posted-at")
     x.add_argument("--notes")
     x.set_defaults(func=cmd_decide)
@@ -278,6 +323,12 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--published-url")
     x.add_argument("--impressions", type=int)
     x.add_argument("--engagements", type=int)
+    x.add_argument("--likes", type=int)
+    x.add_argument("--replies", type=int)
+    x.add_argument("--reposts", type=int)
+    x.add_argument("--quotes", type=int)
+    x.add_argument("--bookmarks", type=int)
+    x.add_argument("--profile-visits", type=int)
     x.add_argument("--notes")
     x.set_defaults(func=cmd_outcome)
 
@@ -311,6 +362,10 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--occurred-at")
     x.add_argument("--notes")
     x.set_defaults(func=cmd_business_event)
+
+    x = sub.add_parser("formula")
+    x.add_argument("--min-samples", type=int, default=2)
+    x.set_defaults(func=cmd_formula)
 
     x = sub.add_parser("review")
     x.add_argument("--date")

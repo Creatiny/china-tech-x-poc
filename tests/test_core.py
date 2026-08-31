@@ -9,6 +9,7 @@ from china_tech_x_radar.classify import classify
 from china_tech_x_radar.db import connect, insert_signal, iso
 from china_tech_x_radar.sources import parse_feed
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
+from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 
 
 class CoreTests(unittest.TestCase):
@@ -91,6 +92,32 @@ class CoreTests(unittest.TestCase):
         gate = evaluate_gate(15, metrics, kpi)
         self.assertTrue(gate["business_pass"])
         self.assertEqual(gate["status"], "GREEN_GROWTH_CONTINUE")
+
+
+    def test_growth_formula_buckets_and_repeated_combo(self):
+        self.assertEqual(age_bucket(8), "0_10M")
+        self.assertEqual(age_bucket(45), "30_60M")
+        self.assertEqual(follower_tier(250000), "100K_1M")
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "formula.db")
+            now = iso()
+            con.execute("INSERT INTO experiment_state(id,started_at,baseline_followers,baseline_tracked_posts,baseline_total_views,created_at,updated_at) VALUES(1,?,?,?,?,?,?)", (now,4,0,0,now,now))
+            con.execute("INSERT INTO account_snapshot(snapshot_date,followers,profile_visits,monetization_signals,notes,captured_at) VALUES('2026-08-31',6,2,0,NULL,?)", (now,))
+            for i in (1,2):
+                fp=(str(i)*64)[:64]
+                cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (fp,'s','S','rss',f'T{i}',now,'P1',10,'r',now))
+                sid=cur.lastrowid
+                cur=con.execute("INSERT INTO published_action(signal_id,action_type,event_type,target_account,target_account_followers,target_post_age_minutes,angle_type,media_type,has_external_link,published_url,published_text,posted_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", (sid,'REPLY','SEMICONDUCTOR','acct',200000,20,'CHINA_CONTEXT','NONE',0,f'https://x.com/me/{i}','text',now))
+                aid=cur.lastrowid
+                con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions,engagements) VALUES(?,?,?,?)", (aid,now,300*i,15*i))
+            con.commit()
+            report=build_formula_report(con,min_samples=2)
+            self.assertEqual(len(report['repeated_combinations']),1)
+            combo=report['repeated_combinations'][0]
+            self.assertEqual(combo['target_tier'],'100K_1M')
+            self.assertEqual(combo['target_age_bucket'],'10_30M')
+            self.assertEqual(combo['samples'],2)
+            self.assertEqual(report['daily_follower_cohorts'][0]['follower_delta'],2)
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

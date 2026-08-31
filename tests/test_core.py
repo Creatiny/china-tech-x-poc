@@ -119,6 +119,19 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(combo['samples'],2)
             self.assertEqual(report['daily_follower_cohorts'][0]['follower_delta'],2)
 
+
+    def test_curated_source_can_promote_known_entity_without_generic_topic_word(self):
+        item = {"title": "Chinese court freezes Nexperia assets in Wingtech case", "excerpt": "", "published_at": datetime.now(timezone.utc)}
+        source = {"china_focused": False, "source_weight": 5, "allow_entity_only": True, "default_topic": "china_tech"}
+        rules = {
+            "china_entities": ["wingtech", "nexperia"], "topic_terms": ["ai", "semiconductor", "chip"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes": 30,
+            "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        out = classify(item, source, rules)
+        self.assertEqual(out["priority"], "P1")
+        self.assertEqual(out["topic"], "china_tech")
+
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "x.db")

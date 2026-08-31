@@ -116,3 +116,26 @@ The current MVP stops for human input only when it needs:
 - a material platform-policy ambiguity.
 
 MomentGrid/OPC availability is explicitly not a stop gate for the business experiment.
+
+## 2026-08-31 Feishu Delivery Correction
+
+User-visible delivery invalidated the earlier Feishu assumption: the operator reported receiving none of the three messages marked `SENT` by the first runtime cycle.
+
+Root cause evidence:
+
+- the Mac contains at least two distinct Feishu application credential sets;
+- the first China Tech sender used an `open_id` from the approval-spike application;
+- another established daily-report path uses a different application and a group `chat_id`;
+- Feishu `open_id` values are application-scoped; attempting the report-leader `open_id` with the approval-spike application returns `open_id cross app`;
+- therefore HTTP/code=0 from the original sender proves API acceptance to some valid app-scoped recipient, not delivery to the intended operator.
+
+Correction:
+
+- the original three alert records are classified `MISROUTED` and must not count toward KPI;
+- automated P0/P1 sending is paused while collection continues;
+- local alert configuration must use one matched app-credential + recipient pair;
+- a test has been sent through the established daily-report application + its historically verified group chat;
+- the channel remains `DELIVERY_UNVERIFIED` until the human operator confirms seeing the test;
+- only after human confirmation may `CHINA_TECH_ALERTS_ENABLED=1` be set and production alert sending resume.
+
+This incident also changes the delivery acceptance contract: **API acceptance is not user delivery evidence**. Initial channel verification requires explicit human-visible confirmation.

@@ -201,3 +201,14 @@ Examples:
 - reconnect OPC only for proven implementation/governance complexity.
 
 Business KPI failure never automatically authorizes more infrastructure.
+
+## 9. Alert Delivery Evidence
+
+A notification API returning HTTP 200 or provider `code=0` is `API_ACCEPTED`, not proof that the intended human received it.
+
+For KPI purposes:
+
+- messages sent before a recipient/channel has been human-confirmed are not counted as delivered opportunities;
+- a new app/recipient pairing requires at least one explicit human-visible smoke confirmation;
+- app-scoped identity types such as Feishu `open_id` must never be reused across different applications;
+- misrouted messages are excluded from alert-count and latency KPI.

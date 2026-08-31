@@ -8,6 +8,7 @@ from pathlib import Path
 from china_tech_x_radar.classify import classify
 from china_tech_x_radar.db import connect, insert_signal, iso
 from china_tech_x_radar.sources import parse_feed
+from china_tech_x_radar.kpi import diagnose
 
 
 class CoreTests(unittest.TestCase):
@@ -53,6 +54,25 @@ class CoreTests(unittest.TestCase):
         }
         out = classify(item, source, rules)
         self.assertEqual(out["priority"], "DROP")
+
+
+    def test_pre_gate_diagnosis_prioritizes_operator_review(self):
+        metrics = {
+            "cycle_count": 2, "cycle_success_rate": 1.0, "qualified_alerts_total": 3,
+            "reviewed_total": 0, "review_worth_rate": None, "executable_opportunities_total": 0,
+            "published_actions_total": 0, "actions_with_outcome": 0,
+        }
+        gate = {
+            "milestone_is_due": False, "evaluated_milestone_day": 3, "experiment_day": 1,
+            "process_pass": False, "business_pass": False,
+            "targets": {
+                "cycle_success_rate_min": 0.95, "qualified_alerts_total_min": 6,
+                "executable_opportunities_total_min": 3, "published_actions_total_min": 3,
+                "review_worth_rate_min": 0.5,
+            },
+        }
+        d = diagnose(metrics, gate)
+        self.assertEqual(d["bottleneck"], "OPERATOR_REVIEW_PENDING")
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

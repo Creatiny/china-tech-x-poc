@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 import os
+import uuid
 import urllib.request
+from pathlib import Path
 from typing import Any
 
 
@@ -35,15 +38,11 @@ class FeishuSender:
         self._token = token
         return token
 
-    def send_text(self, text: str) -> str:
+    def _send(self, msg_type: str, content: dict[str, Any]) -> str:
         if not self.available():
             raise RuntimeError("Feishu channel is not fully configured")
         token = self._tenant_token()
-        payload = {
-            "receive_id": self.receive_id,
-            "msg_type": "text",
-            "content": json.dumps({"text": text}, ensure_ascii=False),
-        }
+        payload = {"receive_id": self.receive_id, "msg_type": msg_type, "content": json.dumps(content, ensure_ascii=False)}
         req = urllib.request.Request(
             self.base + f"/open-apis/im/v1/messages?receive_id_type={self.receive_id_type}",
             data=json.dumps(payload, ensure_ascii=False).encode(),
@@ -56,22 +55,63 @@ class FeishuSender:
             raise RuntimeError(f"Feishu send error code={data.get('code')} msg={data.get('msg')}")
         return str((data.get("data") or {}).get("message_id") or "")
 
+    def send_text(self, text: str) -> str:
+        return self._send("text", {"text": text})
 
-def format_alert(signal: dict[str, Any]) -> str:
-    published = signal.get("published_at") or "unknown"
+    def upload_image(self, path: str | Path) -> str:
+        path = Path(path)
+        token = self._tenant_token()
+        boundary = "----ChinaTech" + uuid.uuid4().hex
+        mime = mimetypes.guess_type(path.name)[0] or "image/png"
+        file_bytes = path.read_bytes()
+        parts = []
+        parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"image_type\"\r\n\r\nmessage\r\n".encode())
+        parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"image\"; filename=\"{path.name}\"\r\nContent-Type: {mime}\r\n\r\n".encode())
+        parts.append(file_bytes)
+        parts.append(f"\r\n--{boundary}--\r\n".encode())
+        body = b"".join(parts)
+        req = urllib.request.Request(
+            self.base + "/open-apis/im/v1/images",
+            data=body,
+            headers={"Authorization": "Bearer " + token, "Content-Type": f"multipart/form-data; boundary={boundary}"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read())
+        if data.get("code") != 0 or not (data.get("data") or {}).get("image_key"):
+            raise RuntimeError(f"Feishu image upload error code={data.get('code')} msg={data.get('msg')}")
+        return str(data["data"]["image_key"])
+
+    def send_image(self, path: str | Path) -> str:
+        image_key = self.upload_image(path)
+        return self._send("image", {"image_key": image_key})
+
+
+def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has_asset: bool) -> str:
+    decision = str(packet.get("decision") or "SKIP").upper()
+    urgency = int(packet.get("urgency_minutes") or 0)
+    action_cn = "发 ORIGINAL POST" if decision == "POST" else "去目标帖 REPLY"
+    confidence = packet.get("confidence")
     lines = [
-        f"[{signal['priority']}] China Tech X signal #{signal['id']}",
+        f"【China Tech 发布包 #{signal['id']}】",
+        f"结论：{action_cn}" + (f"｜置信度 {confidence:.0%}" if isinstance(confidence, (int, float)) else ""),
+        f"时效：{'尽快，约 ' + str(urgency) + ' 分钟内' if urgency else '尽快处理'}",
         "",
-        signal.get("title") or "",
+        f"为什么：{packet.get('reason') or ''}",
+    ]
+    if decision == "REPLY":
+        lines += [f"目标帖：{packet.get('target_url') or 'N/A'}", f"目标账号：{packet.get('target_account') or 'N/A'}"]
+    lines += [
         "",
-        f"Source: {signal.get('source_name')} | Published: {published}",
-        f"Why: {signal.get('reason')}",
-        f"Source link: {signal.get('canonical_url') or 'N/A'}",
-        f"X target: {signal.get('target_mode')}",
-        f"X live search: {signal.get('x_search_url') or 'N/A'}",
+        "【最终文案｜直接复制】",
+        str(packet.get("final_copy") or ""),
         "",
-        signal.get("suggested_angle") or "",
+        f"配图：{'已附原创数据卡，直接保存后随帖发布' if has_asset else ('不建议配图，纯文本更适合这条' if decision == 'REPLY' else '这条不需要为了配图硬加图')}",
+        f"发布提示：{packet.get('publish_note') or '按上面文案直接发布。'}",
         "",
-        "Action: find a strong target post, reply only if you can add a non-generic China-specific fact or implication. X publishing remains manual.",
+        f"来源：{packet.get('source_url') or signal.get('canonical_url') or 'N/A'}",
+        f"实验标签：{packet.get('angle_type') or 'OTHER'}",
+        "",
+        "发布后把 X 链接发给 ChatGPT，我会继续追踪 impressions → followers 并纳入增长公式。",
     ]
     return "\n".join(lines)

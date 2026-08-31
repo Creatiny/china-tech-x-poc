@@ -3,10 +3,10 @@
 ## 1. Architecture Metadata
 
 - Status: `APPROVED`
-- Version: `1.2`
+- Version: `1.3`
 - Date: `2026-08-31`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.2
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.2
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.3
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.3
 - Change proposals: `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
 
 ## 2. Architecture Principle
@@ -35,7 +35,12 @@ RSS/Atom | GitHub | verified zero-cost endpoints
             P0/P1/P2/DROP
                     |
                     v
-       mobile alert adapter (Feishu)
+     editorial enrichment / verification
+ ChatGPT OAuth + Codex, bounded + logged
+          POST / REPLY / SKIP
+                    |
+                    v
+ personal Feishu publishing packet only
                     |
                     v
        human target selection on X
@@ -218,6 +223,17 @@ Unknown metrics remain null.
 The runtime computes distribution comparisons by action type, event/topic, target account/tier, target-age bucket, angle, hook, media and external-link treatment.
 
 Daily follower snapshots are joined as cohorts rather than falsely assigning overlapping follower gains to one action. Formula evidence follows `GROWTH_FORMULA.md`: 1 sample anecdote, 2 hypothesis, >=3 repeated wins candidate, >=5 repeated wins plus follower-positive cohorts eligible for scale bias.
+
+
+### 5.9 Editorial enrichment and publish packet
+
+Raw deterministic P0/P1 output is not operator-facing. Ambiguous candidates may pass through a low-reasoning no-search gate; high-confidence tech candidates and gate-passed candidates receive final bounded Codex enrichment with web verification/search as needed.
+
+The final result is `POST`, `REPLY`, or `SKIP`. `SKIP` is stored silently. `REPLY` requires a verified direct X status URL. `POST/REPLY` receives paste-ready conversational English copy, source provenance, urgency, and an explicit visual decision.
+
+The runtime uses the already authenticated local ChatGPT/Codex OAuth runtime. Daily gate/final call limits and logged token-proxy caps prevent uncontrolled quota consumption. No OpenAI Platform API key is required.
+
+When useful, the runtime renders an original 1200x675 editorial data card from verified facts and uploads it to personal Feishu. It does not assume third-party source photography is reusable.
 
 ## 6. Configuration
 

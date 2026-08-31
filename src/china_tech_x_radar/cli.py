@@ -10,6 +10,7 @@ from .alerts import FeishuSender
 from .db import connect, iso
 from .kpi import build_review
 from .formula import build_formula_report
+from .editorial import model_usage_today
 from .runner import run_cycle
 
 
@@ -51,7 +52,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         "published_actions": con.execute("SELECT COUNT(*) FROM published_action").fetchone()[0],
     }
     exp = con.execute("SELECT * FROM experiment_state WHERE id=1").fetchone()
-    print(json.dumps({"db": str(db_path(root)), "counts": counts, "sources": sources, "experiment": dict(exp) if exp else None}, ensure_ascii=False, indent=2))
+    editorial_usage = model_usage_today(con)
+    print(json.dumps({"db": str(db_path(root)), "counts": counts, "sources": sources, "experiment": dict(exp) if exp else None, "editorial_usage_today": editorial_usage}, ensure_ascii=False, indent=2))
     return 0
 
 

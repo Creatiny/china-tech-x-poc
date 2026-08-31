@@ -1,6 +1,6 @@
 # Daily Runbook v2.0
 
-Authority: `PROJECT_SPEC.md` v2.0 and `EXECUTION_PLAN.md` v1.0.
+Authority: `PROJECT_SPEC.md` v2.1 and `EXECUTION_PLAN.md` v1.1.
 
 ## Daily Objective
 

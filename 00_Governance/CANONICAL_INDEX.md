@@ -2,7 +2,7 @@
 
 ## Single Source of Truth
 
-`PROJECT_SPEC.md` v2.0 is the top-level authority.
+`PROJECT_SPEC.md` v2.1 is the top-level authority.
 
 ## Normative Detail
 

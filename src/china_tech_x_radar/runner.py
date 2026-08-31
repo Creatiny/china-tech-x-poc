@@ -7,8 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .alerts import FeishuSender, format_alert
+from .alerts import FeishuSender, format_publish_packet
 from .classify import classify
+from .editorial import enrich_signal, load_editorial_config
 from .db import (
     ensure_alert,
     get_source_state,
@@ -20,6 +21,7 @@ from .db import (
     save_source_state,
 )
 from .sources import fetch_source, fingerprint
+from .visuals import render_editorial_card
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -139,6 +141,7 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             """,
             (max_alerts,),
         ).fetchall()
+        editorial_cfg = load_editorial_config(root)
         for row in pending:
             signal = dict(row)
             if not send_alerts:
@@ -148,15 +151,44 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                 con.commit()
                 continue
             try:
-                receipt = sender.send_text(format_alert(signal))
+                packet = enrich_signal(con, root, signal)
+                decision = str(packet.get("decision") or "SKIP").upper()
+                editorial_now = iso()
+                if decision == "SKIP":
+                    con.execute(
+                        """UPDATE alert SET status='EDITORIAL_SKIP', editorial_status='SKIP', editorial_packet_json=?,
+                           editorial_at=?, editorial_model=?, error=NULL WHERE id=?""",
+                        (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), signal["alert_id"]),
+                    )
+                    con.commit()
+                    continue
+
+                asset = None
+                if bool(editorial_cfg.get("render_editorial_cards", True)):
+                    try:
+                        asset = render_editorial_card(root, signal, packet)
+                    except Exception as asset_exc:
+                        packet["asset_error"] = f"{type(asset_exc).__name__}: {asset_exc}"[:500]
+                        asset = None
+
+                text = format_publish_packet(signal, packet, has_asset=bool(asset))
+                receipt = sender.send_text(text)
+                if asset:
+                    sender.send_image(asset)
                 con.execute(
-                    "UPDATE alert SET status='SENT',sent_at=?,channel='feishu',receipt_id=?,error=NULL WHERE id=?",
-                    (iso(), receipt, signal["alert_id"]),
+                    """UPDATE alert SET status='SENT',sent_at=?,channel='feishu',receipt_id=?,error=NULL,
+                       editorial_status='READY', editorial_packet_json=?, editorial_at=?, editorial_model=?, asset_path=?
+                       WHERE id=?""",
+                    (iso(), receipt, json.dumps(packet, ensure_ascii=False), editorial_now,
+                     str(editorial_cfg.get("model") or "codex"), str(asset) if asset else None, signal["alert_id"]),
                 )
                 con.commit()
                 counters["alerts_sent"] += 1
             except Exception as exc:
-                con.execute("UPDATE alert SET error=? WHERE id=?", (f"{type(exc).__name__}: {exc}"[:1000], signal["alert_id"]))
+                con.execute(
+                    "UPDATE alert SET status='EDITORIAL_ERROR', editorial_status='ERROR', editorial_at=?, error=? WHERE id=?",
+                    (iso(), f"{type(exc).__name__}: {exc}"[:1000], signal["alert_id"]),
+                )
                 con.commit()
 
         record_cycle_finish(

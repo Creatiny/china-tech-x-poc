@@ -6,7 +6,7 @@ This repository is the canonical product, experiment, and operating definition f
 
 ## Single Source of Truth
 
-`PROJECT_SPEC.md` v2.0 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
+`PROJECT_SPEC.md` v2.1 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
 
 ## North Star
 
@@ -41,7 +41,11 @@ Free RSS/Atom + GitHub + verified free sources
        deterministic relevance rules
                     |
                     v
-         mobile-capable alert channel
+   ChatGPT OAuth/Codex editorial gate
+       POST / REPLY / silent SKIP
+                    |
+                    v
+      personal Feishu publish packet
                     |
                     v
       human X search / reply / publish
@@ -68,17 +72,17 @@ See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
 
 ## Active Canonical
 
-- Single source of truth: `PROJECT_SPEC.md` v2.0
-- Execution plan: `EXECUTION_PLAN.md` v1.0
+- Single source of truth: `PROJECT_SPEC.md` v2.1
+- Execution plan: `EXECUTION_PLAN.md` v1.1
 - Canonical precedence: `00_Governance/CANONICAL_INDEX.md`
 - KPI: `00_Governance/OPERATING_KPI.md` v3.0
 - Growth formula: `00_Governance/GROWTH_FORMULA.md` v1.0
 - Constitution: `00_Governance/POC_CONSTITUTION.md`
 - Current status: `00_Governance/PROJECT_STATUS.md`
 - Business-first correction: `00_Governance/CHANGE_PROPOSALS/CP-002-BUSINESS-VALIDATION-FIRST.md`
-- Requirement: `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` v1.2
-- Architecture: `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` v1.2
-- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.2 — `APPROVED / ACTIVE / MVP-FIRST`
+- Requirement: `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` v1.3
+- Architecture: `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` v1.3
+- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.3 — `APPROVED / ACTIVE / MVP-FIRST`
 - Paid X API pack: `03_Packs/PACK-CHINA-TECH-X-XAPI-PILOT-001.md` — `BLOCKED`
 
 ## Hard Boundaries

@@ -88,3 +88,20 @@ Once per week:
 3. identify false-positive and expired-alert causes;
 4. propose scoring or source changes through normal change control;
 5. decide whether evidence supports entering the blocked X API pilot.
+
+## Mandatory Business Review — v1.1 Addendum
+
+`00_Governance/OPERATING_KPI.md` is the authority for Day 3 / 7 / 10 / 15 / 30 KPI.
+
+At the end of each day:
+
+1. record operator time;
+2. record decisions for every reviewed P0/P1 alert;
+3. attach current impressions/engagement to published test actions when visible;
+4. record account followers/profile visits when visible;
+5. generate the daily KPI review;
+6. classify the first broken funnel stage;
+7. if KPI is GREEN, continue the proven direction;
+8. if KPI is AMBER/RED, change at most one business variable plus one instrumentation fix before the next review.
+
+A daily review with missing outcome metrics must report `MEASUREMENT_GAP`; unknown metrics may never be treated as zero.

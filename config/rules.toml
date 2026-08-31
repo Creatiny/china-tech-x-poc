@@ -1,0 +1,32 @@
+max_candidate_age_minutes = 1440
+p0_max_age_minutes = 30
+p1_max_age_minutes = 360
+bootstrap_alert_max_age_minutes = 120
+max_alerts_per_cycle = 3
+
+china_entities = [
+  "china", "chinese", "alibaba", "qwen", "tencent", "hunyuan", "baidu", "ernie",
+  "huawei", "harmonyos", "xiaomi", "bytedance", "tiktok", "byd", "catl", "smic",
+  "ymtc", "yangtze memory", "cxmt", "deepseek", "zhipu", "glm", "minimax", "moonshot",
+  "kimi", "unitree", "agibot", "ubtech", "xpeng", "nio", "geely", "djI", "lenovo",
+  "sensetime", "cambricon", "enflame", "biren", "moore threads", "sicarrier", "ant group",
+  "meituan", "jd.com", "pinduoduo", "shein", "horizon robotics", "modelscope", "wan3", "wan2"
+]
+
+topic_terms = [
+  "ai", "artificial intelligence", "model", "llm", "agent", "open-source", "open source",
+  "semiconductor", "chip", "gpu", "accelerator", "fab", "foundry", "memory", "dram", "nand",
+  "robot", "robotics", "humanoid", "ev", "electric vehicle", "battery", "autonomous",
+  "manufacturing", "data center", "datacenter", "cloud", "ipo", "funding", "raises", "earnings",
+  "launch", "release", "benchmark", "export", "sanction", "supply chain"
+]
+
+high_impact_terms = [
+  "launch", "release", "open-source", "open source", "raises", "funding", "ipo", "earnings",
+  "chip", "gpu", "semiconductor", "benchmark", "million", "billion", "export", "sanction",
+  "production", "mass production", "tape out", "tape-out", "acquisition", "partnership"
+]
+
+noise_terms = [
+  "coupon", "giveaway", "horoscope", "celebrity", "sports", "lottery"
+]

@@ -82,3 +82,21 @@ See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
 - Human publishing remains the final authority.
 
 All execution follows the Constitution, Change Control, current Project Status, and the active pack.
+
+## Native MVP Commands
+
+The current runtime is standard-library Python + SQLite and is intentionally independent of OPC/Docker.
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -e .
+china-tech-x-radar run
+china-tech-x-radar list
+china-tech-x-radar decide <signal-id> POSTED --worth yes --target-url <x-target> --published-url <your-x-post>
+china-tech-x-radar outcome --published-url <your-x-post> --impressions 123 --engagements 4
+china-tech-x-radar account-snapshot --followers 5 --profile-visits 2
+china-tech-x-radar ops-time --minutes 24
+china-tech-x-radar review --notify
+```
+
+Production Mac launchd definitions live under `deploy/`. KPI authority is `00_Governance/OPERATING_KPI.md`.

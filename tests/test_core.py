@@ -56,43 +56,41 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(out["priority"], "DROP")
 
 
-    def test_pre_gate_diagnosis_prioritizes_money_funnel(self):
+    def test_pre_gate_diagnosis_prioritizes_reply_growth(self):
         metrics = {
-            "cycle_count": 2, "cycle_success_rate": 1.0, "qualified_alerts_total": 2,
-            "published_actions_total": 1, "original_posts_total": 1, "actions_with_outcome": 1,
-            "offer_live_total": 0, "commercial_intent_total": 0, "qualified_conversations_total": 0,
-            "proposals_sent_total": 0, "paying_customers_total": 0, "x_attributed_revenue_cny": 0.0,
+            "cycle_count": 2, "cycle_success_rate": 1.0, "review_worth_rate": 0.8,
+            "reply_actions_total": 0, "original_posts_total": 0, "published_actions_total": 0,
+            "actions_with_outcome": 0, "max_impressions": None, "followers_total": 4,
         }
         gate = {
             "milestone_is_due": False, "evaluated_milestone_day": 3, "experiment_day": 1,
             "process_pass": False, "business_pass": False,
             "targets": {
-                "cycle_success_rate_min": 0.95, "qualified_alerts_total_min": 4,
-                "published_actions_total_min": 2, "original_posts_total_min": 1,
-                "offer_live_total_min": 1,
+                "cycle_success_rate_min": 0.95, "reply_actions_total_min": 6,
+                "original_posts_total_min": 2, "followers_total_min": 8, "max_impressions_min": 100,
+                "review_worth_rate_min": 0.5,
             },
         }
         d = diagnose(metrics, gate)
-        self.assertEqual(d["bottleneck"], "NO_MONETIZATION_OFFER")
+        self.assertEqual(d["bottleneck"], "REPLY_ACQUISITION_PACE")
 
-    def test_day15_money_gate_requires_cash_and_payer(self):
+    def test_day15_growth_gate_requires_followers_and_distribution(self):
         metrics = {
             "cycle_success_rate": 1.0, "median_alert_latency_minutes": 5.0, "review_worth_rate": 0.8,
-            "qualified_alerts_total": 20, "published_actions_total": 12, "median_operator_minutes_per_day": 20,
-            "original_posts_total": 5, "offer_live_total": 1, "commercial_intent_total": 3,
-            "qualified_conversations_total": 3, "proposals_sent_total": 1,
-            "paying_customers_total": 1, "x_attributed_revenue_cny": 500.0,
+            "reply_actions_total": 40, "original_posts_total": 10, "median_operator_minutes_per_day": 20,
+            "followers_total": 40, "max_impressions": 1200,
+            "actions_over_100_impressions": 8, "actions_over_300_impressions": 3, "actions_over_1000_impressions": 1,
         }
         kpi = {"milestone": {"day15": {
             "cycle_success_rate_min": 0.98, "median_alert_latency_minutes_max": 10,
-            "review_worth_rate_min": 0.70, "published_actions_total_min": 10,
-            "original_posts_total_min": 5, "qualified_conversations_total_min": 3,
-            "proposals_sent_total_min": 1, "paying_customers_total_min": 1,
-            "revenue_cny_min": 500, "business_signal_mode": "FIRST_CASH",
+            "review_worth_rate_min": 0.70, "reply_actions_total_min": 40,
+            "original_posts_total_min": 10, "followers_total_min": 40,
+            "actions_over_300_impressions_min": 3, "max_impressions_min": 1000,
+            "median_operator_minutes_per_day_max": 30, "business_signal_mode": "AUDIENCE_ENGINE",
         }, "day3": {}, "day7": {}, "day10": {}, "day30": {}}}
         gate = evaluate_gate(15, metrics, kpi)
         self.assertTrue(gate["business_pass"])
-        self.assertEqual(gate["status"], "GREEN_MONEY_PATH_CONTINUE")
+        self.assertEqual(gate["status"], "GREEN_GROWTH_CONTINUE")
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

@@ -10,7 +10,7 @@ china_entities = [
   "ymtc", "yangtze memory", "cxmt", "deepseek", "zhipu", "glm", "minimax", "moonshot",
   "kimi", "unitree", "agibot", "ubtech", "xpeng", "nio", "geely", "djI", "lenovo",
   "sensetime", "cambricon", "enflame", "biren", "moore threads", "sicarrier", "ant group",
-  "meituan", "jd.com", "pinduoduo", "shein", "horizon robotics", "modelscope", "wan3", "wan2"
+  "meituan", "jd.com", "pinduoduo", "shein", "horizon robotics", "modelscope", "wan3", "wan2", "wingtech", "nexperia"
 ]
 
 topic_terms = [

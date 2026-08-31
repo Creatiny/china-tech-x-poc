@@ -65,7 +65,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     if noise:
         priority = "DROP"
         reason = f"noise:{noise[0]}"
-    elif not topics:
+    elif not topics and not (bool(source.get("allow_entity_only")) and entities):
         priority = "DROP"
         reason = "no_tech_topic_match"
     elif not bool(source.get("china_focused")) and not entities:
@@ -101,6 +101,8 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     generic_topics = {"ai", "model"}
     topic_pool = title_topics or topics
     topic = next((t for t in topic_pool if t.casefold() not in generic_topics), topic_pool[0] if topic_pool else None)
+    if topic is None and bool(source.get("allow_entity_only")) and entities:
+        topic = str(source.get("default_topic") or "china_tech")
     return {
         "priority": priority,
         "score": locals().get("score", 0),

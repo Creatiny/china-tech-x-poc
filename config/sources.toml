@@ -60,3 +60,15 @@ poll_minutes = 30
 china_focused = true
 source_weight = 4
 enabled = true
+
+[[source]]
+id = "reuters_china_tech"
+kind = "rss"
+name = "Reuters China Tech via Google News"
+url = "https://news.google.com/rss/search?q=site%3Areuters.com+China+technology+when%3A1d&hl=en-US&gl=US&ceid=US%3Aen"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+allow_entity_only = true
+default_topic = "china_tech"
+enabled = true

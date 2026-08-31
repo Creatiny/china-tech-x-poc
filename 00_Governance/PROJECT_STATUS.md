@@ -190,3 +190,17 @@ Formula authority: `00_Governance/GROWTH_FORMULA.md`.
 Tracked per action: event type, target account/size, target-post age, visible target impressions at reply time, reply/original angle, hook, media/link treatment, and later distribution/engagement outcomes. Daily follower snapshots are evaluated as cohorts so overlapping actions are not falsely assigned individual follower causality.
 
 Evidence standard: one breakout is anecdotal; >=3 repeated wins form a candidate formula; >=5 repeated wins plus follower-positive cohorts justify scaling the combination.
+
+## 2026-08-31 Source Coverage Repair — Reuters China Tech
+
+The first formal original-post sample (Nexperia/Wingtech) exposed a concrete source-coverage miss: the event was not present in the five-source radar before the operator published it.
+
+A focused zero-cost repair is approved and implemented:
+
+- add a Google News RSS search constrained to `site:reuters.com China technology when:1d`;
+- keep deterministic China-entity/topic filtering active (`china_focused=false`);
+- add `Wingtech` and `Nexperia` to the China Tech entity set because they were the exact missed semiconductor event entities;
+- poll every five minutes;
+- do not broaden to generic Google News coverage from this one miss.
+
+A live probe returned the Nexperia/Wingtech story and other current Reuters China-tech candidates, so this repair addresses an observed business miss rather than speculative source expansion.

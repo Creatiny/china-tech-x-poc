@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.local/
+runtime/
+*.sqlite
+*.sqlite3
+artifacts/reviews/*.json
+artifacts/reviews/*.md
+!artifacts/reviews/.gitkeep
+
+*.egg-info/

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "china-tech-x-radar"
+version = "0.1.0"
+description = "Business-validation-first China Tech signal radar for X"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+china-tech-x-radar = "china_tech_x_radar.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

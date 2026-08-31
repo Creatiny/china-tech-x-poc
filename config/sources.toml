@@ -1,0 +1,62 @@
+# MVP source set. Start narrow and measurable; add sources only after a coverage miss is proven.
+
+[[source]]
+id = "pandaily"
+kind = "rss"
+name = "Pandaily"
+url = "https://pandaily.com/feed"
+poll_minutes = 5
+china_focused = true
+source_weight = 5
+enabled = true
+
+[[source]]
+id = "scmp_china"
+kind = "rss"
+name = "SCMP China"
+url = "https://www.scmp.com/rss/4/feed"
+poll_minutes = 10
+china_focused = true
+source_weight = 4
+enabled = true
+
+[[source]]
+id = "china_tech_news"
+kind = "rss"
+name = "ChinaTechNews"
+url = "https://www.chinatechnews.com/feed/"
+poll_minutes = 10
+china_focused = true
+source_weight = 3
+# Live probes hit HTTP 429; retain as a disabled fallback until source-health evidence improves.
+enabled = false
+
+[[source]]
+id = "deepseek_v3_releases"
+kind = "github_releases"
+name = "DeepSeek V3 GitHub Releases"
+repo = "deepseek-ai/DeepSeek-V3"
+poll_minutes = 30
+china_focused = true
+source_weight = 5
+enabled = true
+
+[[source]]
+id = "qwen3_releases"
+kind = "github_releases"
+name = "Qwen3 GitHub Releases"
+repo = "QwenLM/Qwen3"
+poll_minutes = 30
+china_focused = true
+source_weight = 5
+enabled = true
+
+[[source]]
+id = "glm4_releases"
+kind = "github_releases"
+name = "GLM-4 GitHub Releases"
+repo = "THUDM/GLM-4"
+poll_minutes = 30
+china_focused = true
+source_weight = 4
+enabled = true

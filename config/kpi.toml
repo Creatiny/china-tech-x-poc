@@ -1,0 +1,73 @@
+[baseline]
+followers = 4
+tracked_posts = 15
+total_views = 396
+provisional_avg_views_per_tracked_post = 26.4
+note = "Eden baseline is provisional and incomplete; use only as directional context."
+
+[milestone.day3]
+cycle_success_rate_min = 0.95
+median_alert_latency_minutes_max = 15
+review_worth_rate_min = 0.50
+qualified_alerts_total_min = 6
+executable_opportunities_total_min = 3
+published_actions_total_min = 3
+max_impressions_min = 50
+follower_delta_min = 1
+profile_visits_total_min = 3
+business_signal_mode = "ANY"
+
+[milestone.day7]
+cycle_success_rate_min = 0.97
+median_alert_latency_minutes_max = 10
+review_worth_rate_min = 0.70
+qualified_alerts_total_min = 14
+executable_opportunities_total_min = 7
+published_actions_total_min = 7
+max_impressions_min = 100
+follower_delta_min = 2
+profile_visits_total_min = 5
+business_signal_mode = "ANY"
+
+[milestone.day10]
+cycle_success_rate_min = 0.97
+median_alert_latency_minutes_max = 10
+review_worth_rate_min = 0.70
+qualified_alerts_total_min = 20
+executable_opportunities_total_min = 10
+published_actions_total_min = 10
+actions_over_100_impressions_min = 2
+max_impressions_min = 300
+follower_delta_min = 3
+profile_visits_total_min = 10
+median_operator_minutes_per_day_max = 30
+business_signal_mode = "ANY_GROWTH_PLUS_DISTRIBUTION"
+
+[milestone.day15]
+cycle_success_rate_min = 0.98
+median_alert_latency_minutes_max = 10
+review_worth_rate_min = 0.75
+qualified_alerts_total_min = 30
+executable_opportunities_total_min = 15
+published_actions_total_min = 15
+median_impressions_min = 50
+actions_over_100_impressions_min = 3
+max_impressions_min = 300
+follower_delta_min = 6
+median_operator_minutes_per_day_max = 30
+business_signal_mode = "DISTRIBUTION_AND_GROWTH"
+
+[milestone.day30]
+cycle_success_rate_min = 0.98
+median_alert_latency_minutes_max = 10
+review_worth_rate_min = 0.80
+qualified_alerts_total_min = 60
+executable_opportunities_total_min = 30
+published_actions_total_min = 25
+median_impressions_min = 100
+actions_over_300_impressions_min = 5
+max_impressions_min = 1000
+follower_total_min = 20
+median_operator_minutes_per_day_max = 30
+monetization_signals_min = 1
+business_signal_mode = "DISTRIBUTION_GROWTH_AND_COMMERCIAL_INTENT"

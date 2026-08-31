@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.creatiny.china-tech-x-daily-review</string>
+  <key>ProgramArguments</key><array><string>/Users/jh/services/china-tech-x-radar/scripts/daily_review.sh</string></array>
+  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>22</integer><key>Minute</key><integer>30</integer></dict>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/Users/jh/services/china-tech-x-radar/runtime/review.stdout.log</string>
+  <key>StandardErrorPath</key><string>/Users/jh/services/china-tech-x-radar/runtime/review.stderr.log</string>
+  <key>WorkingDirectory</key><string>/Users/jh/services/china-tech-x-radar</string>
+</dict></plist>

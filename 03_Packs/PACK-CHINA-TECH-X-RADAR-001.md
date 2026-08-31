@@ -3,19 +3,19 @@
 ## Pack Header
 
 - Status: `APPROVED / ACTIVE / MVP-FIRST`
-- Version: `1.1`
+- Version: `1.2`
 - Priority: `P0`
 - Updated: `2026-08-31`
-- Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.1
-- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.1
+- Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.2
+- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.2
 - Delivery repository: `Creatiny/china-tech-x-poc`
 - Runtime target: verified Mac mini
 - OPC: optional/deferred until business evidence justifies it
 
 ## 1. Objective
 
-Launch and validate a zero-new-spend China Tech signal-to-distribution loop with the least engineering necessary to determine whether timely opportunities improve X results.
+Operate the zero-new-spend China Tech growth loop, reach the active follower KPI, and discover the repeatable event/target/timing/angle formula that produces relevant follower growth.
 
 ## 2. Execution Authority
 
@@ -126,9 +126,9 @@ No synthetic signal can satisfy the final smoke, although fixtures may be used b
 
 Accept when timestamps and provenance are complete and no paid/publishing boundary was crossed.
 
-### Slice 5 — Seven-Day Shadow Test
+### Slice 5 — Audience-First 30-Day Growth Test
 
-Start immediately after Slice 4 passes.
+The valid experiment clock starts only after the intended operator has human-confirmed the personal Feishu route.
 
 Daily evidence:
 
@@ -144,9 +144,9 @@ Daily evidence:
 
 Do not pause the test because OPC, Docker, TrendRadar, model scoring, or a web UI is unavailable.
 
-### Slice 6 — Business Decision
+### Slice 6 — Milestone Growth Decisions
 
-At seven valid days, classify the next bottleneck as one of:
+At Day 3/7/10/15/30, classify the first broken growth stage as one of:
 
 - `SOURCE_COVERAGE`
 - `TARGET_DISCOVERY`
@@ -154,22 +154,28 @@ At seven valid days, classify the next bottleneck as one of:
 - `OPERATOR_FRICTION`
 - `CONTENT_OR_POSITIONING`
 - `NO_MEANINGFUL_DISTRIBUTION_LIFT`
-- `BUSINESS_SIGNAL_POSITIVE`
+- `FOLLOWER_CONVERSION`
+- `ORIGINAL_DISTRIBUTION`
+- `GROWTH_FORMULA_CANDIDATE`
+- `GROWTH_SIGNAL_POSITIVE`
 
 Then authorize only the smallest next investment that addresses that bottleneck.
 
 ## 6. Success Evidence
 
-Minimum decision evidence includes:
+Active success evidence is defined by `PROJECT_SPEC.md` and `OPERATING_KPI.md` v3.0.
 
-- P0/P1 review precision target >=70%;
-- measured source-to-alert delay target <=10 minutes for polled sources;
-- median operator time <=30 minutes/day;
-- count of verified executable reply opportunities;
-- distribution outcomes for every published test action where X exposes them;
-- at least one clear distribution lift/profile/follower effect, or an explicit falsification.
+Minimum Day-30 POC success requires:
 
-A practical early positive signal is a reply with >100 impressions or a measurable profile/follower response. Lack of that signal does not justify more infrastructure by itself.
+- followers >=100 from baseline 4;
+- >=90 strategic replies and >=25 differentiated originals, subject to qualified opportunity supply/quality;
+- repeated distribution: >=10 actions >=300 impressions, >=3 >=1,000, >=1 >=5,000;
+- measured runtime health and median operator time near the <=30 min/day design constraint;
+- formula evidence showing repeated winning combinations or a clear falsification/next bottleneck;
+- personal Feishu alert reliability;
+- zero paid X API and no automatic X publishing unless separately approved.
+
+One viral post alone does not satisfy the growth-formula objective.
 
 ## 7. Deferred Work
 

@@ -3,11 +3,11 @@
 ## 1. Architecture Metadata
 
 - Status: `APPROVED`
-- Version: `1.1`
+- Version: `1.2`
 - Date: `2026-08-31`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.1
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.1
-- Change proposal: `CP-002-BUSINESS-VALIDATION-FIRST`
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.2
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.2
+- Change proposals: `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
 
 ## 2. Architecture Principle
 
@@ -64,7 +64,7 @@ Verified 2026-08-31:
 - MacDeveloperBridge MCP;
 - no healthy Docker/Colima requirement;
 - no verified China Tech model route;
-- no verified mobile receive target yet.
+- personal Feishu receive target human-verified and active; group delivery prohibited.
 
 ### Repository
 
@@ -137,7 +137,10 @@ alert
 operator_decision
 published_action
 outcome_snapshot
+account_snapshot
+daily_ops
 runtime_cycle
+experiment_state
 ```
 
 SQLite uses WAL mode and migrations. No PostgreSQL/Redis is introduced for the POC.
@@ -175,7 +178,7 @@ send(opportunity) -> delivery_receipt
 health() -> status
 ```
 
-Preferred first adapter: Feishu application message if a valid receive target is verified.
+Production adapter: Feishu application message to the matched, human-verified personal `open_id`. Group chat is not an authorized China Tech production destination.
 
 Required alert content:
 
@@ -204,9 +207,17 @@ impressions
 engagements
 profile_visits
 follower_delta
+formula variables: event/target tier/target age/angle/hook/media/link treatment
 ```
 
 Unknown metrics remain null.
+
+
+### 5.8 Growth-formula analyzer
+
+The runtime computes distribution comparisons by action type, event/topic, target account/tier, target-age bucket, angle, hook, media and external-link treatment.
+
+Daily follower snapshots are joined as cohorts rather than falsely assigning overlapping follower gains to one action. Formula evidence follows `GROWTH_FORMULA.md`: 1 sample anecdote, 2 hypothesis, >=3 repeated wins candidate, >=5 repeated wins plus follower-positive cohorts eligible for scale bias.
 
 ## 6. Configuration
 

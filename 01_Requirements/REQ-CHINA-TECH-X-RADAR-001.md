@@ -3,17 +3,17 @@
 ## 1. Requirement Metadata
 
 - Status: `APPROVED`
-- Version: `1.1`
+- Version: `1.2`
 - Date: `2026-08-31`
-- Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.1
+- Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.2
 - Paid extension: `PACK-CHINA-TECH-X-XAPI-PILOT-001` (`BLOCKED`)
 
-Version 1.1 preserves the product goal but changes implementation sequencing. Business validation no longer depends on OPC, Docker, a web inbox, model scoring, Horizon, or full event clustering.
+Version 1.2 makes audience-first follower growth and repeatable growth-formula discovery the explicit business objective. Business validation remains independent of OPC, Docker, web UI, model scoring, Horizon, or paid X APIs.
 
 ## 2. Product Goal
 
-Provide one operator with timely, traceable China Tech signals that lead to better-timed X participation and produce measurable evidence about distribution, profile interest, and follower growth while keeping human operation within 30 minutes/day.
+Provide one operator with timely, traceable China Tech opportunities and an evidence loop that grows `@KennyChinaTech` from a four-follower baseline, discovers which event/target/timing/angle combinations repeatedly create distribution and follower gains, and keeps human operation near 30 minutes/day.
 
 ## 3. Primary User
 
@@ -62,9 +62,9 @@ A single human operator building the English-language `@KennyChinaTech` account.
 
 ### Alerting and operator workflow
 
-- **FR-020**: The system shall support a mobile-capable alert channel. Feishu is preferred if an existing receive target can be verified.
+- **FR-020**: The system shall deliver production China Tech alerts only to the human-verified personal Feishu route. Group-chat delivery is prohibited unless the human owner explicitly changes the spec.
 - **FR-021**: Email shall not be the P0 primary channel.
-- **FR-022**: P0 alerts shall be individual; P1 may be batched if notification noise becomes a problem.
+- **FR-022**: P0/P1 signals shall preserve enough urgency for Stage-A early-reply testing; batching may be introduced only if notification noise becomes the measured bottleneck.
 - **FR-023**: Alerts shall include source, freshness, reason, source link, target/search link, suggested angle when available, and expiry.
 - **FR-024**: The operator shall be able to record `POSTED`, `SKIPPED`, `FALSE_POSITIVE`, `EXPIRED`, or `SAVE_FOR_ORIGINAL` without a web UI.
 - **FR-025**: The median daily operator workflow shall fit within 30 minutes during the Shadow Test.
@@ -75,7 +75,19 @@ A single human operator building the English-language `@KennyChinaTech` account.
 - **FR-027**: The system shall distinguish source-published, discovered, alerted, reviewed, and posted timestamps.
 - **FR-028**: The system shall record target-post age at reply time when known.
 - **FR-029**: Available impressions, engagements, profile visits, follower change, and qualitative outcomes shall be recorded without converting unknowns to zero.
-- **FR-030**: A daily evidence summary and a seven-day decision summary shall be producible from local records.
+- **FR-030**: A daily KPI/formula summary and milestone decision summaries for Day 3/7/10/15/30 shall be producible from local records.
+
+### Growth formula and follower KPI
+
+- **FR-047**: Every published action shall distinguish `REPLY` vs `ORIGINAL`.
+- **FR-048**: Where available, every reply shall capture target account, approximate target follower count, target-post timestamp/age, and visible target impressions at reply time.
+- **FR-049**: Every action should classify event/topic, content angle, hook, media treatment, and external-link usage.
+- **FR-050**: Outcome snapshots shall support impressions, engagement and available likes/replies/reposts/quotes/bookmarks/profile visits without converting unknowns to zero.
+- **FR-051**: Daily account snapshots shall preserve total followers and follower delta.
+- **FR-052**: The runtime shall produce a formula report comparing event/topic, target tier, target-post age bucket, angle, hook, media, and link treatment.
+- **FR-053**: A single breakout post shall not be classified as a proven growth formula; >=3 repeated wins are required for a candidate and >=5 repeated wins plus follower-positive cohorts for scale bias.
+- **FR-054**: The active milestone follower targets are Day 3 >=8, Day 7 >=15, Day 10 >=25, Day 15 >=40, Day 30 >=100, with Day-30 stretch >=200.
+- **FR-055**: During Stage A, the operating target is approximately 3–5 qualified strategic replies/day and roughly one differentiated original on active days when material exists; quality/opportunity supply outranks quota completion.
 
 ### Runtime and storage
 
@@ -136,20 +148,23 @@ The seven-day Shadow Test may start when:
 1. at least one live free source flows into SQLite;
 2. repeated polling does not duplicate the same alert;
 3. deterministic relevance classification is visible;
-4. one real P0/P1 test alert reaches the operator on a mobile-capable channel;
+4. one real P0/P1 test alert reaches the intended operator personally through the verified Feishu route;
 5. the operator can record a decision and later attach an outcome;
 6. no paid X or auto-publishing path is active.
 
-## 9. Seven-Day Business Decision Criteria
+## 9. Audience-Growth Decision Criteria
 
-At the end of seven consecutive valid days, the evidence must answer:
+The business experiment is governed by Day 3/7/10/15/30 KPI from `OPERATING_KPI.md`.
 
-- source-to-alert latency and misses;
-- P0/P1 precision and false-positive causes;
-- number of verified executable reply opportunities;
-- operator time and reply timing;
-- impressions/engagement/profile/follower effects for published actions;
-- whether at least one reply achieved a clear distribution lift (practical early proof point: >100 impressions or a measurable profile/follower effect);
-- which single bottleneck should receive the next engineering dollar/hour.
+At each milestone, evidence must answer:
 
-If the business evidence is weak, improve positioning/sources/targets/content before adding platform complexity.
+- current follower count and delta from baseline;
+- strategic reply and original-post counts;
+- repeated reach thresholds (100/300/1000+ impressions);
+- source-to-alert latency and source misses;
+- target account/tier and target-post age for replies where known;
+- angle/hook/media/link treatment performance;
+- whether any combination has reached the growth-formula evidence standard;
+- which first growth-funnel stage is broken if KPI is off track.
+
+The Day-30 minimum follower target is 100 from a baseline of 4. If the target is missed, diagnose signal/target/timing/distribution/profile conversion/original-content positioning before adding infrastructure.

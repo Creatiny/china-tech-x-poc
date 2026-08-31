@@ -4,9 +4,13 @@
 
 This repository is the canonical product, experiment, and operating definition for the China Tech X POC.
 
+## Single Source of Truth
+
+`PROJECT_SPEC.md` v2.0 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
+
 ## North Star
 
-Validate whether one person, using AI-assisted workflows and timely China Tech signals, can build meaningful distribution and eventually monetize an English-language X account focused on China technology.
+Build a large, relevant English-language China Tech audience on X, discover the repeatable follower-growth formula, then monetize audience leverage through aligned commercial cooperation and platform/affiliate/owned-media opportunities. During the current POC, **relevant follower growth is the primary business KPI**.
 
 ## Current Priority — Business Validation First
 
@@ -55,7 +59,7 @@ No Docker, model API, web UI, or OPC is required for this MVP.
 - Docker and Colima are installed, but the existing Colima VM currently fails to start. They are not an MVP dependency.
 - TrendRadar is installed and produced data through 2026-08-30, but its current source configuration is primarily Vietnam/Laos/general-news oriented and its launch path is not currently active after restart. It is an optional reusable asset, not the MVP foundation.
 - Horizon was not found.
-- Feishu app credential references exist, but no verified receive target was found. The existing Deyue notification worker is broken and configured as `dry-run`, so it is not a usable alert path.
+- Personal Feishu delivery has been human-verified and is the only authorized China Tech production alert path; group delivery is prohibited.
 - Background Chrome automation is currently offline.
 - A self-hosted GitHub Actions runner exists for `Creatiny/arbitrage-os`; it is not assumed to be reusable by this repository.
 - MomentGrid OPC is running on the Mac, but it is not required to start or continue the business-validation experiment.
@@ -64,12 +68,17 @@ See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
 
 ## Active Canonical
 
+- Single source of truth: `PROJECT_SPEC.md` v2.0
+- Execution plan: `EXECUTION_PLAN.md` v1.0
+- Canonical precedence: `00_Governance/CANONICAL_INDEX.md`
+- KPI: `00_Governance/OPERATING_KPI.md` v3.0
+- Growth formula: `00_Governance/GROWTH_FORMULA.md` v1.0
 - Constitution: `00_Governance/POC_CONSTITUTION.md`
 - Current status: `00_Governance/PROJECT_STATUS.md`
 - Business-first correction: `00_Governance/CHANGE_PROPOSALS/CP-002-BUSINESS-VALIDATION-FIRST.md`
-- Requirement: `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` v1.1
-- Architecture: `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` v1.1
-- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.1 — `APPROVED / ACTIVE / MVP-FIRST`
+- Requirement: `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` v1.2
+- Architecture: `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` v1.2
+- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.2 — `APPROVED / ACTIVE / MVP-FIRST`
 - Paid X API pack: `03_Packs/PACK-CHINA-TECH-X-XAPI-PILOT-001.md` — `BLOCKED`
 
 ## Hard Boundaries

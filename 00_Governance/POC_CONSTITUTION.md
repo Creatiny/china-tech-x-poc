@@ -1,14 +1,14 @@
-# China Tech X POC Constitution v1.2
+# China Tech X POC Constitution v1.3
 
 ## 1. North Star
 
-Build evidence that a China Tech focused X account can achieve meaningful distribution and eventually monetize through timely, useful, human-published China Tech intelligence.
+Build a large, relevant China Tech follower base and owned distribution asset on X, discover the repeatable follower-growth formula, and monetize that audience leverage later through aligned commercial opportunities.
 
 ## 2. Priority Hierarchy
 
-### P0 — Business validation
+### P0 — Audience growth validation
 
-Prove or falsify that better signal timing, target selection, and differentiated China Tech context improve distribution, profile interest, and follower growth.
+Prove or falsify that better signal timing, target selection, differentiated China Tech context, and original-content treatment create repeatable relevant follower growth. Milestone follower KPI and formula discovery are the primary POC authority.
 
 ### P1 — Repeatable operating loop
 
@@ -70,7 +70,8 @@ The operating system may prioritize a smaller subset when evidence shows stronge
 - free-source polling;
 - normalization and deduplication;
 - deterministic filtering;
-- alert delivery;
+- personal Feishu alert delivery;
+- growth-formula variable/outcome storage;
 - local evidence storage;
 - health logging.
 

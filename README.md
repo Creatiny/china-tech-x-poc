@@ -2,42 +2,83 @@
 
 ## Purpose
 
-This repository is the canonical governance, product definition, and operating system for the China Tech X POC.
+This repository is the canonical product, experiment, and operating definition for the China Tech X POC.
 
 ## North Star
 
-Validate whether one person, using AI-assisted workflows and a timely China Tech signal radar, can build and monetize an English-language X account focused on China technology within 30 days.
+Validate whether one person, using AI-assisted workflows and timely China Tech signals, can build meaningful distribution and eventually monetize an English-language X account focused on China technology.
 
-## Current Strategy
+## Current Priority — Business Validation First
 
-The POC is now opportunity-led rather than quota-led:
+The current execution order is deliberately minimal:
 
-1. Discover high-value China Tech signals early.
-2. Identify time-sensitive X reply opportunities.
-3. Deliver actionable alerts within the user's 30-minute daily operating budget.
-4. Publish manually and measure outcomes.
-5. Improve source, scoring, and response strategy from evidence.
+1. discover timely, relevant China Tech signals;
+2. alert the operator quickly on a mobile-capable channel;
+3. turn the best signals into timely human-published replies or occasional original posts;
+4. record distribution outcomes and follower/profile effects;
+5. only add infrastructure when evidence identifies a real bottleneck.
 
-There is no mandatory daily original-post quota. Original posts are created only when the account has a timely signal, unique evidence, or a differentiated thesis.
+A business experiment must not wait for OPC integration, Docker repair, a web inbox, local-model deployment, or a generalized agent platform when those capabilities are not required to test the growth hypothesis.
 
-## System Roles
+## Current MVP Runtime
 
-- **Horizon, TrendRadar, RSS, and GitHub**: foundation information sources.
-- **Eden**: research, creator intelligence, memory, and retrospective analysis layer; not the sole real-time discovery system.
-- **China Tech Radar**: normalization, deduplication, clustering, opportunity scoring, alerting, feedback, and outcome tracking.
-- **MomentGrid OPC (`Creatiny/momentgrid`)**: control plane for implementation, verification, deployment governance, budget gates, and reviews. OPC is referenced, not copied into this repository.
-- **Human operator**: final publishing authority for posts and replies.
+The approved pre-validation architecture is:
 
-## Active Packs
+```text
+Free RSS/Atom + GitHub + verified free sources
+                    |
+                    v
+         Python polling cycle (5 min)
+                    |
+                    v
+            SQLite + exact dedupe
+                    |
+                    v
+       deterministic relevance rules
+                    |
+                    v
+         mobile-capable alert channel
+                    |
+                    v
+      human X search / reply / publish
+                    |
+                    v
+          outcome evidence ledger
+```
 
-- [`PACK-CHINA-TECH-X-RADAR-001`](03_Packs/PACK-CHINA-TECH-X-RADAR-001.md) — **APPROVED / ACTIVE**
-- [`PACK-CHINA-TECH-X-XAPI-PILOT-001`](03_Packs/PACK-CHINA-TECH-X-XAPI-PILOT-001.md) — **BLOCKED**
+No Docker, model API, web UI, or OPC is required for this MVP.
+
+## Verified Mac mini Baseline — 2026-08-31
+
+- macOS 26.5.2, Apple Silicon, 16 GB RAM.
+- GitHub CLI, Node 22, pnpm, Python 3.14/3.12, `uv`, SQLite, launchd, cloudflared, and MacDeveloperBridge are available.
+- Docker and Colima are installed, but the existing Colima VM currently fails to start. They are not an MVP dependency.
+- TrendRadar is installed and produced data through 2026-08-30, but its current source configuration is primarily Vietnam/Laos/general-news oriented and its launch path is not currently active after restart. It is an optional reusable asset, not the MVP foundation.
+- Horizon was not found.
+- Feishu app credential references exist, but no verified receive target was found. The existing Deyue notification worker is broken and configured as `dry-run`, so it is not a usable alert path.
+- Background Chrome automation is currently offline.
+- A self-hosted GitHub Actions runner exists for `Creatiny/arbitrage-os`; it is not assumed to be reusable by this repository.
+- MomentGrid OPC is running on the Mac, but it is not required to start or continue the business-validation experiment.
+
+See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
+
+## Active Canonical
+
+- Constitution: `00_Governance/POC_CONSTITUTION.md`
+- Current status: `00_Governance/PROJECT_STATUS.md`
+- Business-first correction: `00_Governance/CHANGE_PROPOSALS/CP-002-BUSINESS-VALIDATION-FIRST.md`
+- Requirement: `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` v1.1
+- Architecture: `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` v1.1
+- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.1 — `APPROVED / ACTIVE / MVP-FIRST`
+- Paid X API pack: `03_Packs/PACK-CHINA-TECH-X-XAPI-PILOT-001.md` — `BLOCKED`
 
 ## Hard Boundaries
 
-- No paid X API purchase or paid X API call before the 7-day Shadow Test is complete and an explicit budget Human Gate is approved.
-- No automatic X post or reply publishing.
-- The first execution action is a fact-only Mac mini audit. Horizon, TrendRadar, runners, credentials, and notification channels must not be assumed.
-- Ordinary implementation, testing, bug fixes, technical PRs, and merges do not require repeated human approval unless they change requirements, architecture, paid spend, publishing authority, or another irreversible external boundary.
+- No paid X API call or purchase without an explicit evidence-backed budget gate.
+- No automatic X post, reply, or DM publishing.
+- No secret values in Git, logs, issues, or evidence.
+- No new infrastructure dependency may be introduced merely because it is technically attractive.
+- OPC integration is optional before business validation and may not block the signal-to-publish loop.
+- Human publishing remains the final authority.
 
-All execution must follow `00_Governance/POC_CONSTITUTION.md`, `00_Governance/CHANGE_CONTROL.md`, and the approved pack.
+All execution follows the Constitution, Change Control, current Project Status, and the active pack.

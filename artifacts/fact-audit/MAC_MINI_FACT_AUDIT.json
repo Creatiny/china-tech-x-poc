@@ -1,0 +1,72 @@
+{
+  "audit_timestamp_utc": "2026-08-31T08:48:35Z",
+  "mac_host_id_redacted": "JHdeMac-mini-3.local (hostname only; no hardware serial)",
+  "os_version": "macOS 26.5.2 build 25F84",
+  "cpu_arch": "arm64",
+  "ram_gb": 16,
+  "available_disk_kb": 86495236,
+  "project_roots": [
+    "/Users/jh/projects",
+    "/Users/jh/project",
+    "/Users/jh/services",
+    "/Users/jh/deyue"
+  ],
+  "china_tech_repo_state": {
+    "repo": "Creatiny/china-tech-x-poc",
+    "local_path": "/Users/jh/projects/china-tech-x-poc",
+    "main_at_audit_start": "043f9e991c65c3da12499b4d0664beba2afd4e15",
+    "runtime_code_present_at_start": false
+  },
+  "momentgrid_opc_path": "/Users/jh/ops/momentgrid-runtime",
+  "momentgrid_opc_health": "dispatcher process and launchd job observed running; not required by CP-002",
+  "execution_path": "MacDeveloperBridge MCP full-access bridge verified",
+  "runner_or_agent_status": "repo-scoped GitHub Actions runner active for arbitrage-os; not assumed reusable for China Tech",
+  "horizon_status": "NOT_FOUND",
+  "horizon_version": "NOT_FOUND",
+  "horizon_path": "NOT_FOUND",
+  "horizon_process": "NOT_FOUND",
+  "horizon_data_path": "NOT_FOUND",
+  "horizon_latest_data_at": "NOT_FOUND",
+  "horizon_autostart": "NOT_FOUND",
+  "trendradar_status": "INSTALLED_DATA_PRESENT_RUNTIME_NOT_READY",
+  "trendradar_version": "UNKNOWN_WITH_REASON: image tag is latest; no immutable version established",
+  "trendradar_path": "/Users/jh/deyue/trendradar",
+  "trendradar_process": "NOT_RUNNING",
+  "trendradar_data_path": "/Users/jh/deyue/trendradar/output",
+  "trendradar_latest_data_at": "2026-08-30 (SQLite files inspected)",
+  "trendradar_autostart": "launch plist exists but job not loaded during audit; container dependency currently unhealthy",
+  "docker_or_podman": "Docker 29.4.3 + Colima 0.10.1 installed; Colima start fails with stale/unreachable host-agent socket",
+  "python_uv": "Python 3.14.7 and 3.12 installed; uv 0.12.5",
+  "node_bun": "Node 22.23.1, pnpm 10.33.2; bun not found",
+  "cron": "user crontab contains comments only; no active China Tech job",
+  "launchd": "usable; multiple active LaunchAgents; preferred MVP scheduler",
+  "notification_channels": {
+    "feishu_app_credentials_refs": true,
+    "feishu_receive_target_verified": false,
+    "existing_notification_worker": "BROKEN_AND_DRY_RUN",
+    "email_primary": false
+  },
+  "secret_reference_names": [
+    "FEISHU_API_BASE",
+    "FEISHU_APP_ID",
+    "FEISHU_APP_SECRET",
+    "FEISHU_TENANT_ACCESS_TOKEN"
+  ],
+  "model_route_names": "No China Tech route verified; mlx-lm CLI installed; unrelated V3_LLM_MODEL key exists but value not inspected",
+  "ports_in_use_observed": [
+    18789,
+    18080,
+    18081,
+    8787,
+    8765,
+    20241
+  ],
+  "background_chrome": "CHROME_EXTENSION_OFFLINE",
+  "backup_constraints": "Git protects canonical/code; MVP SQLite backup policy not yet implemented",
+  "blockers": [
+    "No verified mobile receive target",
+    "No China Tech MVP runtime code yet",
+    "Direct X target resolver not automated"
+  ],
+  "recommended_next_technical_action": "Native Python + SQLite + launchd MVP; RSS/Atom + GitHub; deterministic rules; Feishu direct alert; outcome ledger; no OPC/Docker/model/UI dependency"
+}

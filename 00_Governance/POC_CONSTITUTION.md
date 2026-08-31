@@ -1,101 +1,122 @@
-# China Tech X POC Constitution v1.1
+# China Tech X POC Constitution v1.2
 
 ## 1. North Star
 
-Build and monetize a China Tech focused X account through AI-assisted content operations within 30 days.
+Build evidence that a China Tech focused X account can achieve meaningful distribution and eventually monetize through timely, useful, human-published China Tech intelligence.
 
 ## 2. Priority Hierarchy
 
-### P0 - Mandatory
-X growth and revenue validation.
+### P0 — Business validation
 
-### P1
-Repeatable content creation and distribution system.
+Prove or falsify that better signal timing, target selection, and differentiated China Tech context improve distribution, profile interest, and follower growth.
 
-### P2
-AI-assisted operation efficiency.
+### P1 — Repeatable operating loop
 
-### P3
-Future AI Marketing OS and OPC learning.
+Create a reliable signal -> alert -> human action -> outcome loop within 30 minutes/day.
+
+### P2 — Automation efficiency
+
+Automate only the bottlenecks proven by P0/P1 evidence.
+
+### P3 — Platform learning
+
+OPC, AI Marketing OS, local-model routing, and generalized agent infrastructure are downstream learning objectives.
 
 ## 3. Non-Negotiable Rules
 
-1. Revenue and growth validation always outrank tool exploration.
-2. No tool is adopted without solving a proven bottleneck.
-3. No strategy change without data or experiment evidence recorded through change control.
-4. The account positioning is frozen during the 30-day POC.
-5. Research cannot replace publishing, but publishing quotas cannot replace qualified distribution opportunities.
+1. Business evidence outranks tool exploration and infrastructure completeness.
+2. No infrastructure component may block a runnable business experiment unless it is actually required for signal acquisition, operator notification, legal/platform compliance, paid-spend control, or publishing authority.
+3. No tool is adopted without a proven bottleneck, expected benefit, cost, success metric, and exit path.
+4. The China Tech account positioning remains frozen during the active 30-day POC unless the human owner explicitly changes it.
+5. Publishing quotas cannot replace qualified distribution opportunities.
 6. Posts and replies remain human-published unless a separate publishing-authority gate is approved.
-7. Paid data access requires an evidence-backed budget gate and an automatic hard stop.
+7. Paid data access requires an evidence-backed budget gate and hard spend stop.
+8. A failed optional subsystem must degrade gracefully rather than stop the core business loop.
+9. Technical history is preserved, but stale architecture decisions do not override a later explicit human product decision.
 
 ## 4. Account Positioning
 
-China Tech Intelligence.
+**China Tech Intelligence** — explain what is happening in China technology and why it matters globally.
 
-Explain what is happening in China tech and why it matters globally.
-
-## 5. Content Pillars
+## 5. Core Content Pillars
 
 - China AI
-- Robotics and Hardware
-- Advanced Manufacturing
-- China Tech and Global Business
+- Semiconductors and AI infrastructure
+- Robotics and hardware
+- EV and advanced manufacturing
+- China tech and global business
 
-## 6. Role Definition
+The operating system may prioritize a smaller subset when evidence shows stronger distribution.
 
-Human:
-- Final judgment
-- Original insight
-- Publishing approval and execution
-- Requirement, architecture, paid-spend, and publishing-authority decisions
+## 6. Roles
 
-ChatGPT:
-- Analysis
-- Content refinement
-- Experiment review
-- Evidence-backed operating recommendations
+### Human operator
 
-Horizon, TrendRadar, RSS, and GitHub:
-- Foundation information-source classes, subject to fact verification and source health monitoring
+- final product and strategy judgment;
+- publishing authority;
+- requirement/architecture/paid-spend decisions;
+- final reply selection and editing;
+- outcome interpretation.
 
-Eden:
-- Research and memory layer
-- Creator intelligence and historical content analysis
-- Retrospective analytics support
-- Not the sole real-time signal-discovery or alerting system
+### ChatGPT
 
-China Tech Radar:
-- Signal normalization, provenance, deduplication, event clustering, opportunity scoring, alerting, feedback, and outcome tracking
+- analysis and research;
+- reply/original-post drafting and refinement;
+- experiment review;
+- evidence-backed operating recommendations.
 
-MomentGrid OPC:
-- External control plane for implementation, verification, deployment governance, budget gates, and review
-- Referenced from this repository; not copied into it
-- Not placed in the raw-signal runtime path
+### Mac mini runtime
 
-X:
-- Distribution and market feedback
-- No paid API use before the approved X API pilot gate
+- free-source polling;
+- normalization and deduplication;
+- deterministic filtering;
+- alert delivery;
+- local evidence storage;
+- health logging.
 
-## 7. Tool Rule
+### Eden
 
-Every tool must answer:
+- research, creator intelligence, memory, and retrospective analysis;
+- not the sole realtime discovery path;
+- use should be selective while credits are scarce.
 
+### MomentGrid OPC
+
+- optional implementation/governance control plane;
+- not required before business validation;
+- never part of the per-signal runtime path;
+- may be reconnected when evidence shows enough implementation/governance complexity to justify it.
+
+### X
+
+- distribution and market feedback;
+- manual publishing only in the active experiment;
+- paid API blocked until a separate budget gate.
+
+## 7. Tool Admission Rule
+
+Every proposed tool must answer:
+
+```text
 Problem solved:
+Evidence that problem exists:
 Expected impact:
-Cost:
+Mandatory cost:
 Success metric:
 Failure condition:
-Exit or migration path:
+Exit/migration path:
+Why now:
+```
+
+If `Why now` cannot be answered with business evidence, defer the tool.
 
 ## 8. Self Check Before Any Action
 
-Before execution ask:
+1. Does this create or improve business evidence now?
+2. Does this improve signal timeliness, actionability, distribution probability, or operator time?
+3. Is the bottleneck proven rather than assumed?
+4. Can a cheaper/smaller mechanism test the same hypothesis?
+5. Is the capability verified rather than inferred?
+6. Does the action cross a requirement, architecture, paid-spend, publishing, secret-access, destructive, or policy boundary?
 
-1. Does this help P0?
-2. Does this improve growth probability?
-3. Does this reduce operating time?
-4. Is this necessary now?
-5. Is the capability verified rather than inferred from a feature list?
-6. Does it cross a requirement, architecture, paid-spend, publishing-authority, secret-access, or irreversible external gate?
-
-If the first four answers are no, move the action to backlog. If the sixth answer is yes, stop at the corresponding Human Gate.
+If 1–4 do not justify the work, backlog it. If 6 is yes, stop at the corresponding Human Gate.

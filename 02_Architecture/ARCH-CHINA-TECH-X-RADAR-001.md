@@ -3,386 +3,259 @@
 ## 1. Architecture Metadata
 
 - Status: `APPROVED`
-- Version: `1.0`
-- Date: `2026-08-30`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001`
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001`
+- Version: `1.1`
+- Date: `2026-08-31`
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.1
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.1
+- Change proposal: `CP-002-BUSINESS-VALIDATION-FIRST`
 
-## 2. Architecture Summary
+## 2. Architecture Principle
 
-The system separates the realtime data plane from the OPC control plane.
+Use the smallest runtime that can produce business evidence. The MVP is a native one-shot polling cycle scheduled by launchd; it does not require a container platform, web server, model service, message bus, or OPC control plane.
+
+## 3. MVP Data Flow
 
 ```text
-Foundation Sources
-  Horizon | TrendRadar | RSS/Atom | GitHub
-             |
-             v
-      Source Adapters
-             |
-             v
-  Canonical Signal Store (SQLite)
-             |
-             v
- Deduplication + Event Clustering
-             |
-             v
- Deterministic Filter -> Optional Model Scoring
-             |
-             v
-  Opportunity Store + Expiry Engine
-       |                 |
-       v                 v
- Mobile Alerts       Minimal Web Inbox
-       \                 /
-        \               /
-         Human Publish / Skip
-                  |
-                  v
-          Outcome Tracker
-                  |
-                  v
-      High-level OPC Events Only
+Curated free sources
+RSS/Atom | GitHub | verified zero-cost endpoints
+                    |
+                    v
+          source adapters / poll
+                    |
+                    v
+        normalize + exact dedupe
+                    |
+                    v
+            SQLite evidence DB
+                    |
+                    v
+ deterministic relevance + freshness
+                    |
+                    v
+            P0/P1/P2/DROP
+                    |
+                    v
+       mobile alert adapter (Feishu)
+                    |
+                    v
+       human target selection on X
+                    |
+                    v
+         human publish / skip
+                    |
+                    v
+       decision + outcome recorder
 ```
 
-MomentGrid OPC controls implementation, verification, deployment governance, and reviews. It is not in the per-signal runtime path.
+Optional systems are added to the side of this loop, never inserted as mandatory dependencies without evidence.
 
-## 3. Deployment Boundary
+## 4. Verified Deployment Boundary
 
 ### Mac mini
 
-Expected deployment target, subject to fact audit:
+Verified 2026-08-31:
 
-- collectors or collector adapters;
-- signal router;
-- SQLite canonical store;
-- scoring worker;
-- alert gateway;
-- web inbox;
-- health monitor;
-- outcome tracker.
+- macOS 26.5.2 / arm64 / 16 GB RAM;
+- Python 3.14 and 3.12;
+- `uv`;
+- SQLite;
+- launchd;
+- Git/GitHub CLI;
+- MacDeveloperBridge MCP;
+- no healthy Docker/Colima requirement;
+- no verified China Tech model route;
+- no verified mobile receive target yet.
 
-No path, service manager, container runtime, existing checkout, runner, or credential is assumed.
+### Repository
 
-### GitHub
+`Creatiny/china-tech-x-poc` contains domain canonical, MVP runtime code, configuration templates, tests, and evidence references.
 
-- `Creatiny/china-tech-x-poc`: domain canonical, source code, configuration templates, tests, and evidence references.
-- `Creatiny/momentgrid`: existing OPC control plane and its canonical governance.
-- Cross-repository execution must bind to exact commits and preserve provenance.
-- No OPC source is copied into the China Tech repository.
+### Runtime deployment path
 
-## 4. Components
+Preferred local deployment path after implementation:
 
-### 4.1 Source Adapters
+`/Users/jh/services/china-tech-x-radar`
 
-Adapters transform verified source output into `SignalEnvelope`.
+Preferred launchd label:
 
-Initial adapter classes:
+`com.creatiny.china-tech-x-radar`
 
-- `horizon`
-- `trendradar`
-- `rss`
-- `github`
+These are implementation defaults, not external architecture dependencies.
 
-Each adapter implements:
+## 5. MVP Components
 
-```text
-poll_or_receive()
-normalize()
-checkpoint()
-health()
-```
+### 5.1 `run_cycle`
 
-Adapters must not directly modify another tool's database. Where upstream tools expose only local storage, the adapter uses a documented read-only interface or export.
+One idempotent process invocation performs:
 
-### 4.2 Canonical Signal Store
+1. load configuration;
+2. poll enabled sources;
+3. normalize items;
+4. exact-deduplicate/store;
+5. classify new items;
+6. queue/send unsent qualified alerts;
+7. update source health;
+8. emit a structured cycle summary;
+9. exit.
 
-Foundation version: SQLite with WAL mode and explicit migrations.
+launchd executes the cycle approximately every five minutes. A short-lived cycle is preferred over a custom always-on daemon during validation because restart behavior is simpler and observable.
 
-Core tables:
+### 5.2 Source adapters
 
-```text
-source
-source_checkpoint
-raw_signal
-canonical_event
-event_signal_link
-opportunity
-opportunity_decision
-published_action
-outcome_snapshot
-service_health
-config_revision
-```
+MVP adapters:
 
-SQLite is selected for a single Mac mini and expected POC volume. PostgreSQL requires a new architecture decision only if measured concurrency or volume proves SQLite insufficient.
+- RSS/Atom;
+- GitHub releases/repository events;
+- optional simple HTTP/JSON endpoints that are free and traceable.
 
-### 4.3 Signal Envelope
+Each adapter returns a common envelope:
 
 ```text
-signal_id
 source_type
 source_name
 source_item_id
 source_url
 canonical_url
-author
 title
-content_excerpt
+excerpt
 published_at
 discovered_at
-source_timezone
-language
-entities
-topic_hints
+author
 raw_hash
-payload_ref
 ```
 
-Raw payloads may be retained locally when permitted, but alerts and model prompts use only the minimum needed content.
+TrendRadar is not an MVP adapter until its value is proven. If reused, the first integration is read-only against its existing SQLite outputs.
 
-### 4.4 Deduplication and Event Clustering
+### 5.3 SQLite store
 
-Ordered pipeline:
+Minimum tables:
 
-1. exact source-item identity;
-2. canonical URL match;
-3. raw fingerprint match;
-4. normalized-title similarity;
-5. entity and event-type overlap within a time window;
-6. optional semantic similarity for unresolved candidates.
+```text
+source_state
+signal
+alert
+operator_decision
+published_action
+outcome_snapshot
+runtime_cycle
+```
 
-The event cluster stores:
+SQLite uses WAL mode and migrations. No PostgreSQL/Redis is introduced for the POC.
 
-- earliest source;
-- all source links;
-- first-seen and last-updated times;
-- entity set;
-- event type;
-- confidence;
-- cluster history.
+### 5.4 Deterministic classifier
 
-Human split/merge creates an auditable correction event.
+First pass uses:
 
-### 4.5 Opportunity Scoring
+- source allowlist/weight;
+- China-company/entity/topic matches;
+- publish/discovery freshness;
+- material-event keywords;
+- obvious-noise exclusions;
+- duplicate suppression.
 
-Version 1 score:
+The classifier stores a reason string and rule revision. Model scoring is a later adapter, not a base dependency.
 
-| Dimension | Weight |
-|---|---:|
-| China Tech relevance | 25 |
-| Freshness | 20 |
-| X replyability | 20 |
-| Source authority | 15 |
-| Novelty | 10 |
-| Cross-source confirmation | 5 |
-| Account positioning fit | 5 |
+### 5.5 X target path
 
-Deterministic checks run first. Model scoring is optional and limited to the surviving candidate set.
+Order of preference:
 
-Suggested classes:
+1. verified direct X target URL carried by a source or manually configured watch target;
+2. prefilled X live-search link built from the event/entity;
+3. human search and selection;
+4. only after evidence: browser resolver, Eden lookup, official X-native read path, or another approved resolver.
 
-- `P0`: immediate, short-lived opportunity;
-- `P1`: same-day executable opportunity;
-- `P2`: research or original-post candidate;
-- `DROP`: no operator notification.
+Only direct verified post URLs count as executable reply opportunities.
 
-The score is not sufficient by itself. Every opportunity stores a rationale and missing-evidence flags.
-
-### 4.6 Target Resolver
-
-The foundation version may use:
-
-- links already embedded in source items;
-- verified non-chargeable source references;
-- operator-supplied X links;
-- a read-only browser-assisted step where available and compliant.
-
-If no direct X target can be verified, the item cannot be labeled an executable reply opportunity.
-
-Paid X-native search or stream behavior belongs only to the blocked X API pack.
-
-### 4.7 Alert Gateway
+### 5.6 Alert adapter
 
 Interface:
 
 ```text
-send_p0(opportunity)
-send_p1_digest(opportunities)
-send_system_health(alert)
+send(opportunity) -> delivery_receipt
+health() -> status
 ```
 
-Delivery channel is selected only after the audit verifies credentials and user reachability. Preferred order:
+Preferred first adapter: Feishu application message if a valid receive target is verified.
 
-1. existing Feishu channel;
-2. existing Bark, ntfy, or equivalent mobile channel;
-3. generic webhook.
+Required alert content:
 
-Email is not the primary P0 channel.
+- priority;
+- event title;
+- source and age;
+- why it matters;
+- source URL;
+- direct X target or `TARGET_SEARCH_REQUIRED` search link;
+- proposed reply angle when deterministic/template logic can provide one;
+- expiry/review-by time;
+- evidence ID.
 
-### 4.8 Minimal Web Inbox
+The current Deyue notification worker is not reused because it is broken and configured dry-run. Only small reusable Feishu auth/send logic may be copied/refactored if license/ownership is clear, with no secret values copied.
 
-Required views:
+### 5.7 Decision/outcome recorder
 
-- Live Opportunities
-- Event Clusters
-- Decision / Reply Log
-- Outcomes
-- Source Health
-- Cost and Model Usage
-
-Required actions:
-
-- `POSTED`
-- `SKIPPED`
-- `FALSE_POSITIVE`
-- `EXPIRED`
-- `SAVE_FOR_ORIGINAL`
-
-The UI does not publish to X.
-
-### 4.9 Outcome Tracker
-
-Tracks:
-
-- event and opportunity IDs;
-- target account and target URL;
-- target age when action was taken;
-- actual text and published URL;
-- available impressions and engagements;
-- profile visits and follower change when available;
-- source, topic, timing, and response-style features.
-
-Missing metrics remain `UNKNOWN`; they must not be replaced with zero.
-
-### 4.10 OPC Adapter
-
-Only emits high-level, low-volume events:
+No web UI is required. The first interface may be a CLI command or small local command wrapper to record:
 
 ```text
-radar.opportunity.alerted
-radar.reply.posted
-radar.reply.skipped
-radar.false_positive.recorded
-radar.outcome.measured
-radar.shadow_test.day_closed
-radar.review.ready
-radar.health.degraded
+POSTED / SKIPPED / FALSE_POSITIVE / EXPIRED / SAVE_FOR_ORIGINAL
+published_url
+published_text
+notes
+impressions
+engagements
+profile_visits
+follower_delta
 ```
 
-The adapter is asynchronous and non-blocking. OPC unavailability must not stop collection, scoring, alerting, or local feedback capture.
+Unknown metrics remain null.
 
-## 5. Mac mini Fact Audit Contract
+## 6. Configuration
 
-The first task is read-only by default and must establish:
+Use a repository template plus local ignored runtime config.
 
-- machine identity and operating-system version;
-- project directories and existing checkouts;
-- Horizon presence, version, path, configuration location, process state, data path, latest data time, startup mode, and health;
-- TrendRadar presence, version, path, configuration location, process state, data path, latest data time, startup mode, and health;
-- Docker/Podman, Python/uv, Node/Bun, cron, and launchd availability;
-- existing notification channels and credential references, without exposing secret values;
-- existing MomentGrid OPC agent/runner path and health;
-- whether the runner can execute a controlled command on the Mac;
-- disk capacity, ports in use, and backup constraints;
-- available local or routed models and non-secret endpoint names;
-- blockers and safest remediation path.
+Suggested structure:
 
-The audit output is a structured evidence artifact. A missing component is a fact, not a failure and not permission to invent it.
+```text
+config/sources.toml
+config/rules.toml
+config/runtime.example.toml
+.local/runtime.toml        # ignored; may reference secret env names
+runtime/china-tech-x.db    # ignored
+```
 
-## 6. Security and Privacy
-
-- Secrets remain in existing secret stores or local environment files outside Git.
-- Evidence records secret names and presence only.
-- Raw private data is not sent to hosted models without an approved data boundary.
-- Source licensing and platform rules must be respected.
-- The system uses least-privilege access.
-- Automatic X publishing and direct messaging remain absent.
-- Paid X API code is inactive and has no live credential dependency in the active pack.
+Secrets remain in environment/keychain/local ignored config and are never written into Git.
 
 ## 7. Reliability
 
-- SQLite uses migrations, WAL, backups, and one designated writer per queue.
-- Adapters use checkpoints and idempotent upsert.
-- Alert delivery retries are bounded and deduplicated.
-- A dead-letter table retains failed items.
-- Services expose heartbeat and lag.
-- Service startup must be reproducible through the verified service manager.
-- A restart smoke test is required before runtime readiness.
+- polling is idempotent;
+- source checkpoints are persisted;
+- alert uniqueness is enforced in SQLite;
+- failed sends remain retryable with bounded retries;
+- a source error does not fail the entire cycle;
+- launchd restarts future cycles automatically;
+- every cycle writes counts, duration, lag, and errors.
 
-## 8. Cost Controls
+## 8. Deferred Architecture
 
-Foundation pack:
+### TrendRadar / Docker
 
-- X API read cost: `$0`.
-- Mandatory new tool spend: `$0`.
-- Model calls are counted and capped.
-- Deterministic filtering reduces model volume.
-- Cost/usage panel distinguishes local, subscribed, free-tier, and metered providers.
+Current Colima VM is unhealthy. Repair is deferred until TrendRadar adds proven value over native polling.
 
-Blocked X API pack, if later approved:
+### Browser/X resolver
 
-- exact monetary ceiling;
-- exact unique-post ceiling;
-- automatic shutdown;
-- usage reconciliation;
-- no auto top-up.
+Background Chrome automation is offline. It is not repaired merely to start the POC. It becomes P0 only if target discovery time is the measured bottleneck.
 
-## 9. Key Architecture Decisions
+### Model scoring
 
-### AD-001 — Opportunity-led, not quota-led
+`mlx-lm` is installed, but no model route is required or verified. Model scoring is added only if deterministic precision/recall is insufficient.
 
-Accepted. Daily posting is conditional.
+### Web UI
 
-### AD-002 — Eden as Research/Memory Layer
+Deferred until CLI/alert workflow exceeds the operator time budget or produces data-entry quality problems.
 
-Accepted. Eden is useful but is not the sole realtime source and alert chain.
+### OPC
 
-### AD-003 — Reuse foundation collectors
+MomentGrid remains a possible external delivery/governance control plane. It is not part of the MVP runtime or a prerequisite for business validation. If reconnected, only high-level implementation/evidence events cross the boundary.
 
-Accepted, contingent on Mac audit. Do not rebuild Horizon or TrendRadar capabilities without evidence of a gap.
+## 9. Paid X Boundary
 
-### AD-004 — SQLite for POC
-
-Accepted. Revisit only with measured evidence.
-
-### AD-005 — Separate OPC control plane and radar data plane
-
-Accepted. Prevents governance latency and OPC downtime from blocking realtime monitoring.
-
-### AD-006 — Manual X publising
-
-Accepted as a hard boundary.
-
-### AD-007 — Paid X API as a blocked extension
-
-Accepted. The pilot is evidence-triggered and budget-gated.
-
-## 10. Failure Modes and Responses
-
-| Failure | Required behavior |
-|---|----|
-| One source stops | Mark degraded; continue other sources |
-| All sources stale | Send system-health alert; do not fabricate opportunities |
-| Model unavailable | Continue deterministic scoring and label reduced confidence |
-| Notification fails | Retry boundedly; retain unsent alert; show in inbox |
-| Duplicate alert | Suppress by opportunity key and channel receipt |
-| OPC unavailable | Queue high-level events locally; continue radar |
-| No target X post | Reclassify as signal/original candidate |
-| Source timestamp absent | Mark unknown; reduce freshness confidence |
-| Budgeted service requested | Fail closed unless its pack is unblocked |
-| Restart | Resume from checkpoints without duplicate operator alerts |
-
-## 11. Verification Strategy
-
-- schema and migration tests;
-- adapter contract tests with fixtures;
-- idempotency tests;
-- duplicate and cluster golden cases;
-- scoring golden cases;
-- alert deduplication tests;
-- expiry tests;
-- failure-injection tests;
-- restart/recovery smoke;
-- no-paid-X-API static and runtime assertions;
-- no-auto-publish assertion;
-- seven-day evidence verifier.
+No component in this architecture may create a chargeable X read/stream or publish automatically. The separate X API pilot remains blocked behind its existing exact budget gate.

@@ -2,270 +2,186 @@
 
 ## Pack Header
 
-- Status: `APPROVED / ACTIVE`
+- Status: `APPROVED / ACTIVE / MVP-FIRST`
+- Version: `1.1`
 - Priority: `P0`
-- Date activated: `2026-08-30`
-- Change proposal: `CP-001-REALTIME-CHINA-TECH-RADAR`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001`
-- Architecture: `ARCH-CHINA-TECH-X-RADAR-001`
+- Updated: `2026-08-31`
+- Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.1
+- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.1
 - Delivery repository: `Creatiny/china-tech-x-poc`
-- Control plane: existing MomentGrid OPC in `Creatiny/momentgrid`
-- Runtime target: Mac mini, subject to fact audit
-- Human owner: final product, paid-spend, architecture, requirement, and publishing authority
+- Runtime target: verified Mac mini
+- OPC: optional/deferred until business evidence justifies it
 
 ## 1. Objective
 
-Deliver and validate a zero-new-mandatory-spend China Tech realtime opportunity radar through a seven-day Shadow Test.
+Launch and validate a zero-new-spend China Tech signal-to-distribution loop with the least engineering necessary to determine whether timely opportunities improve X results.
 
-## 2. Authority
+## 2. Execution Authority
 
-Within the approved requirement and architecture, OPC is authorized to:
+Within the approved requirement and architecture, ordinary technical implementation may proceed without repeated human approval, including:
 
-- create technical issues and branches;
-- implement and refactor code;
-- add tests and fixtures;
-- create, update, review, and merge technical PRs;
-- fix ordinary bugs and CI failures;
-- configure verified local services;
-- deploy and restart the radar on the Mac mini;
-- add bounded health checks, logs, backups, and rollback;
-- update implementation evidence and project status;
-- choose implementation details that do not alter requirements, architecture boundaries, paid spend, or publishing authority.
+- code, tests, configuration templates, local deployment, launchd service files, logs, and evidence;
+- source adapter fixes;
+- exact dedupe and rule tuning;
+- Feishu integration using already-authorized credentials once a valid receive target is available;
+- GitHub branches/PRs/merges for technical work;
+- runtime restart and benign smoke tests.
 
-Repeated human approval is not required for those activities.
+OPC is one optional way to execute this pack. Direct MCP-assisted implementation is equally valid during business validation.
 
-## 3. Mandatory Stop Gates
+## 3. Mandatory Human Gates
 
-Stop and report an evidence-backed Human Gate only when any of the following is required:
+Stop only for:
 
-1. requirement change;
-2. architecture boundary change;
-3. paid purchase, paid API call, auto top-up, or increased monetary exposure;
-4. automatic X post/reply/DM publishing;
-5. unavailable secret or account permission that cannot be resolved technically without the owner;
-6. destructive or irreversible external action;
-7. legal/platform-policy ambiguity with material risk;
-8. measured evidence that invalidates the approved product hypothesis.
+1. requirement or architecture boundary change;
+2. paid spend, chargeable API, subscription, or auto top-up;
+3. automatic X publishing/DM authority;
+4. unavailable secret/receiver identity/account permission that cannot be derived safely;
+5. destructive or irreversible external action;
+6. material platform-policy/legal ambiguity;
+7. evidence that invalidates the business hypothesis and requires a strategy decision.
 
-Do not stop merely because a technical bug, test failure, merge, deployment step, or ordinary configuration change occurs.
+Do not stop for OPC unavailability, Docker failure, lack of a web UI, lack of a local model, technical bugs, tests, merges, or ordinary deployment work.
 
 ## 4. Hard Prohibitions
 
-- No paid X API purchase or call.
-- No X API stream connection.
-- No automated X post, reply, or DM.
+- No paid X API call or stream.
+- No automatic X post, reply, or DM.
+- No secret values in Git/logs/evidence.
+- No fabricated signals or outcomes.
+- No new mandatory paid service.
+- No Docker/Colima dependency for MVP readiness.
 - No OPC copy in this repository.
-- No secret value in Git, logs, prompts, PRs, issues, or evidence.
-- No assumption that Horizon, TrendRadar, the runner, notification credentials, or project paths exist.
-- No fabricated signal, metric, health result, or Shadow Test day.
-- No claim of runtime readiness before restart and delivery smoke tests pass.
 
 ## 5. Execution Slices
 
-### Slice 0 — Canonical Sync and Mac mini Fact Audit
+### Slice 0 — Mac mini Fact Audit
 
-#### Deliverables
+Status: `COMPLETE` on 2026-08-31 through direct MCP inspection.
 
-- canonical documents merged to `main`;
-- exact canonical commit recorded;
-- OPC intake bound to the exact commit and pack content hash;
-- `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.json`;
-- `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md`;
-- evidence of controlled Mac command execution or an explicit execution-path blocker;
-- inventory of Horizon, TrendRadar, runtimes, services, data paths, notification channels, runner/agent path, storage, ports, and model routes;
-- no secret values.
+Evidence:
 
-#### Acceptance
+- `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md`
+- `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.json`
 
-- audit fields are complete or explicitly `NOT_FOUND` / `UNKNOWN_WITH_REASON`;
-- no component is reported present without command/file/process evidence;
-- first modification after the audit is tied to an identified fact or gap.
+The audit established that native Python/SQLite/launchd are available and that Docker/Colima, TrendRadar runtime health, background Chrome, and the existing notification worker must not be treated as ready dependencies.
 
-### Slice 1 — Repository and Runtime Foundation
+### Slice 1 — Native MVP Foundation
 
-#### Deliverables
+Deliver:
 
-- implementation layout;
-- configuration templates;
-- canonical signal schema;
-- SQLite migrations;
-- service health contract;
-- local development and Mac deployment runbooks;
-- test harness;
-- cost and paid-X guard assertions.
-
-#### Acceptance
-
-- clean setup is reproducible;
-- migrations are idempotent;
-- no paid X credential is required;
-- no publishing endpoint exists.
-
-### Slice 2 — Verified Source Adapters
-
-#### Deliverables
-
-- adapters only for sources verified or safely installable under the approved architecture;
-- Horizon adapter;
-- TrendRadar adapter;
+- Python project/runtime entry point;
+- SQLite schema/migration;
 - RSS/Atom adapter;
 - GitHub adapter;
-- checkpoints, health, fixtures, and error handling.
+- exact dedupe;
+- deterministic relevance/freshness rules;
+- structured cycle/source health logs;
+- configuration templates;
+- paid-X and auto-publish guard tests.
 
-A missing Horizon or TrendRadar installation may be installed or configured as an ordinary technical action only after the audit records the gap and the action creates no new paid commitment or architecture change.
+Accept when one live source can be polled twice without duplicate accepted signals/alerts.
 
-#### Acceptance
+### Slice 2 — Mobile Alert Path
 
-- at least one live foundation source flows end-to-end;
-- each configured adapter passes contract and idempotency tests;
-- source health and lag are visible;
-- upstream databases are read-only from adapters unless an official write interface is explicitly required and approved by architecture.
+Deliver:
 
-### Slice 3 — Deduplication, Clustering, and Opportunity Scoring
+- Feishu alert adapter behind environment/config references;
+- bounded retry and alert uniqueness;
+- message with source, freshness, reason, source URL, target/search link, and expiry;
+- delivery receipt storage.
 
-#### Deliverables
+Accept when one real test alert reaches the operator's mobile-capable channel.
 
-- exact and near-duplicate handling;
-- canonical event clusters;
-- deterministic filter;
-- optional bounded model scorer;
-- P0/P1/P2/DROP classification;
-- rationale and expiry;
-- golden-case tests;
-- human split/merge correction.
+If no Feishu receive target exists, stop only for the minimum receiver/account input. Do not build a notification platform.
 
-#### Acceptance
+### Slice 3 — Decision and Outcome Ledger
 
-- duplicate fixtures do not create duplicate alerts;
-- one event can retain multiple sources;
-- every P0/P1 contains a traceable rationale;
-- no direct X target means no executable reply classification.
+Deliver a CLI/simple local command that records:
 
-### Slice 4 — Alerts, Web Inbox, Feedback, and Outcomes
+- decision;
+- target URL;
+- actual published text;
+- posted time;
+- available impressions/engagement/profile/follower evidence;
+- notes.
 
-#### Deliverables
+Accept when an alert can be linked to one stored operator decision and one nullable outcome record.
 
-- verified mobile-capable alert integration;
-- P0 immediate alerts and P1 digest;
-- minimal web inbox;
-- decision workflow;
-- outcome tracker;
-- source health and usage views;
-- notification deduplication and bounded retry.
+### Slice 4 — End-to-End Business Smoke
 
-#### Acceptance
-
-- operator receives a test alert on the chosen channel;
-- each action is persisted;
-- no UI or backend action publishes to X;
-- missing outcomes remain unknown rather than zero.
-
-### Slice 5 — Deployment and Runtime Readiness
-
-#### Deliverables
-
-- verified service manager configuration;
-- backup and rollback;
-- restart/recovery test;
-- end-to-end smoke;
-- health alert;
-- runtime evidence.
-
-#### Acceptance
-
-- Mac restart or service restart recovers without duplicate alerts;
-- checkpoints resume correctly;
-- failure of one adapter does not stop the pipeline;
-- OPC outage simulation does not stop radar runtime.
-
-### Slice 6 — Seven-Day Shadow Test
-
-#### Entry Criteria
-
-- Slices 0–5 accepted;
-- runtime health passes;
-- notification path verified;
-- paid X guard passes;
-- operator workflow available.
-
-#### Daily Evidence
-
-- source health and lag;
-- raw and canonical signal counts;
-- P0/P1/P2 counts;
-- reviewed, posted, skipped, false-positive, expired counts;
-- discovery and alert delays;
-- operator time;
-- available outcomes;
-- incidents and repairs.
-
-#### Exit Criteria
-
-- seven consecutive valid days;
-- verifier report;
-- success-criteria table;
-- source and scoring recommendations;
-- explicit recommendation:
-  - keep X API pack blocked; or
-  - request a separate Human Budget Gate with exact ceiling and evidence.
-
-## 6. Quality Gates
-
-- lint/type/test appropriate to selected stack;
-- migrations test;
-- adapter contract test;
-- idempotency test;
-- cluster golden test;
-- score golden test;
-- alert dedupe test;
-- expiry test;
-- restart/recovery smoke;
-- static and runtime `NO_PAID_X_API` gate;
-- static and runtime `NO_AUTOPUBLISH` gate;
-- independent evidence verifier.
-
-## 7. Evidence Contract
-
-Every completion claim must identify:
-
-- exact repository commit;
-- exact configuration revision without secret values;
-- command or workflow used;
-- test and verifier result;
-- runtime target;
-- artifact path;
-- known limitation;
-- rollback path.
-
-`DONE` without evidence is invalid.
-
-## 8. OPC Event Boundary
-
-Emit high-level events only:
+Run:
 
 ```text
-radar.build.started
-radar.build.verified
-radar.runtime.ready
-radar.opportunity.alerted
-radar.reply.posted
-radar.reply.skipped
-radar.false_positive.recorded
-radar.outcome.measured
-radar.shadow_test.day_closed
-radar.review.ready
-radar.health.degraded
+live source
+ -> accepted signal
+ -> dedupe/classification
+ -> real mobile alert
+ -> human review
+ -> stored decision
 ```
 
-Raw signals remain in the radar data plane.
+No synthetic signal can satisfy the final smoke, although fixtures may be used before it.
 
-## 9. Completion Definition
+Accept when timestamps and provenance are complete and no paid/publishing boundary was crossed.
 
-The pack is complete only when:
+### Slice 5 — Seven-Day Shadow Test
 
-1. all slices pass;
-2. the seven-day verifier report exists;
-3. project status is updated;
-4. paid X usage remains zero;
-5. automated publishing remains absent;
-6. the next decision is stated as an evidence-backed gate, not an assumption.
+Start immediately after Slice 4 passes.
+
+Daily evidence:
+
+- source health and lag;
+- new/qualified alert counts;
+- P0/P1 review decisions;
+- direct-target vs target-search-required counts;
+- source-to-alert delay;
+- operator time;
+- posted reply target age;
+- available impressions, engagement, profile, and follower effects;
+- false positives/misses/incidents.
+
+Do not pause the test because OPC, Docker, TrendRadar, model scoring, or a web UI is unavailable.
+
+### Slice 6 — Business Decision
+
+At seven valid days, classify the next bottleneck as one of:
+
+- `SOURCE_COVERAGE`
+- `TARGET_DISCOVERY`
+- `ALERT_PRECISION`
+- `OPERATOR_FRICTION`
+- `CONTENT_OR_POSITIONING`
+- `NO_MEANINGFUL_DISTRIBUTION_LIFT`
+- `BUSINESS_SIGNAL_POSITIVE`
+
+Then authorize only the smallest next investment that addresses that bottleneck.
+
+## 6. Success Evidence
+
+Minimum decision evidence includes:
+
+- P0/P1 review precision target >=70%;
+- measured source-to-alert delay target <=10 minutes for polled sources;
+- median operator time <=30 minutes/day;
+- count of verified executable reply opportunities;
+- distribution outcomes for every published test action where X exposes them;
+- at least one clear distribution lift/profile/follower effect, or an explicit falsification.
+
+A practical early positive signal is a reply with >100 impressions or a measurable profile/follower response. Lack of that signal does not justify more infrastructure by itself.
+
+## 7. Deferred Work
+
+Deferred until evidence proves a bottleneck:
+
+- semantic clustering;
+- model scoring;
+- web inbox;
+- direct browser automation;
+- TrendRadar/Colima repair;
+- Horizon;
+- paid X-native data;
+- OPC integration.
+
+The X API pilot remains separately blocked.

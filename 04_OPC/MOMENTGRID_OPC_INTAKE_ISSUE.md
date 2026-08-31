@@ -1,48 +1,24 @@
-# Proposed MomentGrid OPC Intake Issue
+# MomentGrid OPC Intake — Deferred
 
-> Create this issue in `Creatiny/momentgrid` only after the canonical sync has merged. Replace all placeholders with exact values.
+## Status
 
-## Title
+`DEFERRED_BY_CP-002`
 
-`[OPC External Pack Intake] Execute PACK-CHINA-TECH-X-RADAR-001`
+The prior external-pack intake into `Creatiny/momentgrid` is retained as historical design evidence, but MomentGrid OPC is not required to build, deploy, start, or continue the China Tech business-validation MVP.
 
-## Body
+Do not reopen or create a new OPC intake merely to satisfy architecture history.
 
-```markdown
-## Canonical Source
+## Re-entry Condition
 
-- Delivery repository: `Creatiny/china-tech-x-poc`
-- Canonical commit: `<TARGET_CANONICAL_COMMIT>`
-- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md`
-- Pack SHA-256: `<PACK_SHA256>`
-- First task: `04_OPC/OPC-CTXR-001-MAC-MINI-FACT-AUDIT.md`
+Create or supersede an OPC intake only when measured evidence shows that implementation/deployment/governance complexity is materially slowing the business experiment.
 
-This issue is an intake pointer, not the authority. Read the exact canonical commit and verify the pack hash before dispatch.
+When re-entering OPC:
 
-## Authorization
+- bind to the exact `Creatiny/china-tech-x-poc` canonical commit and active-pack SHA-256;
+- keep OPC outside the raw-signal runtime path;
+- send only high-level implementation/evidence lifecycle events;
+- preserve `$0` paid-X authorization and manual-publishing authority unless separately changed by a Human Gate.
 
-Execute the active Radar pack through the existing MomentGrid OPC control plane until the next mandatory requirement, architecture, paid-spend, publishing-authority, unavailable-secret, destructive/irreversible external, or policy gate.
+## Historical Note
 
-Ordinary implementation, tests, repairs, technical PRs, merges, deployment, service configuration, and evidence updates do not require repeated human approval when they remain inside the exact canonical requirements and architecture.
-
-## First Mandatory Action
-
-Run the Mac mini fact audit. Do not assume Horizon, TrendRadar, a runner, notification credentials, repository paths, services, or models exist.
-
-## Hard Blocks
-
-- No paid X API purchase or chargeable call.
-- No X stream.
-- No automatic X post, reply, or DM.
-- No secret values in artifacts.
-- Do not copy OPC into the target repository.
-- Do not push raw signal volume into the OPC task queue.
-
-## Expected Dispatch Result
-
-1. Verify exact canonical and pack hash.
-2. Establish a controlled execution path to the Mac mini through existing OPC capabilities.
-3. Produce and independently verify the fact-audit artifacts.
-4. Continue the next technical slice automatically if no mandatory gate exists.
-5. Report evidence paths, exact commit, tests, runtime state, risks, and next action.
-```
+The previous intake was accepted but blocked by MomentGrid Stability Gate and external-repository execution constraints. CP-002 explicitly supersedes that sequencing dependency because it did not produce business evidence.

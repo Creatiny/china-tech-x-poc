@@ -1,113 +1,116 @@
-# Daily Runbook
+# Daily Runbook v2.0
+
+Authority: `PROJECT_SPEC.md` v2.0 and `EXECUTION_PLAN.md` v1.0.
 
 ## Daily Objective
 
-Complete one evidence-producing operating cycle within 30 minutes.
+Grow relevant followers while producing clean evidence for the growth formula. Do not optimize posting volume for its own sake.
 
-The objective is not to satisfy a posting quota. The objective is to act on the best available China Tech opportunity while preserving account quality.
+## 1. Receive / Review Personal Feishu Signals
 
-## Step 1 — Review Live Opportunities (5 min)
+Production China Tech publishing signals arrive **only in the operator's personal Feishu**.
 
-Open the Radar opportunity inbox and review P0 and P1 items.
+For each qualified P0/P1 signal, check:
 
-For each candidate, confirm:
+- freshness;
+- source quality;
+- fit with China Tech positioning;
+- live X conversation/target quality;
+- whether we can add China context, data, comparison, technical explanation, or global implication.
 
-- original source and timestamp;
-- relevance to the China Tech positioning;
-- whether the X conversation is still timely;
-- whether the account can add a non-generic fact, interpretation, comparison, or China-specific context;
-- remaining opportunity lifetime.
+## 2. Stage-A Publishing Target
 
-Do not publish from an alert that lacks a traceable source or direct target link.
+When enough qualified opportunities exist:
 
-## Step 2 — Reply or Skip Deliberately (15 min)
+- 3–5 strategic replies/day;
+- approximately one differentiated original post on active days.
 
-Select up to 2–5 qualified reply opportunities.
+Prefer quality over quota. Do not fill the timeline with generic or late replies merely to satisfy the count.
 
-A reply is qualified only when it:
+## 3. Reply Selection
 
-- adds original value;
-- fits the account positioning;
-- is timely enough to have a realistic distribution opportunity;
-- avoids generic praise, repetition, and unsupported claims;
-- can be written in a natural, non-AI voice.
+Prefer replies where:
 
-If no qualified opportunity exists, publish no reply rather than lowering the threshold.
+- target post is still early/growing;
+- target account is relevant to China AI/chips/robotics/EV/global-tech discussion;
+- the conversation already has or is likely to gain attention;
+- our reply adds differentiated information or interpretation;
+- wording is concise and human, not generic AI prose.
 
-Record one outcome for every reviewed P0/P1 item:
+Record target account and target-post age whenever possible.
 
-- `POSTED`
-- `SKIPPED`
-- `FALSE_POSITIVE`
-- `EXPIRED`
-- `SAVE_FOR_ORIGINAL`
+## 4. Original Selection
 
-## Step 3 — Conditional Original Post (5 min)
+Publish an original when there is:
 
-An original post is optional.
+- a material current signal;
+- unique China-side data/context;
+- a useful synthesis/comparison;
+- a differentiated thesis/global implication;
+- a winning reply/theme worth developing into owned distribution.
 
-Publish only when at least one condition is true:
+Track link/no-link and media treatment as formula variables.
 
-- the account is early to a material signal;
-- there is unique data or a useful synthesis;
-- there is a differentiated thesis;
-- a reply opportunity has matured into a standalone point;
-- a recurring theme has enough evidence to support a concise view.
+## 5. Human Publish
 
-Do not create filler to satisfy a daily count.
+Publishing remains manual on X. No automatic reply/post/DM is authorized.
 
-## Step 4 — Record Outcome and Learning (5 min)
+After publishing, return the X URL to ChatGPT when practical so the action can be linked to the stored signal and formula record.
 
-Record:
+## 6. Outcome Capture
 
-- target post URL and target account;
-- target post age when the reply was published;
-- actual reply or original post text;
-- signal source and canonical event;
-- posted/skipped/false-positive decision;
-- available impressions, engagements, profile visits, and follower change;
-- one learning or scoring adjustment hypothesis.
+Capture public/native outcomes as available:
 
-## Daily Minimum
+- impressions;
+- engagements;
+- likes/replies/reposts/quotes/bookmarks;
+- profile visits when visible;
+- daily follower total.
 
-A day is complete when:
+Unknowns remain null, never zero.
 
-- all P0 items received during the operating window are reviewed;
-- at least the top three P1 candidates are reviewed, when available;
-- decisions and outcomes are recorded;
-- no paid X API call or automated publishing occurred outside an approved gate.
+## 7. Daily KPI + Formula Review
 
-Publishing is not mandatory when the system produces no qualified opportunity.
+Review:
 
-## Weekly Review
+- follower total/delta;
+- reply and original counts;
+- 100/300/1000+ impression repetition;
+- source/alert latency and misses;
+- target tier and target-post age;
+- angle/hook/media/link performance;
+- formula sample status;
+- first broken growth stage.
 
-Once per week:
+Then choose **at most one growth variable** to change/bias the next day and, if necessary, one measurement repair.
 
-1. compare reply age, impressions, engagement, profile visits, and follows with the prior baseline;
-2. identify the sources and target accounts that produced qualified opportunities;
-3. identify false-positive and expired-alert causes;
-4. propose scoring or source changes through normal change control;
-5. decide whether evidence supports entering the blocked X API pilot.
+## 8. Milestone Reviews
 
-## Mandatory Business Review — v1.1 Addendum
+Use `OPERATING_KPI.md` for Day 3 / 7 / 10 / 15 / 30 gates.
 
-`00_Governance/OPERATING_KPI.md` is the authority for Day 3 / 7 / 10 / 15 / 30 KPI.
+If on track: continue the proven direction.
 
-At the end of each day:
+If off track: diagnose in order:
 
-1. record operator time;
-2. record decisions for every reviewed P0/P1 alert;
-3. attach current impressions/engagement to published test actions when visible;
-4. record account followers/profile visits when visible;
-5. generate the daily KPI review;
-6. classify the first broken funnel stage;
-7. if KPI is GREEN, continue the proven direction;
-8. if KPI is AMBER/RED, change at most one business variable plus one instrumentation fix before the next review.
+```text
+signal quality/coverage
+ -> target quality
+ -> reply timing
+ -> content angle/value
+ -> impressions/distribution
+ -> profile/follower conversion
+ -> original-content distribution
+```
 
-A daily review with missing outcome metrics must report `MEASUREMENT_GAP`; unknown metrics may never be treated as zero.
+Do not add infrastructure unless the failed stage is actually an infrastructure bottleneck.
 
-## Growth Formula Capture — v1.2 Addendum
+## 9. Growth Formula Evidence
 
-For every published reply/original, capture the variables in `00_Governance/GROWTH_FORMULA.md`. For replies, target account and target-post age are especially important.
+Use `GROWTH_FORMULA.md`.
 
-At each daily review, run the formula report, compare strong vs weak actions, and select at most one variable to bias/test the next day. Do not increase low-quality posting merely to create samples.
+- 1 win = anecdote;
+- 2 = hypothesis;
+- >=3 repeated wins = candidate;
+- >=5 repeated wins + follower-positive cohorts = scale bias.
+
+Never declare a formula from one breakout post.

@@ -1,325 +1,203 @@
-# China Tech X Operating KPI — v1.0
+# China Tech X Operating KPI — Money-First v2.0
 
-## 1. Authority
+## 1. North Star
 
-- Status: `APPROVED / ACTIVE`
-- Effective date: `2026-08-31`
-- Governing principle: **business outcome is the highest priority**.
-- Applies to: active 30-day China Tech X POC and `PACK-CHINA-TECH-X-RADAR-001`.
+**Primary goal: generate repeatable cash revenue attributable to X operations.**
 
-KPI exists to force fast learning, not to force low-quality publishing. A missed KPI triggers diagnosis of the first broken funnel stage before new infrastructure or broader automation is added.
+Followers, impressions, engagement, reply reach, profile visits, alert latency, and posting volume are leading indicators only. They never substitute for revenue validation.
 
-## 2. Baseline
+The project has two monetization paths:
 
-The provisional pre-test baseline is:
+1. **Direct X-attributable business revenue — P0**: China Tech research/intelligence work, consulting, paid briefs, sponsorship/partnership, paid community/subscription or another customer payment whose source can be traced to X.
+2. **X-native creator payout — P1/later**: Original Content Rewards and other X creator monetization products when eligibility is reached.
+
+Direct business revenue is prioritized because a small high-value China Tech audience can produce revenue before the account reaches X-native payout scale.
+
+## 2. Revenue Attribution
+
+Revenue counts as `X-attributable` only when there is evidence that X initiated or materially caused the commercial relationship, for example:
+
+- X DM/reply/profile interaction leads to a paid customer;
+- buyer discovers the account/content on X and requests research, consulting, sponsorship, or another paid service;
+- an X post/pinned CTA drives a buyer to the payment/contact path;
+- X itself pays the creator through an official monetization program.
+
+Existing customers or unrelated sales do not count merely because they follow the account.
+
+Every commercial event is recorded as one of:
+
+`OFFER_LIVE -> COMMERCIAL_INTENT -> QUALIFIED_CONVERSATION -> PROPOSAL_SENT -> PAID_CUSTOMER -> REPEAT_PURCHASE`
+
+Separate event types exist for `SPONSOR_PAYMENT`, `X_NATIVE_PAYOUT`, and `LOST_DEAL`.
+
+## 3. Initial Monetization Hypothesis
+
+The first low-cost monetization hypothesis is **China Tech research / market-intelligence expertise** for an English-speaking audience.
+
+The initial CTA should be low friction, e.g. a profile/pinned-post route for custom China Tech research, market intelligence, or an expert briefing. Do not build a paid product before a buyer conversation exists.
+
+The exact offer, price, and buyer segment are experiment variables. Change at most one monetization variable between daily reviews.
+
+## 4. Baseline
+
+Day-0 directional baseline:
 
 - followers: `4`;
 - tracked posts: `15`;
-- tracked views: `396`;
-- provisional arithmetic average: `26.4 views / tracked post`.
+- provisional tracked views: `396`;
+- arithmetic average: `26.4 views/post`.
 
-Eden's historical import is incomplete, so this baseline is directional only. Native X-visible metrics recorded during the Shadow Test supersede it when available.
+The old metrics are retained only to measure distribution lift. Money KPI is the authority.
 
-## 3. Business Funnel
+## 5. Day 3 KPI — Monetization Path Exists
 
-Every daily review follows the same funnel:
+### Required operating evidence
 
-```text
-SOURCE COVERAGE
-    -> SIGNAL LATENCY
-    -> ALERT PRECISION
-    -> X TARGET DISCOVERY
-    -> HUMAN ACTION
-    -> REPLY DISTRIBUTION
-    -> PROFILE / FOLLOWER CONVERSION
-    -> COMMERCIAL INTENT
-```
+- runtime success `>=95%`;
+- delivered-alert latency after channel verification `<=15 min` median;
+- at least `4` qualified alerts/opportunities;
+- at least `2` published actions;
+- at least `1` differentiated original post.
 
-Never optimize a downstream stage while an upstream stage is unmeasured or clearly broken.
+### Required money-funnel evidence
 
-## 4. Milestone KPI
+- at least `1` monetization offer/CTA is live and recorded as `OFFER_LIVE`.
 
-### Day 3 — prove the loop can create a business signal
+### Decision
 
-Process targets:
+Day 3 passes only if there is both an operating content loop and a visible path for a buyer to start a commercial conversation.
 
-- runtime cycle success rate `>=95%`;
-- median source-to-alert latency `<=15 minutes`;
-- at least `6` delivered P0/P1 alerts;
-- at least `50%` of reviewed alerts judged worth reviewing;
-- at least `3` verified executable X reply opportunities;
-- at least `3` published test actions when qualified opportunities exist.
+No buyer interest is required in 72 hours, but **no offer path = failure** regardless of views.
 
-Business signal — at least one:
+## 6. Day 7 KPI — First Commercial Intent
 
-- one published action reaches `>=50 impressions`; or
-- net follower change `>=+1`; or
-- cumulative profile visits `>=3`.
-
-Decision:
-
-- met: continue current direction;
-- missed: diagnose the first broken funnel stage before adding sources/tools.
-
-### Day 7 — prove timing/opportunity selection can beat the old baseline
-
-Process targets:
+Required:
 
 - runtime success `>=97%`;
-- median source-to-alert latency `<=10 minutes`;
-- at least `14` delivered P0/P1 alerts;
-- review-worth precision `>=70%`;
-- at least `7` executable opportunities;
-- at least `7` published test actions when qualified opportunities exist;
-- median human operating time remains within `30 minutes/day` when recorded.
+- median verified alert latency `<=10 min`;
+- review-worth precision `>=60%`;
+- at least `8` qualified alerts;
+- at least `5` published actions;
+- at least `2` original posts;
+- at least `1` real commercial-intent signal;
+- at least `1` qualified buyer conversation.
 
-Business signal — at least one:
+A like, follow, repost, or generic compliment is **not** commercial intent.
 
-- one action reaches `>=100 impressions`; or
-- net follower change `>=+2` (followers `>=6`); or
-- cumulative profile visits `>=5`.
+Examples that count: request for custom research, pricing question, consulting call request, sponsor inquiry, request for deeper paid analysis, or explicit willingness to discuss a paid solution.
 
-If process KPI passes but business KPI fails, do **not** build more platform. Diagnose target age/account quality, reply angle, account conversion, and content positioning first.
+## 7. Day 10 KPI — Qualified Pipeline
 
-### Day 10 — prove the lift is repeatable rather than one lucky reply
+Required:
 
-Targets:
+- at least `7` published actions;
+- at least `3` original posts;
+- at least `2` qualified buyer conversations;
+- at least `1` concrete paid proposal / paid pilot offered.
 
-- runtime success `>=97%`;
-- alert latency `<=10 minutes`;
-- review-worth precision `>=70%`;
-- at least `20` delivered P0/P1 alerts;
-- at least `10` executable opportunities;
-- at least `10` published test actions;
-- median operating time `<=30 minutes/day`;
-- distribution: at least `2` actions `>=100 impressions` **or** one action `>=300 impressions`;
-- growth: net followers `>=+3` **or** cumulative profile visits `>=10`.
+If reach is growing but there is no qualified pipeline, the problem is buyer/offer fit or CTA—not infrastructure.
 
-Both a distribution signal and a growth/profile signal are required to call Day 10 healthy.
+## 8. Day 15 KPI — First Cash
 
-### Day 15 — prove a repeatable growth mechanism is emerging
+Required minimum:
 
-Targets:
+- at least `10` published actions;
+- at least `5` original posts;
+- at least `3` qualified buyer conversations;
+- at least `1` proposal;
+- at least `1` paying customer;
+- cumulative X-attributable cash revenue `>= ¥500`.
+
+**Day 15 is the first hard money gate.**
+
+If the account has good distribution but zero paid conversion, monetization has not been validated. Diagnose buyer segment, offer, proof/value, price, and CTA before scaling reach.
+
+## 9. Day 30 KPI — Revenue Validation
+
+### Target gate
 
 - runtime success `>=98%`;
-- alert latency `<=10 minutes`;
 - review-worth precision `>=75%`;
-- at least `30` delivered P0/P1 alerts;
-- at least `15` executable opportunities;
-- at least `15` published actions;
-- median published-action impressions `>=50`;
-- at least `3` actions `>=100 impressions` or a stronger distribution outlier;
-- net follower growth `>=+6` (followers `>=10`);
-- median operating time `<=30 minutes/day`.
+- median operating time `<=30 min/day`;
+- at least `20` published qualified actions;
+- at least `8` original posts;
+- at least `5` qualified buyer conversations;
+- at least `3` proposals;
+- at least `2` paying customers;
+- cumulative X-attributable revenue `>= ¥2,000`.
 
-If Day 15 misses both distribution and follower growth after at least two documented corrective iterations, the next review must explicitly consider whether source/target/content strategy or account positioning is wrong. Infrastructure expansion is not the default answer.
+### Stretch
 
-### Day 30 — growth-mechanism validation
+- cumulative revenue `>= ¥5,000`;
+- at least `3` paying customers;
+- at least `1` repeat purchase.
 
-Operational targets:
+### Minimum monetization validation
 
-- runtime success `>=98%`;
-- alert latency `<=10 minutes`;
-- review-worth precision `>=80%`;
-- at least `60` delivered P0/P1 alerts;
-- at least `30` executable reply opportunities;
-- at least `25` published qualified actions;
-- median operating time `<=30 minutes/day`.
+If Day 30 has at least one genuine payer and `>= ¥500`, the monetization hypothesis has weak-but-real proof even if the target gate is missed. It requires correction/iteration, not automatic abandonment.
 
-Distribution and growth targets:
+### Failure interpretation
 
-- median published-action impressions `>=100`;
-- at least `5` actions `>=300 impressions`;
-- at least `1` action `>=1,000 impressions`;
-- followers `>=20` from the starting baseline of 4.
+- strong impressions/follower growth + `¥0`: **distribution validated, monetization failed**;
+- commercial conversations + no payment: **offer/conversion failure**;
+- no commercial conversations: **buyer/CTA/audience failure**;
+- no meaningful distribution: **content/target/distribution failure**.
 
-Original-content target:
+Infrastructure is never the default explanation.
 
-- at least `8` differentiated original posts during the 30-day window, unless the daily reviews document insufficient qualified signals;
-- original-post results must be reported separately from reply results;
-- at least one original post should materially exceed the Day-0 average-view baseline.
+## 10. Beyond Day 30
 
-Commercial-intent target:
+These are project business targets, not external industry averages. Recalibrate after the first real paid conversions reveal actual deal size and conversion rate.
 
-- at least `1` measurable monetization-intent signal: inbound collaboration, consulting/research inquiry, sponsor/partner interest, subscriber/lead intent, or another recorded willingness-to-pay/convert signal.
+- **Day 60**: target X-attributable monthly revenue `>= ¥3,000`.
+- **Day 90**: target monthly revenue `>= ¥5,000` with more than one paying customer or a repeat/recurring customer.
+- **3–6 months commercial-success definition**: X-attributable revenue `>= ¥10,000/month` for **2 consecutive months**, while keeping the operating system economically sensible.
 
-Day 30 can be classified:
+A smaller revenue level can still justify continuing if the trend and unit economics are improving; the canonical target is deliberately meaningful enough to distinguish a hobby metric from a business asset.
 
-- `GROWTH_MECHANISM_VALIDATED`: reply acquisition + original distribution + growth evidence pass;
-- `DISTRIBUTION_VALIDATED_NOT_COMMERCIALIZED`: growth/distribution pass but no commercial intent;
-- `AUDIENCE_SIGNAL_WEAK`: operating loop works but distribution/growth fails;
-- `FUNNEL_NOT_VALIDATED`: upstream source/alert/target loop itself still fails.
+## 11. X-Native Monetization Track
 
-## 5. Daily Review Rule
-
-Every calendar day must produce a review even when nothing was published.
-
-The review records:
-
-- runtime/source health;
-- delivered P0/P1 count and alert latency;
-- reviewed/worth-reviewing count;
-- executable target count and target-search time;
-- published/skipped/false-positive/expired decisions;
-- operator minutes;
-- latest per-action impressions/engagement;
-- daily follower/profile snapshot when available;
-- current milestone progress;
-- single primary bottleneck;
-- no more than two corrective actions.
-
-## 6. Corrective-Action Discipline
-
-When a target is missed:
-
-1. identify the first broken funnel stage;
-2. state one falsifiable reason;
-3. change at most **one business variable** before the next daily review;
-4. one additional instrumentation fix is allowed if measurement is the blocker;
-5. record what metric the change is expected to move;
-6. review the effect the next day.
-
-Do not simultaneously change sources, scoring, target strategy, voice, posting time, and architecture. That destroys causal evidence.
-
-## 7. Bottleneck Mapping
-
-| Failure | Default diagnosis before any new tool |
-|---|---|
-| Too few qualified alerts | source coverage / entity-topic rules |
-| Alerts arrive late | source/poll latency |
-| Many alerts are not worth seeing | alert precision |
-| Good signals but no target post | X target discovery |
-| Targets exist but not posted | operator friction / reply selection |
-| Replies posted but impressions remain weak | target age/account quality / reply value / account distribution |
-| Impressions improve but followers do not | profile positioning / conversion |
-| Growth exists but no commercial signal by Day 30 | monetization offer/path missing |
-
-## 8. Infrastructure Admission Rule
-
-A new system is admitted only when a KPI review names the bottleneck it solves.
-
-Examples:
-
-- repair TrendRadar only for proven source-coverage gaps;
-- add X-native/browser resolver only for proven target-discovery gaps;
-- add LLM scoring only for proven alert-precision gaps;
-- add web UI only for proven operator-friction/measurement gaps;
-- reconnect OPC only for proven implementation/governance complexity.
-
-Business KPI failure never automatically authorizes more infrastructure.
-
-## 9. Alert Delivery Evidence
-
-A notification API returning HTTP 200 or provider `code=0` is `API_ACCEPTED`, not proof that the intended human received it.
-
-For KPI purposes:
-
-- messages sent before a recipient/channel has been human-confirmed are not counted as delivered opportunities;
-- a new app/recipient pairing requires at least one explicit human-visible smoke confirmation;
-- app-scoped identity types such as Feishu `open_id` must never be reused across different applications;
-- misrouted messages are excluded from alert-count and latency KPI.
-
-## 10. KPI Basis and Success Horizon — 2026-08-31 Calibration
-
-### What the Day 3/7/10/15/30 KPI is
-
-These are **POC falsification and learning gates**, not an industry promise that the account is "successful" by Day 30.
-
-They are based on three evidence classes:
-
-1. **Own-account baseline**: 4 followers, 15 tracked posts, 396 provisional tracked views, or about 26.4 views per tracked post. Early distribution thresholds are deliberately set as multiples of this weak baseline rather than generic large-account averages.
-2. **Operating constraints**: <=30 minutes/day, <=10-minute live-source alert latency once warmed, and enough reviewed opportunities to diagnose the funnel rather than rely on a single lucky post.
-3. **External platform reality**: X is a high-variance network where most posts receive low engagement, consistent participation matters over months, and current X native monetization increasingly rewards original content rather than reply-only reach.
-
-Therefore Day 30 means **growth mechanism validated or falsified**, not "mature account achieved."
-
-### External benchmark context
-
-Current external research is used as context, not copied as a target for this tiny account:
-
-- Buffer's 2026 benchmark reports X median engagement around the low-single-digit percentage range, with text posts leading and substantial Premium/non-Premium distribution differences.
-- Buffer's consistency study found creators posting at least weekly for 20+ of 26 weeks earned materially more engagement per post than highly inconsistent creators; this supports a multi-month stabilization horizon.
-- X is highly skewed: typical posts can remain small while occasional posts produce very large distribution, so one viral post cannot validate the system by itself.
-
-### Current X native monetization constraint
-
-As of 2026-08-31, X is retiring Creator Revenue Sharing and moving toward Original Content Rewards.
-
-X's published Original Content Rewards eligibility currently requires, among other conditions:
+Verified against X Help on 2026-08-31, Original Content Rewards currently requires, among other conditions:
 
 - active eligible Premium subscription;
-- at least **500 verified followers**;
-- at least **500,000 Home Timeline impressions from verified users in the last 90 days**;
-- **reply impressions are excluded** from that impressions threshold;
-- active original content.
+- at least `500 verified followers`;
+- at least `500,000 Home Timeline impressions from verified users in the last 90 days`;
+- reply impressions are excluded from that threshold;
+- active original content;
+- payout method / identity requirements after eligibility;
+- minimum payout currently `$30`.
 
-Implication: replies are a discovery/acquisition channel, but the account must develop an **original-content distribution engine** to become sustainably monetizable on X itself.
+Therefore:
 
-### Required two-track measurement
+- replies are primarily **audience acquisition**;
+- original posts are required to build **owned distribution and X-native monetizable impressions**;
+- X-native payouts are tracked separately as `X_NATIVE_PAYOUT` and are not expected to be the fastest first-revenue path.
 
-From Day 7 onward, reviews must separate:
+X Subscriptions has an even higher current application threshold in X's English help documentation (including 2,000 verified followers and 5M organic impressions over 3 months), so it is not a near-term Day-30 revenue assumption.
 
-**Reply acquisition track**
+## 12. Daily Review Funnel
 
-- target-post age;
-- reply impressions and engagement;
-- profile visits / follower conversion attributed when observable;
-- target accounts and topics producing follows.
+Every review walks the money funnel in this order:
 
-**Original distribution track**
+```text
+Signal -> Distribution -> Original Authority -> Offer Visible
+       -> Commercial Intent -> Qualified Conversation
+       -> Proposal -> Paid Customer -> Repeat Purchase -> Revenue
+```
 
-- number of differentiated original posts;
-- original-post impressions;
-- median and max original-post impressions;
-- verified-user/Home Timeline metrics when X exposes them;
-- follower/profile conversion;
-- recurring thesis/topic performance.
+Identify the **first broken stage**.
 
-A strategy that produces reply impressions but no growth in original-post distribution is not sufficient for long-term success.
+Only after identifying that stage may the system recommend a correction. Change at most:
 
-## 11. How Long Should Success Take?
+- one business/monetization variable;
+- one instrumentation fix.
 
-Use staged definitions rather than one date:
+Do not simultaneously change sources, target accounts, voice, offer, price, CTA, and architecture.
 
-### 0–30 days — mechanism validation
+## 13. Notification Evidence
 
-Question: can this account repeatedly earn distribution above its own baseline and convert some of that attention into relevant followers/profile interest?
+A provider HTTP 200 / `code=0` means `API_ACCEPTED`, not human delivery.
 
-This is the current experiment. Day 30 is a go/correct/stop decision, not mature success.
+A delivery channel counts for KPI only after the intended human explicitly confirms seeing a smoke message. Feishu `open_id` is application-scoped and may never be mixed with credentials from another application.
 
-### 31–90 days — audience traction
-
-If Day 30 is positive, the next 60 days should demonstrate that growth is repeatable across multiple topics and original posts, not dependent on one target account or viral event.
-
-The exact Day-90 follower target must be set from the observed Day-30 conversion rate rather than invented in advance. Planning bands may be used, but actual Day-30 data is the authority.
-
-### 3–6 months — credible niche account
-
-A successful path should by then show:
-
-- a repeatable source -> thesis -> original-post engine;
-- multiple posts with materially larger reach than the Day-0 baseline;
-- a meaningful base of relevant followers;
-- recurring profile/follower conversion;
-- at least early commercial-intent evidence if consulting/research/business monetization is part of the goal.
-
-This is the first realistic horizon for saying the account is "operating successfully" rather than merely showing a promising POC.
-
-### 6–12+ months — platform-scale monetization
-
-X-native monetization eligibility is a much higher bar because 500 verified followers alone is insufficient; the 90-day qualified original-content impression threshold is also required. The timeline depends strongly on whether original posts begin producing thousands to tens of thousands of Home Timeline impressions.
-
-Business monetization outside X's native payout programs may occur earlier with a smaller but high-value China Tech audience; this must be measured separately from X payout eligibility.
-
-## 12. Day-30 Interpretation Bands
-
-The existing `followers >=20` target is a **minimum direction signal**, not the definition of account success.
-
-At Day 30:
-
-- `<20 followers` plus weak distribution: growth mechanism has not been proven;
-- `20–49 followers` with several above-baseline posts: early signal, but trajectory is still too slow for near-term X-native monetization;
-- `50–99 followers` with repeatable original-post lift: strong cold-start evidence and a plausible multi-month path;
-- `>=100 followers` with repeatable original-post lift: strong Month-1 traction; scale the proven topic/target patterns while protecting quality.
-
-These bands are planning heuristics. They do not override actual follower quality, original-post reach, conversion, or commercial-intent evidence.
+Misrouted messages are excluded from delivery counts and latency KPI.

@@ -139,3 +139,16 @@ Correction:
 - only after human confirmation may `CHINA_TECH_ALERTS_ENABLED=1` be set and production alert sending resume.
 
 This incident also changes the delivery acceptance contract: **API acceptance is not user delivery evidence**. Initial channel verification requires explicit human-visible confirmation.
+
+## 2026-08-31 Money-First KPI Decision
+
+The human owner changed the highest-level objective from account growth to **making money through X operations**.
+
+Canonical consequence:
+
+- X-attributable cash revenue is now the North Star;
+- followers/impressions are leading indicators;
+- Day 15 requires first cash (`>=¥500`, at least one payer);
+- Day 30 target requires at least 2 paying customers and `>=¥2,000` cumulative X-attributable revenue;
+- direct China Tech research/intelligence monetization is P0; X-native creator payout is a later parallel track;
+- reply acquisition and original-content distribution must be measured separately because current X Original Content Rewards excludes reply impressions from its qualified-impression eligibility threshold.

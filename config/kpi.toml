@@ -3,71 +3,73 @@ followers = 4
 tracked_posts = 15
 total_views = 396
 provisional_avg_views_per_tracked_post = 26.4
-note = "Eden baseline is provisional and incomplete; use only as directional context."
+note = "Growth metrics are leading indicators. Primary success metric is X-attributable cash revenue."
 
 [milestone.day3]
 cycle_success_rate_min = 0.95
 median_alert_latency_minutes_max = 15
-review_worth_rate_min = 0.50
-qualified_alerts_total_min = 6
-executable_opportunities_total_min = 3
-published_actions_total_min = 3
-max_impressions_min = 50
-follower_delta_min = 1
-profile_visits_total_min = 3
-business_signal_mode = "ANY"
+qualified_alerts_total_min = 4
+published_actions_total_min = 2
+original_posts_total_min = 1
+offer_live_total_min = 1
+business_signal_mode = "MONEY_FUNNEL_SETUP"
 
 [milestone.day7]
 cycle_success_rate_min = 0.97
 median_alert_latency_minutes_max = 10
-review_worth_rate_min = 0.70
-qualified_alerts_total_min = 14
-executable_opportunities_total_min = 7
-published_actions_total_min = 7
-max_impressions_min = 100
-follower_delta_min = 2
-profile_visits_total_min = 5
-business_signal_mode = "ANY"
+review_worth_rate_min = 0.60
+qualified_alerts_total_min = 8
+published_actions_total_min = 5
+original_posts_total_min = 2
+commercial_intent_total_min = 1
+qualified_conversations_total_min = 1
+business_signal_mode = "COMMERCIAL_INTENT"
 
 [milestone.day10]
 cycle_success_rate_min = 0.97
 median_alert_latency_minutes_max = 10
-review_worth_rate_min = 0.70
-qualified_alerts_total_min = 20
-executable_opportunities_total_min = 10
-published_actions_total_min = 10
-actions_over_100_impressions_min = 2
-max_impressions_min = 300
-follower_delta_min = 3
-profile_visits_total_min = 10
-median_operator_minutes_per_day_max = 30
-business_signal_mode = "ANY_GROWTH_PLUS_DISTRIBUTION"
+review_worth_rate_min = 0.65
+published_actions_total_min = 7
+original_posts_total_min = 3
+qualified_conversations_total_min = 2
+proposals_sent_total_min = 1
+business_signal_mode = "QUALIFIED_PIPELINE"
 
 [milestone.day15]
 cycle_success_rate_min = 0.98
 median_alert_latency_minutes_max = 10
-review_worth_rate_min = 0.75
-qualified_alerts_total_min = 30
-executable_opportunities_total_min = 15
-published_actions_total_min = 15
-median_impressions_min = 50
-actions_over_100_impressions_min = 3
-max_impressions_min = 300
-follower_delta_min = 6
-median_operator_minutes_per_day_max = 30
-business_signal_mode = "DISTRIBUTION_AND_GROWTH"
+review_worth_rate_min = 0.70
+published_actions_total_min = 10
+original_posts_total_min = 5
+qualified_conversations_total_min = 3
+proposals_sent_total_min = 1
+paying_customers_total_min = 1
+revenue_cny_min = 500
+business_signal_mode = "FIRST_CASH"
 
 [milestone.day30]
 cycle_success_rate_min = 0.98
 median_alert_latency_minutes_max = 10
-review_worth_rate_min = 0.80
-qualified_alerts_total_min = 60
-executable_opportunities_total_min = 30
-published_actions_total_min = 25
-median_impressions_min = 100
-actions_over_300_impressions_min = 5
-max_impressions_min = 1000
-follower_total_min = 20
+review_worth_rate_min = 0.75
+published_actions_total_min = 20
+original_posts_total_min = 8
+qualified_conversations_total_min = 5
+proposals_sent_total_min = 3
+paying_customers_total_min = 2
+revenue_cny_min = 2000
 median_operator_minutes_per_day_max = 30
-monetization_signals_min = 1
-business_signal_mode = "DISTRIBUTION_GROWTH_AND_COMMERCIAL_INTENT"
+business_signal_mode = "REVENUE_VALIDATED"
+
+[stretch.day30]
+revenue_cny = 5000
+paying_customers = 3
+repeat_purchases = 1
+note = "Stretch means strong Month-1 commercial traction, not required for minimum validation."
+
+[success_horizon]
+day30_minimum_revenue_cny = 500
+day30_target_revenue_cny = 2000
+day60_monthly_revenue_cny = 3000
+day90_monthly_revenue_cny = 5000
+commercial_success_monthly_revenue_cny = 10000
+commercial_success_consecutive_months = 2

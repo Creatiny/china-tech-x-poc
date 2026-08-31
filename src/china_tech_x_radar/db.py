@@ -96,6 +96,7 @@ def migrate(con: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS published_action (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             signal_id INTEGER NOT NULL REFERENCES signal(id) ON DELETE CASCADE,
+            action_type TEXT NOT NULL DEFAULT 'REPLY',
             target_url TEXT,
             published_url TEXT UNIQUE,
             published_text TEXT,
@@ -128,6 +129,19 @@ def migrate(con: sqlite3.Connection) -> None:
             notes TEXT,
             captured_at TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS business_event (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            occurred_at TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            source_url TEXT,
+            amount_cny REAL,
+            currency TEXT NOT NULL DEFAULT 'CNY',
+            notes TEXT,
+            created_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_business_event_occurred ON business_event(occurred_at);
+        CREATE INDEX IF NOT EXISTS idx_business_event_type ON business_event(event_type);
+
 
         CREATE TABLE IF NOT EXISTS runtime_cycle (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -157,6 +171,9 @@ def migrate(con: sqlite3.Connection) -> None:
     cols = {r[1] for r in con.execute("PRAGMA table_info(signal)")}
     if "score" not in cols:
         con.execute("ALTER TABLE signal ADD COLUMN score INTEGER NOT NULL DEFAULT 0")
+    action_cols = {r[1] for r in con.execute("PRAGMA table_info(published_action)")}
+    if "action_type" not in action_cols:
+        con.execute("ALTER TABLE published_action ADD COLUMN action_type TEXT NOT NULL DEFAULT 'REPLY'")
     con.commit()
 
 

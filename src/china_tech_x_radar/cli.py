@@ -101,12 +101,12 @@ def cmd_decide(args: argparse.Namespace) -> int:
         posted_at = args.posted_at or now
         con.execute(
             """
-            INSERT INTO published_action(signal_id,target_url,published_url,published_text,posted_at)
-            VALUES(?,?,?,?,?)
+            INSERT INTO published_action(signal_id,action_type,target_url,published_url,published_text,posted_at)
+            VALUES(?,?,?,?,?,?)
             ON CONFLICT(published_url) DO UPDATE SET
-              target_url=excluded.target_url,published_text=excluded.published_text,posted_at=excluded.posted_at
+              action_type=excluded.action_type,target_url=excluded.target_url,published_text=excluded.published_text,posted_at=excluded.posted_at
             """,
-            (args.signal_id, args.target_url, args.published_url, args.published_text, posted_at),
+            (args.signal_id, args.action_type.upper(), args.target_url, args.published_url, args.published_text, posted_at),
         )
         row = con.execute("SELECT id FROM published_action WHERE published_url=?", (args.published_url,)).fetchone()
         action_id = row["id"] if row else None
@@ -225,6 +225,26 @@ def cmd_review(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_business_event(args: argparse.Namespace) -> int:
+    root = project_root()
+    con = connect(db_path(root))
+    occurred = args.occurred_at or iso()
+    allowed = {
+        "OFFER_LIVE", "COMMERCIAL_INTENT", "QUALIFIED_CONVERSATION", "PROPOSAL_SENT",
+        "PAID_CUSTOMER", "REPEAT_PURCHASE", "SPONSOR_PAYMENT", "X_NATIVE_PAYOUT", "LOST_DEAL"
+    }
+    event_type = args.event_type.upper()
+    if event_type not in allowed:
+        raise SystemExit(f"unsupported event type: {event_type}")
+    cur = con.execute(
+        "INSERT INTO business_event(occurred_at,event_type,source_url,amount_cny,currency,notes,created_at) VALUES(?,?,?,?,?,?,?)",
+        (occurred, event_type, args.source_url, args.amount_cny, args.currency.upper(), args.notes, iso()),
+    )
+    con.commit()
+    print(json.dumps({"business_event_id": cur.lastrowid, "event_type": event_type, "amount_cny": args.amount_cny}, ensure_ascii=False))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="china-tech-x-radar")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -248,6 +268,7 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--target-search-minutes", type=float)
     x.add_argument("--published-url")
     x.add_argument("--published-text")
+    x.add_argument("--action-type", choices=["reply", "original"], default="reply")
     x.add_argument("--posted-at")
     x.add_argument("--notes")
     x.set_defaults(func=cmd_decide)
@@ -281,6 +302,15 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--total-views", type=int, default=396)
     x.add_argument("--force", action="store_true")
     x.set_defaults(func=cmd_experiment_start)
+
+    x = sub.add_parser("business-event")
+    x.add_argument("event_type", choices=["offer_live", "commercial_intent", "qualified_conversation", "proposal_sent", "paid_customer", "repeat_purchase", "sponsor_payment", "x_native_payout", "lost_deal"])
+    x.add_argument("--amount-cny", type=float)
+    x.add_argument("--currency", default="CNY")
+    x.add_argument("--source-url")
+    x.add_argument("--occurred-at")
+    x.add_argument("--notes")
+    x.set_defaults(func=cmd_business_event)
 
     x = sub.add_parser("review")
     x.add_argument("--date")

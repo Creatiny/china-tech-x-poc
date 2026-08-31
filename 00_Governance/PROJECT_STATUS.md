@@ -168,3 +168,15 @@ Current state:
 - the Shadow Test clock has been cleared/paused and will restart only after personal delivery is human-verified.
 
 Status: `COLLECTION_LIVE / PERSONAL_DELIVERY_UNVERIFIED / SHADOW_CLOCK_PAUSED / MONEY_FIRST_KPI_ACTIVE`.
+
+## 2026-08-31 Audience-First Commercial Strategy Correction
+
+The human owner rejected premature money-first service monetization and clarified the intended business sequence:
+
+1. obtain a large, relevant China Tech follower base;
+2. convert follower scale and authority into commercial collaboration and other audience monetization;
+3. treat direct X platform payouts as one downstream revenue stream, not the sole business.
+
+`OPERATING_KPI.md` v3.0 supersedes the earlier money-first Day-15/Day-30 cash gates.
+
+The personal Feishu route has now been explicitly confirmed by the intended human recipient. Production alerts are enabled for personal Feishu only; group chat is prohibited. The Shadow Test clock restarts from the verified personal-delivery activation on 2026-08-31.

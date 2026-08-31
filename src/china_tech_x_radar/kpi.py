@@ -146,6 +146,7 @@ def collect_metrics(con: sqlite3.Connection, start_at: str, as_of: date) -> dict
         "max_impressions": max(impressions) if impressions else None,
         "actions_over_100_impressions": sum(1 for v in impressions if v >= 100),
         "actions_over_300_impressions": sum(1 for v in impressions if v >= 300),
+        "actions_over_1000_impressions": sum(1 for v in impressions if v >= 1000),
         "followers_total": follower_total,
         "follower_delta": follower_delta,
         "profile_visits_total": profile_visits,
@@ -176,8 +177,8 @@ def evaluate_gate(day: int, metrics: dict[str, Any], kpi: dict[str, Any]) -> dic
         "cycle_success_rate": ("cycle_success_rate_min", "min"),
         "median_alert_latency_minutes": ("median_alert_latency_minutes_max", "max"),
         "review_worth_rate": ("review_worth_rate_min", "min"),
-        "qualified_alerts_total": ("qualified_alerts_total_min", "min"),
-        "published_actions_total": ("published_actions_total_min", "min"),
+        "reply_actions_total": ("reply_actions_total_min", "min"),
+        "original_posts_total": ("original_posts_total_min", "min"),
         "median_operator_minutes_per_day": ("median_operator_minutes_per_day_max", "max"),
     }
     process_checks: dict[str, bool | None] = {}
@@ -189,17 +190,15 @@ def evaluate_gate(day: int, metrics: dict[str, Any], kpi: dict[str, Any]) -> dic
         else:
             process_checks[metric_name] = _threshold(metrics.get(metric_name), maximum=gate[target_name])
 
-    business_specs = {
-        "original_posts_total": "original_posts_total_min",
-        "offer_live_total": "offer_live_total_min",
-        "commercial_intent_total": "commercial_intent_total_min",
-        "qualified_conversations_total": "qualified_conversations_total_min",
-        "proposals_sent_total": "proposals_sent_total_min",
-        "paying_customers_total": "paying_customers_total_min",
-        "x_attributed_revenue_cny": "revenue_cny_min",
+    growth_specs = {
+        "followers_total": "followers_total_min",
+        "max_impressions": "max_impressions_min",
+        "actions_over_100_impressions": "actions_over_100_impressions_min",
+        "actions_over_300_impressions": "actions_over_300_impressions_min",
+        "actions_over_1000_impressions": "actions_over_1000_impressions_min",
     }
     business_checks: dict[str, bool | None] = {}
-    for metric_name, target_name in business_specs.items():
+    for metric_name, target_name in growth_specs.items():
         if gate.get(target_name) is not None:
             business_checks[metric_name] = _threshold(metrics.get(metric_name), minimum=gate[target_name])
 
@@ -209,9 +208,9 @@ def evaluate_gate(day: int, metrics: dict[str, Any], kpi: dict[str, Any]) -> dic
     if due is None:
         status = "PRE_GATE"
     elif process_pass and business_pass:
-        status = "GREEN_MONEY_PATH_CONTINUE"
+        status = "GREEN_GROWTH_CONTINUE"
     elif process_pass:
-        status = "AMBER_MONETIZATION_GAP"
+        status = "AMBER_GROWTH_GAP"
     else:
         status = "RED_FUNNEL_OR_MEASUREMENT"
 
@@ -232,9 +231,11 @@ def evaluate_gate(day: int, metrics: dict[str, Any], kpi: dict[str, Any]) -> dic
 def diagnose(metrics: dict[str, Any], gate: dict[str, Any]) -> dict[str, Any]:
     t = gate["targets"]
     if metrics["cycle_count"] == 0 or metrics["cycle_success_rate"] is None:
-        return {"bottleneck": "RUNTIME_OR_MEASUREMENT", "actions": ["Restore the live collection/review evidence path before changing monetization strategy.", "Do not add infrastructure unrelated to the missing evidence."]}
-    if metrics["cycle_success_rate"] is not None and metrics["cycle_success_rate"] < float(t.get("cycle_success_rate_min", 0)):
-        return {"bottleneck": "RUNTIME_RELIABILITY", "actions": ["Fix only the recurring runtime/source failure blocking business evidence.", "Keep healthy collectors and manual X publishing running."]}
+        return {"bottleneck": "RUNTIME_OR_MEASUREMENT", "actions": ["Restore live collection/review evidence before changing growth strategy.", "Do not add unrelated infrastructure."]}
+    if metrics["cycle_success_rate"] < float(t.get("cycle_success_rate_min", 0)):
+        return {"bottleneck": "RUNTIME_RELIABILITY", "actions": ["Fix only the recurring runtime/source error while healthy collectors continue.", "Do not change content strategy until signal delivery is reliable."]}
+    if t.get("review_worth_rate_min") is not None and metrics.get("review_worth_rate") is not None and metrics["review_worth_rate"] < float(t["review_worth_rate_min"]):
+        return {"bottleneck": "ALERT_PRECISION", "actions": ["Tighten only the false-positive rule/source pattern evidenced by today's review.", "Do not increase alert volume until precision improves."]}
 
     if not gate.get("milestone_is_due"):
         eval_day = max(1, int(gate.get("evaluated_milestone_day", 1)))
@@ -242,42 +243,39 @@ def diagnose(metrics: dict[str, Any], gate: dict[str, Any]) -> dict[str, Any]:
         def paced(target_key: str) -> int:
             target = int(t.get(target_key, 0))
             return max(1, (target * current_day + eval_day - 1) // eval_day) if target else 0
-        if t.get("qualified_alerts_total_min") and metrics["qualified_alerts_total"] < paced("qualified_alerts_total_min"):
-            return {"bottleneck": "SOURCE_COVERAGE_PACE", "actions": ["Inspect a concrete missed China Tech event before adding any new source.", "Add only the source class that would have captured the documented miss."]}
-        if metrics["published_actions_total"] < paced("published_actions_total_min"):
-            return {"bottleneck": "DISTRIBUTION_EXECUTION_PACE", "actions": ["Publish the highest-value qualified reply/original post rather than expanding infrastructure.", "Record action type and outcome so revenue attribution has a usable top-of-funnel."]}
+        if t.get("reply_actions_total_min") and metrics["reply_actions_total"] < paced("reply_actions_total_min"):
+            return {"bottleneck": "REPLY_ACQUISITION_PACE", "actions": ["Use the next highest-quality personal Feishu signals to publish enough early, useful replies to stay on milestone pace.", "Do not compensate with generic reply volume; target relevance and timing remain mandatory."]}
         if t.get("original_posts_total_min") and metrics["original_posts_total"] < paced("original_posts_total_min"):
-            return {"bottleneck": "ORIGINAL_CONTENT_PACE", "actions": ["Convert the strongest current signal into one differentiated original China Tech post.", "Replies remain acquisition; original content must build owned distribution and monetizable authority."]}
-        if t.get("offer_live_total_min") and metrics["offer_live_total"] < int(t["offer_live_total_min"]):
-            return {"bottleneck": "NO_MONETIZATION_OFFER", "actions": ["Put one low-friction China Tech research/intelligence offer behind the profile or pinned-post CTA and record OFFER_LIVE.", "Do not build a product; first test whether X produces a buyer conversation."]}
-        if t.get("commercial_intent_total_min") and metrics["commercial_intent_total"] < paced("commercial_intent_total_min"):
-            return {"bottleneck": "NO_COMMERCIAL_INTENT", "actions": ["Tighten content/CTA toward a specific buyer problem rather than chasing generic impressions.", "Test one monetization message or buyer segment before changing the tooling."]}
-        if t.get("qualified_conversations_total_min") and metrics["qualified_conversations_total"] < paced("qualified_conversations_total_min"):
-            return {"bottleneck": "LEAD_QUALITY", "actions": ["Review which X interactions reached the right buyer profile and sharpen the offer/CTA around that problem.", "Do not count likes/follows as qualified commercial conversations."]}
-        if t.get("proposals_sent_total_min") and metrics["proposals_sent_total"] < paced("proposals_sent_total_min"):
-            return {"bottleneck": "NO_OFFER_CONVERSION", "actions": ["Turn the best qualified X conversation into one concrete paid proposal/pilot.", "Use the smallest paid deliverable that proves willingness to pay."]}
-        if t.get("revenue_cny_min") and metrics["x_attributed_revenue_cny"] < float(t["revenue_cny_min"]) * current_day / eval_day:
-            return {"bottleneck": "NO_CASH_YET", "actions": ["Focus on closing an existing qualified conversation rather than increasing follower targets.", "If there is no qualified pipeline, move one stage upstream to buyer/offer fit."]}
+            return {"bottleneck": "ORIGINAL_CONTENT_PACE", "actions": ["Convert the strongest current China Tech signal into one differentiated original post.", "Keep the post native/zero-click first and add the source link only secondarily if needed."]}
+        if metrics["published_actions_total"] > 0 and metrics["actions_with_outcome"] < max(1, metrics["published_actions_total"] // 2):
+            return {"bottleneck": "MEASUREMENT_GAP", "actions": ["Capture current impressions for published replies/originals and update the follower snapshot.", "Unknown outcome metrics must remain null rather than zero."]}
+        if t.get("max_impressions_min") is not None and (metrics.get("max_impressions") or 0) < float(t["max_impressions_min"]):
+            return {"bottleneck": "DISTRIBUTION", "actions": ["Change one distribution variable: target-post selection/timing for replies or hook/angle for originals.", "Prefer relevant high-attention conversations and native text over link-first posts."]}
+        if t.get("followers_total_min") is not None:
+            baseline = 4
+            target = int(t["followers_total_min"])
+            paced_followers = baseline + max(1, ((target - baseline) * current_day + eval_day - 1) // eval_day)
+            current_followers = metrics.get("followers_total")
+            if current_followers is None:
+                return {"bottleneck": "FOLLOWER_MEASUREMENT_GAP", "actions": ["Record today's follower count before making another growth change.", "Follower growth is the primary POC KPI."]}
+            if current_followers < paced_followers:
+                return {"bottleneck": "FOLLOWER_CONVERSION", "actions": ["Inspect which high-impression actions failed to convert profile visitors into follows; tighten profile promise and topic/target relevance before increasing output.", "Change only one profile/content-positioning variable before the next review."]}
 
-    if metrics["published_actions_total"] > 0 and metrics["actions_with_outcome"] < max(1, metrics["published_actions_total"] // 2):
-        return {"bottleneck": "MEASUREMENT_GAP", "actions": ["Capture X outcomes for published actions and keep unknown metrics null.", "Revenue/funnel decisions require action-level evidence, not memory."]}
     if gate["process_pass"] and not gate["business_pass"]:
-        missing = [k for k,v in gate["business_checks"].items() if v is not True]
-        first = missing[0] if missing else "monetization"
+        missing = [k for k, v in gate["business_checks"].items() if v is not True]
+        first = missing[0] if missing else "followers_total"
         mapping = {
-            "original_posts_total": ("ORIGINAL_CONTENT_GAP", "Publish differentiated original analysis that can build owned distribution; reply reach alone is not monetizable enough."),
-            "offer_live_total": ("NO_MONETIZATION_OFFER", "Make one clear China Tech research/intelligence offer discoverable from the profile/pinned content."),
-            "commercial_intent_total": ("NO_COMMERCIAL_INTENT", "Change one buyer-facing content/CTA variable to attract a specific commercial problem."),
-            "qualified_conversations_total": ("LEAD_QUALITY", "Improve buyer targeting and CTA until X produces qualified conversations rather than vanity engagement."),
-            "proposals_sent_total": ("NO_OFFER_CONVERSION", "Turn the best qualified conversation into a small concrete paid proposal."),
-            "paying_customers_total": ("NO_PAID_CUSTOMER", "Close the highest-intent proposal; if objections repeat, fix offer/value/price before adding reach."),
-            "x_attributed_revenue_cny": ("REVENUE_BELOW_TARGET", "Prioritize cash conversion and repeat purchases from existing X-sourced leads before scaling audience work."),
+            "followers_total": ("FOLLOWER_GROWTH_BELOW_TARGET", "Prioritize target accounts/topics that produce relevant follows, and verify the profile gives a clear reason to follow."),
+            "max_impressions": ("NO_BREAKOUT_DISTRIBUTION", "Improve one hook/timing/target variable until at least one action materially exceeds the Day-0 reach baseline."),
+            "actions_over_100_impressions": ("DISTRIBUTION_NOT_REPEATABLE", "Repeat the topic/target pattern from the strongest action rather than broadening content themes."),
+            "actions_over_300_impressions": ("DISTRIBUTION_NOT_SCALING", "Increase concentration on proven target accounts and signature topics; do not broaden the niche."),
+            "actions_over_1000_impressions": ("NO_LARGE_REACH_POSTS", "Create stronger original analysis around the highest-attention China Tech events and continue early strategic replies."),
         }
-        code, action = mapping.get(first, ("MONETIZATION_GAP", "Fix the first missing money-funnel stage before changing infrastructure."))
-        return {"bottleneck": code, "actions": [action, "Change at most one monetization variable before the next daily review."]}
+        code, action = mapping.get(first, ("GROWTH_GAP", "Fix the first missing growth-funnel stage before changing infrastructure."))
+        return {"bottleneck": code, "actions": [action, "Change at most one growth variable before the next daily review."]}
     if gate["business_pass"]:
-        return {"bottleneck": "NONE_PRIMARY", "actions": ["Continue the proven money path and scale the exact content/buyer/offer pattern that produced cash.", "Seek repeat purchase or a second customer before broadening the system."]}
-    return {"bottleneck": "INSUFFICIENT_EVIDENCE", "actions": ["Complete the next missing money-funnel evidence event.", "Do not confuse impressions/followers with revenue validation."]}
+        return {"bottleneck": "NONE_PRIMARY", "actions": ["Continue the proven target/topic/content pattern and scale it carefully.", "Do not monetize aggressively before the audience-size readiness gate unless a highly aligned inbound opportunity appears."]}
+    return {"bottleneck": "INSUFFICIENT_EVIDENCE", "actions": ["Complete the next missing follower-growth evidence step.", "Do not treat impressions without follower conversion as success."]}
 
 
 def render_markdown(as_of: date, metrics: dict[str, Any], gate: dict[str, Any], diagnosis: dict[str, Any]) -> str:
@@ -296,9 +294,8 @@ def render_markdown(as_of: date, metrics: dict[str, Any], gate: dict[str, Any], 
         "cycle_count","cycle_success_rate","qualified_alerts_total","median_alert_latency_minutes",
         "reviewed_total","review_worth_rate","executable_opportunities_total","median_target_search_minutes",
         "published_actions_total","original_posts_total","reply_actions_total","actions_with_outcome",
-        "median_impressions","max_impressions","followers_total","follower_delta","profile_visits_total",
-        "offer_live_total","commercial_intent_total","qualified_conversations_total","proposals_sent_total",
-        "paying_customers_total","repeat_purchases_total","x_attributed_revenue_cny","x_native_payout_cny",
+        "median_impressions","max_impressions","actions_over_100_impressions","actions_over_300_impressions",
+        "actions_over_1000_impressions","followers_total","follower_delta","profile_visits_total",
         "median_operator_minutes_per_day",
     ]:
         lines.append(f"- {k}: `{metrics.get(k)}`")
@@ -306,7 +303,7 @@ def render_markdown(as_of: date, metrics: dict[str, Any], gate: dict[str, Any], 
     for k, v in gate["process_checks"].items():
         lines.append(f"- process.{k}: `{v}`")
     for k, v in gate["business_checks"].items():
-        lines.append(f"- money.{k}: `{v}`")
+        lines.append(f"- growth.{k}: `{v}`")
     lines.append(f"- business_pass: `{gate['business_pass']}`")
     lines += ["", "## Corrective Action", ""]
     for a in diagnosis["actions"][:2]:

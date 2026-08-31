@@ -3,13 +3,13 @@
 ## 1. Requirement Metadata
 
 - Status: `APPROVED`
-- Version: `1.2`
+- Version: `1.3`
 - Date: `2026-08-31`
 - Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.2
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.3
 - Paid extension: `PACK-CHINA-TECH-X-XAPI-PILOT-001` (`BLOCKED`)
 
-Version 1.2 makes audience-first follower growth and repeatable growth-formula discovery the explicit business objective. Business validation remains independent of OPC, Docker, web UI, model scoring, Horizon, or paid X APIs.
+Version 1.3 retains audience-first follower growth and repeatable growth-formula discovery the explicit business objective. Business validation remains independent of OPC, Docker, web UI, model scoring, Horizon, or paid X APIs.
 
 ## 2. Product Goal
 
@@ -168,3 +168,14 @@ At each milestone, evidence must answer:
 - which first growth-funnel stage is broken if KPI is off track.
 
 The Day-30 minimum follower target is 100 from a baseline of 4. If the target is missed, diagnose signal/target/timing/distribution/profile conversion/original-content positioning before adding infrastructure.
+
+## 10. Editorial Publishing Packet — v1.3
+
+- **FR-056**: Raw deterministic P0/P1 classifier output shall not be sent directly to personal Feishu.
+- **FR-057**: A candidate shall receive editorial `POST`, `REPLY`, or `SKIP` classification before operator notification.
+- **FR-058**: `SKIP` shall be silent to the operator and persisted for precision analysis.
+- **FR-059**: A `REPLY` recommendation requires a verified direct X status URL; otherwise final editorial must choose `POST` or `SKIP`.
+- **FR-060**: `POST/REPLY` packets shall include final humanized English copy ready to paste, a direct reason/urgency, source provenance, and an explicit visual recommendation.
+- **FR-061**: When a POST benefits from a simple visual, the runtime may generate an original data/editorial card from verified facts and attach it to the personal Feishu packet; copyrighted source photography shall not be assumed reusable.
+- **FR-062**: Editorial enrichment shall use the existing locally authenticated ChatGPT/Codex OAuth runtime unless a later model-routing change is approved; no OpenAI Platform API key is required by this feature.
+- **FR-063**: Editorial model calls/tokens shall be locally logged and bounded by configurable daily caps.

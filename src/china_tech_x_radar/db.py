@@ -78,7 +78,12 @@ def migrate(con: sqlite3.Connection) -> None:
             channel TEXT,
             status TEXT NOT NULL DEFAULT 'PENDING',
             receipt_id TEXT,
-            error TEXT
+            error TEXT,
+            editorial_status TEXT,
+            editorial_packet_json TEXT,
+            editorial_at TEXT,
+            editorial_model TEXT,
+            asset_path TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_alert_status ON alert(status);
 
@@ -158,6 +163,17 @@ def migrate(con: sqlite3.Connection) -> None:
         CREATE INDEX IF NOT EXISTS idx_business_event_occurred ON business_event(occurred_at);
         CREATE INDEX IF NOT EXISTS idx_business_event_type ON business_event(event_type);
 
+        CREATE TABLE IF NOT EXISTS model_usage (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usage_date TEXT NOT NULL,
+            used_at TEXT NOT NULL,
+            purpose TEXT NOT NULL,
+            model TEXT NOT NULL,
+            tokens_used INTEGER,
+            success INTEGER NOT NULL,
+            error TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_model_usage_date ON model_usage(usage_date, purpose);
 
         CREATE TABLE IF NOT EXISTS runtime_cycle (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -204,6 +220,17 @@ def migrate(con: sqlite3.Connection) -> None:
     for name, decl in action_migrations.items():
         if name not in action_cols:
             con.execute(f"ALTER TABLE published_action ADD COLUMN {name} {decl}")
+    alert_cols = {r[1] for r in con.execute("PRAGMA table_info(alert)")}
+    alert_migrations = {
+        "editorial_status": "TEXT",
+        "editorial_packet_json": "TEXT",
+        "editorial_at": "TEXT",
+        "editorial_model": "TEXT",
+        "asset_path": "TEXT",
+    }
+    for name, decl in alert_migrations.items():
+        if name not in alert_cols:
+            con.execute(f"ALTER TABLE alert ADD COLUMN {name} {decl}")
     outcome_cols = {r[1] for r in con.execute("PRAGMA table_info(outcome_snapshot)")}
     outcome_migrations = {
         "likes": "INTEGER", "replies": "INTEGER", "reposts": "INTEGER", "quotes": "INTEGER",

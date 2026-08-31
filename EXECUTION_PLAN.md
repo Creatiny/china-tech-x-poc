@@ -1,10 +1,10 @@
-# China Tech X POC — Execution Plan v1.0
+# China Tech X POC — Execution Plan v1.1
 
 ## Authority
 
 Status: `APPROVED / ACTIVE`
 
-Top-level strategy authority: `PROJECT_SPEC.md` v2.0.
+Top-level strategy authority: `PROJECT_SPEC.md` v2.1.
 
 This file defines **how the current spec is executed**. If execution here conflicts with the strategy/spec, `PROJECT_SPEC.md` wins and this plan must be corrected.
 
@@ -262,3 +262,28 @@ If a high-quality inbound commercial opportunity appears earlier, it can be eval
 6. capture outcomes and follower snapshots;
 7. perform daily review and change no more than one growth variable;
 8. evaluate Day-3 KPI first, then Day 7/10/15/30.
+
+## 13. Feishu Publish-Packet Execution
+
+Do not send raw classifier output to the operator.
+
+For a new qualified candidate:
+
+1. deterministic rules remove obvious noise;
+2. generic/ambiguous candidates run a low-reasoning editorial gate without web search;
+3. obvious high-quality tech candidates or gate `PASS` candidates run final editorial enrichment with web verification/search as needed;
+4. final model selects `REPLY`, `POST`, or `SKIP`;
+5. `SKIP` is stored silently;
+6. `REPLY` requires a verified direct X status target and receives final paste-ready reply copy;
+7. `POST` receives final native-first copy, source kept separate, and an original editorial card when the model says a visual adds value;
+8. only `POST/REPLY` packets go to personal Feishu.
+
+Current quota-protection defaults:
+
+- low reasoning;
+- maximum 12 gate calls/day;
+- maximum 6 final/search calls/day;
+- maximum 180,000 logged model tokens/day as an internal proxy stop;
+- no OpenAI Platform API key or paid X API is introduced.
+
+If enrichment budget is exhausted, the item is held/error-recorded rather than degrading back to a raw Feishu signal.

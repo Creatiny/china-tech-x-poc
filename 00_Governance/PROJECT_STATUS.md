@@ -127,3 +127,22 @@ Human approval is required for:
 - material legal/platform-policy ambiguity.
 
 Ordinary implementation, source repairs backed by observed misses, GitHub PR/merge, tests, and runtime corrections proceed without repeated approval.
+
+## 2026-09-01 Feishu Publish-Packet Upgrade
+
+Operator feedback established that a raw P1 signal with source/search links still creates too much manual work. The production interface is therefore upgraded from raw alerting to **publish-ready personal Feishu packets**.
+
+Active contract:
+
+- raw candidates stay internal;
+- generic macro/geopolitical/general-China candidates must be filtered or editorially skipped;
+- ambiguous candidates may use a low-reasoning no-search Codex gate;
+- final candidates use the locally authenticated ChatGPT/Codex OAuth runtime for fact verification, `POST/REPLY/SKIP` selection, X-target search when relevant, and paste-ready humanized English copy;
+- only `POST/REPLY` is sent to personal Feishu;
+- `SKIP` is silent and persisted;
+- REPLY requires a verified direct X status URL;
+- POST keeps source URL separate from native-first final copy;
+- when a visual materially helps, the runtime generates an original editorial data card and sends the image after the text packet;
+- model calls/token proxies are logged and capped daily; no OpenAI Platform API key is introduced.
+
+The reported yuan/weak-demand Reuters alert is classified as a false positive and now deterministically drops because generic `China/Chinese` alone cannot satisfy curated-source entity-only qualification.

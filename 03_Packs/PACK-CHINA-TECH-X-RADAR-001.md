@@ -3,12 +3,12 @@
 ## Pack Header
 
 - Status: `APPROVED / ACTIVE / MVP-FIRST`
-- Version: `1.2`
+- Version: `1.3`
 - Priority: `P0`
 - Updated: `2026-08-31`
 - Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.2
-- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.2
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.3
+- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.3
 - Delivery repository: `Creatiny/china-tech-x-poc`
 - Runtime target: verified Mac mini
 - OPC: optional/deferred until business evidence justifies it
@@ -95,6 +95,23 @@ Deliver:
 Accept when one real test alert reaches the operator's mobile-capable channel.
 
 If no Feishu receive target exists, stop only for the minimum receiver/account input. Do not build a notification platform.
+
+
+### Slice 2.5 — Editorial Publishing Packet
+
+Deliver:
+
+- deterministic false-positive hardening so generic `China` alone cannot qualify entity-only Reuters items;
+- bounded ChatGPT OAuth/Codex editorial gate and final enrichment;
+- `POST / REPLY / SKIP` decision contract;
+- silent persisted `SKIP`;
+- verified direct X target requirement for `REPLY`;
+- final humanized English copy ready to paste;
+- personal Feishu publish packet formatting;
+- original editorial-card renderer and Feishu image upload/send path;
+- local model usage/call/token proxy logging and daily caps.
+
+Accept when a known macro false positive is suppressed, a real China Tech candidate produces a structured publish-ready packet, and visual upload works without a paid Platform API key.
 
 ### Slice 3 — Decision and Outcome Ledger
 

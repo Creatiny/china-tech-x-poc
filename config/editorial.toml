@@ -1,0 +1,20 @@
+# ChatGPT OAuth / Codex editorial enrichment. No Platform API key is used.
+enabled = true
+codex_path = "/Users/jh/.codex/plugins/.plugin-appserver/codex"
+model = "gpt-5.6-luna"
+reasoning_effort = "low"
+call_timeout_seconds = 90
+
+# Protect the user's ChatGPT quota. These are call/token proxy limits, not billed-API limits.
+max_gate_calls_per_day = 12
+max_final_calls_per_day = 6
+max_tokens_per_day = 180000
+
+# Obvious high-quality specific tech signals skip the cheap model gate and go straight to final enrichment.
+direct_final_min_score = 10
+
+# Only POST/REPLY editorial packets are sent. SKIP is stored silently.
+send_skip_to_feishu = false
+
+# Visual policy: replies default to no image; POST may receive an original editorial data card.
+render_editorial_cards = true

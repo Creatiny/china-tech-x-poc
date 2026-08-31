@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v2.0
+# China Tech X POC — Canonical Project Spec v2.1
 
 ## 0. Authority
 
@@ -299,3 +299,33 @@ The 30-day POC succeeds when:
 5. the runtime reliably discovers and personally alerts timely opportunities without paid X data or automated publishing.
 
 The POC is a **growth-mechanism validation**, not the final monetization milestone.
+
+## 15. Feishu Publishing Packet Contract
+
+Personal Feishu is a **publishing-decision surface**, not a raw signal dump.
+
+Raw P0/P1 candidates remain internal until they pass editorial enrichment. The production pipeline is:
+
+```text
+rules/relevance candidate
+ -> low-cost editorial gate where needed
+ -> ChatGPT OAuth/Codex final verification + editorial decision
+ -> SKIP silently OR produce POST/REPLY packet
+ -> personal Feishu only
+```
+
+Every Feishu publishing packet must contain:
+
+- direct recommendation: `POST` or `REPLY`;
+- short reason;
+- urgency;
+- verified direct X target for `REPLY` (otherwise it may not recommend REPLY);
+- final conversational English copy ready to paste;
+- source URL separate from main POST copy;
+- explicit visual decision;
+- when useful for POST, an attached original editorial data card using verified facts;
+- concise publish note.
+
+`SKIP` decisions are stored but not pushed to the operator. Macro/politics/general-China items without a material technology angle must not become publishing packets.
+
+The enrichment layer uses the existing locally authenticated ChatGPT/Codex runtime, not an OpenAI Platform API key. Low reasoning and daily call/token proxy caps are mandatory to avoid uncontrolled ChatGPT quota consumption. Model usage is logged locally and visible in runtime status.

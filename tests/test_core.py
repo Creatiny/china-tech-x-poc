@@ -10,6 +10,7 @@ from china_tech_x_radar.db import connect, insert_signal, iso
 from china_tech_x_radar.sources import parse_feed
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
+from china_tech_x_radar.alerts import format_publish_packet
 
 
 class CoreTests(unittest.TestCase):
@@ -131,6 +132,31 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertEqual(out["priority"], "P1")
         self.assertEqual(out["topic"], "china_tech")
+
+
+    def test_curated_source_does_not_promote_generic_china_only(self):
+        item = {"title": "China reins in rising yuan as weak domestic demand clouds outlook", "excerpt": "macro currency demand", "published_at": datetime.now(timezone.utc)}
+        source = {"china_focused": False, "source_weight": 5, "allow_entity_only": True, "default_topic": "china_tech"}
+        rules = {
+            "china_entities": ["china", "chinese", "wingtech", "nexperia"], "topic_terms": ["ai", "semiconductor", "chip", "robot", "ev"],
+            "high_impact_terms": ["million"], "noise_terms": [], "p0_max_age_minutes": 30,
+            "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        out = classify(item, source, rules)
+        self.assertEqual(out["priority"], "DROP")
+
+    def test_feishu_publish_packet_is_copy_ready(self):
+        text = format_publish_packet(
+            {"id": 9, "canonical_url": "https://example.com/source"},
+            {"decision": "POST", "confidence": 0.91, "reason": "Strong China AI result", "final_copy": "Human-ready final copy.",
+             "source_url": "https://example.com/source", "angle_type": "CHINA_CONTEXT", "urgency_minutes": 90,
+             "publish_note": "Publish now.", "image_mode": "NONE"},
+            has_asset=False,
+        )
+        self.assertIn("结论：发 ORIGINAL POST", text)
+        self.assertIn("【最终文案｜直接复制】", text)
+        self.assertIn("Human-ready final copy.", text)
+        self.assertIn("来源：https://example.com/source", text)
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

@@ -62,10 +62,14 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     published = item.get("published_at")
     age = _age_minutes(published, now)
 
+    generic_entities = {"china", "chinese"}
+    specific_entities = [e for e in entities if e.casefold() not in generic_entities]
+    entity_only_ok = bool(source.get("allow_entity_only")) and bool(specific_entities)
+
     if noise:
         priority = "DROP"
         reason = f"noise:{noise[0]}"
-    elif not topics and not (bool(source.get("allow_entity_only")) and entities):
+    elif not topics and not entity_only_ok:
         priority = "DROP"
         reason = "no_tech_topic_match"
     elif not bool(source.get("china_focused")) and not entities:
@@ -92,7 +96,6 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
             bits.append("impact=" + high[0])
         reason = "; ".join(bits)
 
-    generic_entities = {"china", "chinese"}
     # For target search, title entities outrank entities mentioned only in article body/context.
     entity = next((e for e in title_entities if e.casefold() not in generic_entities), None)
     if entity is None and title_entities:
@@ -101,7 +104,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     generic_topics = {"ai", "model"}
     topic_pool = title_topics or topics
     topic = next((t for t in topic_pool if t.casefold() not in generic_topics), topic_pool[0] if topic_pool else None)
-    if topic is None and bool(source.get("allow_entity_only")) and entities:
+    if topic is None and entity_only_ok:
         topic = str(source.get("default_topic") or "china_tech")
     return {
         "priority": priority,

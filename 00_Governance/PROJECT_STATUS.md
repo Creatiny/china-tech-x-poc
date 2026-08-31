@@ -2,19 +2,21 @@
 
 ## Status Timestamp
 
-2026-08-30
+2026-08-31
 
 ## Current Phase
 
-Canonical Radar Pack is active; external OPC intake is accepted but runtime execution is blocked by the current MomentGrid Stability Gate and repository-local mission authority.
+`BUSINESS_VALIDATION_FIRST / MAC_FACT_AUDIT_COMPLETE / MVP_BUILD_READY`
+
+The prior `EXECUTION_BLOCKED` state caused by MomentGrid Stability Gate and external-pack intake is superseded by CP-002. OPC is no longer a prerequisite for the China Tech business experiment.
 
 ## Current Objective
 
-Build and validate a source-diverse, time-sensitive China Tech opportunity radar that reliably produces actionable X reply opportunities while keeping daily human operation within 30 minutes.
+Launch the smallest reliable signal -> mobile alert -> human reply -> outcome evidence loop on the Mac mini, then run seven consecutive valid days before adding infrastructure.
 
-## Verified Baseline
+## Business Baseline
 
-Latest Eden-connected account snapshot available during the strategy review:
+Latest Eden-connected provisional snapshot available before this correction:
 
 - X account: `@KennyChinaTech`
 - Followers: 4
@@ -25,75 +27,81 @@ Latest Eden-connected account snapshot available during the strategy review:
 - Shares: 0
 - Total engagements: 2
 
-Data-quality caveat: Eden previously reported incomplete X imports and Analytics inconsistencies. This snapshot is a provisional baseline, not a complete source of truth.
+Eden previously reported incomplete imports and Analytics inconsistencies, so this is a weak baseline. Native X-visible outcomes should be recorded during the experiment whenever available.
 
-## Canonical and OPC Binding
+## Mac mini Fact Audit Summary
 
-- Canonical Radar strategy merged to `main`: `d5f6b41182aff0dc927c5f47c886d3d90f95a86d`.
-- Active pack: `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md`.
-- Active pack SHA-256 at that commit: `b0a8585eb64dd953dd1e533ffe241011b7bf9eb5543ab32175e3784e41453f43`.
-- MomentGrid intake: `Creatiny/momentgrid#121`.
-- Intake state: `ACCEPTED / EXECUTION_BLOCKED`.
-- Mac mini fact audit state: `NOT_DISPATCHED`.
-- Paid X API spend: `$0`.
-- Chargeable X API requests: `0`.
-- Automatic X publishing: disabled.
+| Capability | Verified state | MVP decision |
+|---|---|---|
+| MacDeveloperBridge MCP | Running, full-access bridge available, launchd autostart present | Use for direct implementation/inspection when needed |
+| Git / GitHub CLI | Available; GitHub account authenticated | Use |
+| Python | 3.14.7 and 3.12 available; `uv` available | Use native Python |
+| Node / pnpm | Node 22.23.1; pnpm 10.33.2 | Available but not required |
+| SQLite | Available locally | Use |
+| launchd | Available and already used by multiple services | Use for 5-minute polling |
+| cloudflared | Installed; MCP tunnel running | Keep existing; not required in signal path |
+| Docker / Colima | Installed; current Colima VM fails to start | Do not repair for MVP |
+| TrendRadar | Installed; data exists through 2026-08-30; current source set is mostly Vietnam/Laos/general; no active launchd job after restart | Optional later; do not block MVP |
+| Horizon | Not found | Ignore for MVP |
+| Feishu | App ID/secret references exist; receive target not found/verified | Preferred alert path after receive target smoke test |
+| Existing notification worker | Broken path and configured `dry-run` | Do not reuse as-is |
+| Background Chrome automation | Offline | Do not block MVP; direct X resolver deferred |
+| GitHub Actions runner | Repo-scoped runner exists for `arbitrage-os` | Do not reuse/assume |
+| MLX / mlx-lm | Installed; no China Tech model route verified | Do not use in MVP |
+| MomentGrid OPC | Dispatcher running on Mac | Optional; not an MVP dependency |
 
-The existing MomentGrid Command Bus and trusted Mac execution path were independently proven responsive by a focused stability-repair mission (`Creatiny/momentgrid#123`), which received real `ACKED` and `RUNNING` receipts. Its generated Plan Gate was bound to the wrong legacy Delivery Loop authority and omitted part of the requested file scope, so the gate was rejected fail-closed and the run completed as cancelled. No writer, verifier, repository mutation, Radar task, or Mac mini fact audit was executed by that rejected run.
+Detailed evidence: `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md`.
 
 ## Active Experiment
 
-### EXP-001 — Zero-New-Spend China Tech Radar Shadow Test
+### EXP-001 — Zero-New-Spend Business Validation Shadow Test
 
-Status: `BLOCKED_BEFORE_BUILD`
+Status: `READY_FOR_MVP_BUILD / SHADOW_CLOCK_NOT_STARTED`
 
-Execution pack: `PACK-CHINA-TECH-X-RADAR-001`
+The seven-day clock starts only after:
 
-Planned test sequence:
+1. at least one live free source completes end-to-end ingestion;
+2. exact dedupe works across repeated polls;
+3. a real mobile-capable alert reaches the operator;
+4. the operator decision/outcome ledger can be written;
+5. paid-X and auto-publish guards are confirmed.
 
-1. Mac mini fact audit.
-2. Foundation-source ingestion and normalization.
-3. Deduplication and event clustering.
-4. Opportunity scoring and alert delivery.
-5. Human feedback and outcome capture.
-6. Seven consecutive days of Shadow Test evidence.
-7. Recommendation on whether the blocked X API pilot is justified.
+A web inbox, OPC, Docker, model scoring, Horizon, and direct X API access are not entry criteria.
 
-The Shadow Test has not started. Its seven-day clock must not begin until runtime readiness and notification delivery are verified.
+## Active Pack
 
-## Pack Status
+`03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` v1.1 — `APPROVED / ACTIVE / MVP-FIRST`
 
-| Pack | Status | Execution |
-|---|---|---|
-| `PACK-CHINA-TECH-X-RADAR-001` | `APPROVED / ACTIVE` | Canonical and accepted by the OPC intake; execution is blocked before the first Mac audit |
-| `PACK-CHINA-TECH-X-XAPI-PILOT-001` | `BLOCKED` | No purchase, chargeable request, credential setup that creates spend, or live stream connection |
+The existing X API pilot remains `BLOCKED` with authorized spend `$0` and chargeable calls `0`.
 
-## Decisions
+## Current Known Gaps
 
-- Eden is retained as a Research/Memory Layer, not the sole discovery or realtime-growth system.
-- Horizon, TrendRadar, RSS, and GitHub are the foundation information-source classes.
-- Reply opportunity quality and timeliness take priority over mandatory output quotas.
-- Original posts are conditional; no daily original-post minimum remains.
-- Existing MomentGrid OPC is the control plane; no OPC copy is created in this repository.
-- Radar runtime remains an independent data plane so monitoring does not stop when the OPC control plane is unavailable.
-- Human publishing remains mandatory.
-- Paid X API activity remains blocked until a separate evidence-backed budget gate.
-- An external-pack adapter must not be silently added while MomentGrid's architecture freeze remains active; it requires the existing Stability Gate to pass or a separate explicit architecture decision.
-
-## Current Blockers
-
-1. MomentGrid's current mission runtime, authority reader, worktrees, verifier, and promoter are scoped to the `Creatiny/momentgrid` checkout. They cannot yet safely consume and mutate an exact pack from `Creatiny/china-tech-x-poc`.
-2. The current mission-to-Delivery compatibility adapter generated a Plan Gate with legacy `PACK-OPC-DELIVERY-LOOP-001` source references instead of the focused Stability authority. This gate-integrity defect was rejected rather than approved.
-3. MomentGrid remains under its Stability Gate / architecture-freeze decision. The known deterministic verifier-environment defect must be repaired and the Stability Pack completed before adding a nonessential external-repository control-plane adapter, unless the owner explicitly changes that architecture decision.
-4. Because the first Mac audit has not run, Horizon, TrendRadar, runner/agent paths, notification credentials, services, data paths, and model routes remain unverified.
+1. No China Tech-specific runtime has yet been implemented in this repository.
+2. No mobile receive target has been verified. Feishu application credentials exist, but the operator receive ID/chat ID/webhook is not present in the inspected configuration.
+3. Direct X target-post discovery is not automated. The MVP may send a source link plus an X live-search link; only a verified direct target counts as an executable reply opportunity.
+4. The current TrendRadar configuration is not China Tech-focused and its Docker/Colima runtime is unhealthy after restart.
+5. The exact source allowlist and entity/topic rules still need to be tuned for China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global-business impact.
 
 ## Next Executable Sequence
 
-1. Repair and verify the existing MomentGrid deterministic verifier environment under its current Stability requirements.
-2. Complete or explicitly change the MomentGrid Stability Gate decision.
-3. Implement and independently verify a minimal exact-commit/exact-pack-hash external-pack intake adapter without arbitrary remote shell access.
-4. Re-read the latest China Tech canonical and supersede the intake if its commit or active-pack hash changed.
-5. Dispatch `OPC-CTXR-001 — Mac mini Fact Audit` first and require real Command Bus `ACKED` plus `RUNNING` or terminal evidence.
-6. Continue the active Radar pack only after the fact audit establishes the actual Mac mini state.
+1. Implement one native Python `run_cycle` with RSS/Atom + GitHub adapters, SQLite exact dedupe, deterministic filtering, and structured logs.
+2. Add a small China Tech source allowlist and entity/topic rules; do not attempt broad platform coverage yet.
+3. Implement Feishu alert delivery behind configuration. If no valid receive target can be obtained from existing credentials, use one explicitly approved alternative mobile webhook rather than building a notification platform.
+4. Add a one-command/manual decision and outcome recorder; no web UI yet.
+5. Run a real end-to-end smoke: live source -> stored signal -> qualified alert -> mobile delivery -> manual decision record.
+6. Start the seven-day Shadow Test immediately after the smoke passes.
+7. At day seven, decide from evidence whether the next bottleneck is source coverage, direct X target discovery, scoring quality, operator workflow, or account/content strategy.
+8. Only then decide whether to repair TrendRadar/Colima, add model scoring, add a web inbox, use Eden more heavily, pilot paid X-native data, or reconnect OPC.
 
-Until step 5 occurs, the accurate status is: PACK written and active, OPC intake accepted, Mac mini Radar execution not started.
+## Stop Gates
+
+The current MVP stops for human input only when it needs:
+
+- a requirement or architecture boundary change;
+- paid spend or a chargeable API;
+- automatic publishing authority;
+- a missing account secret/receiver identity that cannot be derived safely;
+- a destructive/irreversible external action;
+- a material platform-policy ambiguity.
+
+MomentGrid/OPC availability is explicitly not a stop gate for the business experiment.

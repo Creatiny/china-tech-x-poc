@@ -1,14 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "deliveryRepository": "Creatiny/china-tech-x-poc",
   "controlPlaneRepository": "Creatiny/momentgrid",
+  "opcRequiredForBusinessValidation": false,
   "canonicalCommit": "<TARGET_CANONICAL_COMMIT>",
   "activePackPath": "03_Packs/PACK-CHINA-TECH-X-RADAR-001.md",
   "activePackSha256": "<PACK_SHA256>",
-  "firstTaskPath": "04_OPC/OPC-CTXR-001-MAC-MINI-FACT-AUDIT.md",
   "xApiPackPath": "03_Packs/PACK-CHINA-TECH-X-XAPI-PILOT-001.md",
   "xApiPackStatus": "BLOCKED",
   "paidXApiAuthorizedUsd": 0,
   "autoPublishAuthorized": false,
-  "dispatchStatus": "READY_AFTER_CANONICAL_MERGE"
+  "dispatchStatus": "DEFERRED_UNTIL_BUSINESS_EVIDENCE_JUSTIFIES_OPC"
 }

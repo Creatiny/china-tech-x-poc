@@ -7,8 +7,8 @@ call_timeout_seconds = 90
 
 # Protect the user's ChatGPT quota. These are call/token proxy limits, not billed-API limits.
 max_gate_calls_per_day = 12
-max_final_calls_per_day = 6
-max_tokens_per_day = 180000
+max_final_calls_per_day = 10
+max_tokens_per_day = 240000
 
 # Obvious high-quality specific tech signals skip the cheap model gate and go straight to final enrichment.
 direct_final_min_score = 10

@@ -282,8 +282,8 @@ Current quota-protection defaults:
 
 - low reasoning;
 - maximum 12 gate calls/day;
-- maximum 6 final/search calls/day;
-- maximum 180,000 logged model tokens/day as an internal proxy stop;
+- maximum 10 final/search calls/day;
+- maximum 240,000 logged model tokens/day as an internal proxy stop;
 - no OpenAI Platform API key or paid X API is introduced.
 
 If enrichment budget is exhausted, the item is held/error-recorded rather than degrading back to a raw Feishu signal.

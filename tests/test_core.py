@@ -12,7 +12,7 @@ from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy
-from china_tech_x_radar.editorial import _reserve_model_call, model_usage_today
+from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today
 
 
 class CoreTests(unittest.TestCase):
@@ -236,6 +236,22 @@ class CoreTests(unittest.TestCase):
             self.assertTrue(c1)
             self.assertFalse(c2)
             self.assertEqual(con.execute("select count(*) from signal").fetchone()[0], 1)
+
+    def test_language_gate_rejects_ai_template_reply(self):
+        packet = {
+            "decision": "REPLY",
+            "final_copy": "The bigger signal is that China's supply chain is changing. This suggests that the market will follow.",
+        }
+        violations = language_gate_violations(packet)
+        self.assertTrue(any(v.startswith("banned_phrase:the bigger signal") for v in violations))
+        self.assertTrue(any(v.startswith("banned_phrase:this suggests that") for v in violations))
+
+    def test_language_gate_accepts_short_conversational_reply(self):
+        packet = {
+            "decision": "REPLY",
+            "final_copy": "CXMT still hasn't shared yields or stack capacity. If qualification goes well, commercial shipments could start in 2027.",
+        }
+        self.assertEqual(language_gate_violations(packet), [])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Daily Runbook v2.0
 
-Authority: `PROJECT_SPEC.md` v2.2 and `EXECUTION_PLAN.md` v1.2.
+Authority: `PROJECT_SPEC.md` v2.3 and `EXECUTION_PLAN.md` v1.2.
 
 ## Daily Objective
 
@@ -51,13 +51,23 @@ Publish an original when there is:
 
 Track link/no-link and media treatment as formula variables.
 
-## 5. Human Publish
+## 5. Mandatory Language Gate
+
+Before showing any paste-ready Reply or Original Post to the operator, apply `PROJECT_SPEC.md` Section 17.
+
+- Reply: direct response to the target claim, 1–3 short sentences, normally <=80 words.
+- Original: strongest fact first, 2–5 short paragraphs, normally <=130 words.
+- Reject banned template phrases, report/analyst tone, generic filler, forced contrast, and em-dash-heavy prose.
+- Rewrite once when the draft fails.
+- If it still fails, store `SKIP`; do not send the publishing packet.
+
+## 6. Human Publish
 
 Publishing remains manual on X. No automatic reply/post/DM is authorized.
 
 After publishing, return the X URL to ChatGPT when practical so the action can be linked to the stored signal and formula record.
 
-## 6. Outcome Capture
+## 7. Outcome Capture
 
 Capture public/native outcomes as available:
 
@@ -69,7 +79,7 @@ Capture public/native outcomes as available:
 
 Unknowns remain null, never zero.
 
-## 7. Daily KPI + Formula Review
+## 8. Daily KPI + Formula Review
 
 Review:
 
@@ -84,7 +94,7 @@ Review:
 
 Then choose **at most one growth variable** to change/bias the next day and, if necessary, one measurement repair.
 
-## 8. Milestone Reviews
+## 9. Milestone Reviews
 
 Use `OPERATING_KPI.md` for Day 3 / 7 / 10 / 15 / 30 gates.
 
@@ -104,7 +114,7 @@ signal quality/coverage
 
 Do not add infrastructure unless the failed stage is actually an infrastructure bottleneck.
 
-## 9. Growth Formula Evidence
+## 10. Growth Formula Evidence
 
 Use `GROWTH_FORMULA.md`.
 

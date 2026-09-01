@@ -13,6 +13,25 @@ from typing import Any
 
 GENERIC_ENTITIES = {"china", "chinese"}
 
+BANNED_AI_PHRASES = (
+    "one caveat",
+    "one data caveat",
+    "the bigger signal",
+    "the bigger question",
+    "what caught my eye",
+    "worth noting",
+    "it is worth noting",
+    "this suggests that",
+    "this points to",
+    "the key test is",
+    "the key test is not",
+    "this isn't just",
+    "this is not just",
+    "in other words",
+    "the real story",
+    "one concrete datapoint missing",
+)
+
 
 def load_editorial_config(root: Path) -> dict[str, Any]:
     with (root / "config" / "editorial.toml").open("rb") as f:
@@ -168,6 +187,26 @@ Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}'''
 
 
+def language_gate_violations(packet: dict[str, Any]) -> list[str]:
+    decision = str(packet.get("decision") or "").upper()
+    if decision not in {"REPLY", "POST"}:
+        return []
+    copy = str(packet.get("final_copy") or "").strip()
+    if not copy:
+        return ["missing_copy"]
+
+    lowered = copy.casefold()
+    violations = [f"banned_phrase:{phrase}" for phrase in BANNED_AI_PHRASES if phrase in lowered]
+    word_count = len(re.findall(r"\b[\w’'-]+\b", copy))
+    max_words = 80 if decision == "REPLY" else 130
+    if word_count > max_words:
+        violations.append(f"too_long:{word_count}>{max_words}")
+    if copy.count("—") > 1:
+        violations.append("em_dash_heavy")
+    if re.search(r"(?im)^\s*(reply|post|analysis|takeaway|conclusion)\s*:", copy):
+        violations.append("label_inside_copy")
+    return violations
+
 def final_prompt(signal: dict[str, Any]) -> str:
     return f'''You are the final editorial operator for @KennyChinaTech, an English X account in Stage A (4->100 followers). Positioning: China Tech Intelligence — China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global implications of China technology.
 
@@ -189,7 +228,11 @@ Decision rules:
 - POST when the event deserves owned distribution and no better live target is verified.
 - SKIP when weak, late, off-positioning, duplicative, or there is no differentiated angle.
 
-If REPLY or POST, write FINAL English copy ready to paste into X. Make it conversational, concise, specific and human. No AI clichés, no headings inside the copy, no generic praise, no filler, no forced hashtags, no em-dash-heavy prose. Add a concrete China-specific fact, comparison, technical explanation, data point, or second-order global implication. Do not overclaim.
+If REPLY or POST, write FINAL English copy ready to paste into X and obey PROJECT_SPEC.md Section 17 as a mandatory gate. Sound like a knowledgeable person joining a conversation, never a report, press release, analyst note, or AI summary. Lead with the reaction or strongest fact. Use short ordinary words, natural contractions, one main point, and at most two supporting facts. No headings, labels, generic praise, filler, forced hashtags, formal conclusion, forced cleverness, repeated template structure, or more than one em dash.
+
+REPLY must answer the target post's exact claim, read as a continuation of the conversation, use 1-3 short sentences, and stay at or below 80 words. POST must put the strongest fact first, use 2-5 short paragraphs, and stay at or below 130 words.
+
+Never use these default phrases: "One caveat", "One data caveat", "The bigger signal", "The bigger question", "What caught my eye", "Worth noting", "It is worth noting", "This suggests that", "This points to", "The key test is", "The key test is not", "This isn't just", "This is not just", "In other words", "The real story", or "One concrete datapoint missing". Avoid contrived "X is new. Y isn't." and repeated "not X, but Y" framing. Read the copy aloud mentally and rewrite it before returning JSON if it does not sound natural. Add a concrete China-specific fact, correction, comparison, technical explanation, data point, or useful global implication. Do not overclaim.
 
 For POST, keep the main copy native-first; do NOT put the source URL in final_copy. Provide source_url separately.
 For REPLY, target_url must be a verified direct X status URL; if you cannot verify one, do not return REPLY.
@@ -216,4 +259,13 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"
     packet["decision"] = decision
+    violations = language_gate_violations(packet)
+    if violations:
+        return {
+            "decision": "SKIP",
+            "confidence": packet.get("confidence"),
+            "reason": "language_gate_failed:" + ",".join(violations),
+            "source_url": packet.get("source_url"),
+            "gate": packet,
+        }
     return packet

@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v2.2
+# China Tech X POC — Canonical Project Spec v2.3
 
 ## 0. Authority
 
@@ -357,3 +357,80 @@ P1 is curated rather than streamed. During Stage A, P1 operator notifications ar
 This notification policy is intentionally aligned with Stage-A output goals: roughly 3–5 strategic replies/day and ~1 original/day when qualified material exists.
 
 Model-quota enforcement must be atomic. Each Codex gate/final call reserves a call/token allowance in SQLite before execution, preventing overlapping runs from overshooting the configured daily budget. Budget accounting is revision-scoped so a new policy can start cleanly while old usage remains auditable.
+
+## 17. Mandatory Human Voice Standard for Replies and Original Posts
+
+This section is a **publishing gate**, not a writing preference. Every model, ChatGPT session, agent, runtime prompt, and human-facing publishing packet must apply it before recommending `REPLY` or `POST`.
+
+### 17.1 Shared voice rules
+
+All final English copy must:
+
+- sound like a knowledgeable person joining an X conversation, not a report, press release, research memo, or AI summary;
+- lead with the actual reaction, fact, or point; no scene-setting introduction;
+- use short, ordinary words and natural contractions where they fit;
+- make one main point, supported by no more than two useful facts;
+- keep attribution and uncertainty clear without adding policy-style disclaimers;
+- remove anything that does not help the reader understand or respond;
+- contain no heading, label, bullet list, process note, source note, or explanation inside the paste-ready copy;
+- avoid forced cleverness, symmetrical contrast, rhetorical flourish, and repeated house templates;
+- pass the read-aloud test: it should sound natural if said to another informed person.
+
+### 17.2 Reply rules
+
+A Reply must:
+
+- respond directly to the exact claim in the target post;
+- read as a continuation of that conversation, not a standalone mini-essay;
+- add one specific China-side fact, correction, comparison, or useful implication;
+- normally use 1–3 short sentences and no more than 80 words;
+- avoid repeating the original post before adding value;
+- avoid generic agreement, praise, throat-clearing, and formal conclusion sentences.
+
+### 17.3 Original Post rules
+
+An Original Post must:
+
+- open with the most interesting verified fact or a plain-spoken observation;
+- explain why it matters in direct language;
+- normally use 2–5 short paragraphs and no more than 130 words;
+- include only the numbers needed to support the point;
+- avoid sounding like a newswire summary, company announcement, or analyst note;
+- keep source links outside the main copy under the existing publishing-packet contract.
+
+### 17.4 Banned default phrases and structures
+
+The following phrases are banned unless the human owner explicitly asks for one in a specific draft:
+
+- `One caveat...`
+- `One data caveat...`
+- `The bigger signal...`
+- `The bigger question...`
+- `What caught my eye...`
+- `Worth noting...` / `It is worth noting...`
+- `This suggests that...`
+- `This points to...`
+- `The key test is...` / `The key test is not...`
+- `This isn't just...` / `This is not just...`
+- `In other words...`
+- `The real story...`
+- `One concrete datapoint missing...`
+
+Also prohibited by default:
+
+- contrived `X is new. Y isn't.` constructions;
+- repeated `not X, but Y` framing;
+- more than one em dash in a draft;
+- three-part rhetorical lists written for cadence rather than clarity;
+- generic endings that merely restate the previous sentence.
+
+### 17.5 Enforcement
+
+Before a `REPLY` or `POST` packet is sent to the operator:
+
+1. check the copy against Sections 17.1–17.4;
+2. rewrite it if any rule fails;
+3. run the check again;
+4. if it still fails, return `SKIP` and do not send a publishing packet.
+
+A fluent factual draft that fails this voice gate is **not publish-ready**. Daily reviews may identify new repetitive AI-like phrases; once confirmed by the human owner, they must be added to this section and to the runtime language gate.

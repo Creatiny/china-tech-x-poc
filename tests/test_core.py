@@ -158,6 +158,33 @@ class CoreTests(unittest.TestCase):
         self.assertIn("Human-ready final copy.", text)
         self.assertIn("来源：https://example.com/source", text)
 
+
+    def test_generic_funding_or_release_are_not_tech_topics(self):
+        source = {"china_focused": True, "source_weight": 4}
+        rules = {
+            "china_entities": ["china", "chinese"],
+            "topic_terms": ["ai", "chip", "robot", "ipo", "raises", "launch"],
+            "high_impact_terms": ["funding", "release"], "noise_terms": [],
+            "p0_max_age_minutes": 30, "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        movie = {"title": "Can Chinese sleeper hit Dear You conquer the US box office next? release", "excerpt": "", "published_at": datetime.now(timezone.utc)}
+        university = {"title": "US university settlement over China ties funding disclosure", "excerpt": "", "published_at": datetime.now(timezone.utc)}
+        self.assertEqual(classify(movie, source, rules)["priority"], "DROP")
+        self.assertEqual(classify(university, source, rules)["priority"], "DROP")
+
+    def test_chinese_tech_entity_and_topic_can_qualify_non_china_focused_feed(self):
+        source = {"china_focused": False, "source_weight": 4}
+        rules = {
+            "china_entities": ["华为", "宇树", "昇腾"],
+            "topic_terms": ["ai", "大模型", "机器人", "芯片"],
+            "high_impact_terms": ["采购", "量产"], "noise_terms": [],
+            "p0_max_age_minutes": 30, "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        item = {"title": "范式智能采购华为昇腾 950，用于 AI 大模型落地", "excerpt": "", "published_at": datetime.now(timezone.utc)}
+        out = classify(item, source, rules)
+        self.assertIn(out["priority"], {"P0", "P1"})
+        self.assertGreaterEqual(out["score"], 7)
+
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "x.db")

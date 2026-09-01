@@ -72,3 +72,15 @@ source_weight = 5
 allow_entity_only = true
 default_topic = "china_tech"
 enabled = true
+
+[[source]]
+id = "ithome"
+kind = "rss"
+name = "IT之家"
+url = "https://www.ithome.com/rss/"
+poll_minutes = 5
+china_focused = false
+source_weight = 4
+require_title_entity = true
+require_title_topic = true
+enabled = true

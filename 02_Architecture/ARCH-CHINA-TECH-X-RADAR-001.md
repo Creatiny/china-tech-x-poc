@@ -3,10 +3,10 @@
 ## 1. Architecture Metadata
 
 - Status: `APPROVED`
-- Version: `1.3`
+- Version: `1.4`
 - Date: `2026-08-31`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.3
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.3
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.4
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.4
 - Change proposals: `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
 
 ## 2. Architecture Principle
@@ -286,3 +286,14 @@ MomentGrid remains a possible external delivery/governance control plane. It is 
 ## 9. Paid X Boundary
 
 No component in this architecture may create a chargeable X read/stream or publish automatically. The separate X API pilot remains blocked behind its existing exact budget gate.
+
+### 5.10 Operator notification policy
+
+Editorial enrichment and Feishu delivery are separate gates. A publishable packet is evaluated by `priority × decision × confidence × score × daily-slot` policy before it reaches Feishu.
+
+- P0 passes immediately after the P0 confidence floor.
+- P1 POST/REPLY uses stricter thresholds and daily caps.
+- rejected-by-policy publishable candidates become `EDITORIAL_HOLD` with the packet preserved.
+- Feishu formatting includes the priority in the first line.
+
+Codex quota enforcement uses an SQLite `BEGIN IMMEDIATE` reservation before each call. The reservation records a policy revision and estimated token allocation; the row is updated with actual usage after completion. This prevents budget races and preserves audit evidence.

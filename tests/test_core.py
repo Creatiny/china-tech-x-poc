@@ -11,6 +11,8 @@ from china_tech_x_radar.sources import parse_feed
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
+from china_tech_x_radar.runner import notification_policy
+from china_tech_x_radar.editorial import _reserve_model_call, model_usage_today
 
 
 class CoreTests(unittest.TestCase):
@@ -184,6 +186,40 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertIn(out["priority"], {"P0", "P1"})
         self.assertGreaterEqual(out["score"], 7)
+
+
+    def test_p0_packet_header_is_visible(self):
+        text = format_publish_packet(
+            {"id": 77, "priority": "P0", "title": "Major China AI event", "canonical_url": "https://example.com"},
+            {"decision": "POST", "confidence": 0.9, "reason": "High priority", "final_copy": "Copy", "urgency_minutes": 30,
+             "source_url": "https://example.com", "angle_type": "CHINA_CONTEXT", "publish_note": "Publish now."},
+            has_asset=False,
+        )
+        self.assertTrue(text.startswith("【🔥 P0｜POST｜立即】"))
+        self.assertIn("级别：P0｜最高优先级", text)
+
+    def test_p1_post_daily_slot_throttles_second_packet(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "policy.db")
+            now = iso()
+            cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", ('1'*64,'s','S','rss','T1',now,'P1',12,'r',now))
+            sid = cur.lastrowid
+            con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (sid,'P1',now,now,'SENT','READY','{"decision":"POST"}'))
+            con.commit()
+            cfg={"p1_min_confidence":0.88,"p1_post_min_score":10,"max_p1_post_packets_per_day":1,"max_p1_reply_packets_per_day":4}
+            allowed, reason = notification_policy(con,{"priority":"P1","score":12},{"decision":"POST","confidence":0.95},cfg)
+            self.assertFalse(allowed)
+            self.assertEqual(reason,"p1_post_daily_slot_used")
+
+    def test_atomic_budget_reservation_blocks_second_call(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "budget.db")
+            cfg={"budget_revision":"test-v2","max_gate_calls_per_day":1,"max_final_calls_per_day":1,"max_tokens_per_day":10000,"gate_token_reserve":1000,"final_token_reserve":5000}
+            rid=_reserve_model_call(con,cfg,"GATE","test-model")
+            self.assertGreater(rid,0)
+            self.assertEqual(model_usage_today(con,"test-v2")["gate_calls"],1)
+            with self.assertRaises(RuntimeError):
+                _reserve_model_call(con,cfg,"GATE","test-model")
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

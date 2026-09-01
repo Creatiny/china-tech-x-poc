@@ -3,13 +3,13 @@
 ## 1. Requirement Metadata
 
 - Status: `APPROVED`
-- Version: `1.3`
+- Version: `1.4`
 - Date: `2026-08-31`
 - Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
-- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.3
+- Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.4
 - Paid extension: `PACK-CHINA-TECH-X-XAPI-PILOT-001` (`BLOCKED`)
 
-Version 1.3 retains audience-first follower growth and repeatable growth-formula discovery the explicit business objective. Business validation remains independent of OPC, Docker, web UI, model scoring, Horizon, or paid X APIs.
+Version 1.4 retains audience-first follower growth and repeatable growth-formula discovery the explicit business objective. Business validation remains independent of OPC, Docker, web UI, model scoring, Horizon, or paid X APIs.
 
 ## 2. Product Goal
 
@@ -179,3 +179,12 @@ The Day-30 minimum follower target is 100 from a baseline of 4. If the target is
 - **FR-061**: When a POST benefits from a simple visual, the runtime may generate an original data/editorial card from verified facts and attach it to the personal Feishu packet; copyrighted source photography shall not be assumed reusable.
 - **FR-062**: Editorial enrichment shall use the existing locally authenticated ChatGPT/Codex OAuth runtime unless a later model-routing change is approved; no OpenAI Platform API key is required by this feature.
 - **FR-063**: Editorial model calls/tokens shall be locally logged and bounded by configurable daily caps.
+
+## 11. Priority Visibility and Notification Throttling — v1.4
+
+- **FR-064**: Every operator-facing Feishu publish packet shall show `P0` or `P1` in its first line.
+- **FR-065**: P0 packets shall be visually distinct and explicitly labeled highest priority.
+- **FR-066**: P1 packets shall be curated according to configurable confidence/score and per-day POST/REPLY caps; excess candidates shall be held silently rather than pushed.
+- **FR-067**: Current Stage-A defaults are maximum 1 P1 POST packet/day and 4 P1 REPLY packets/day; P1 REPLY requires a verified direct X target.
+- **FR-068**: Model quota checks shall atomically reserve call/token allowance before launching Codex so concurrent/overlapping runs cannot exceed configured call caps by race condition.
+- **FR-069**: Model usage shall retain budget-policy revision metadata so historical usage remains auditable after a quota-policy change.

@@ -23,14 +23,19 @@ def utc_date() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
 
-def model_usage_today(con: sqlite3.Connection) -> dict[str, int]:
+def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = None) -> dict[str, int]:
+    where = "usage_date=?"
+    params: list[Any] = [utc_date()]
+    if budget_revision is not None:
+        where += " AND budget_revision=?"
+        params.append(budget_revision)
     row = con.execute(
-        """SELECT COUNT(*) calls,
+        f"""SELECT COUNT(*) calls,
                   SUM(CASE WHEN purpose='GATE' THEN 1 ELSE 0 END) gate_calls,
                   SUM(CASE WHEN purpose='FINAL' THEN 1 ELSE 0 END) final_calls,
                   COALESCE(SUM(tokens_used),0) tokens
-           FROM model_usage WHERE usage_date=?""",
-        (utc_date(),),
+           FROM model_usage WHERE {where}""",
+        params,
     ).fetchone()
     return {
         "calls": int(row["calls"] or 0),
@@ -38,6 +43,37 @@ def model_usage_today(con: sqlite3.Connection) -> dict[str, int]:
         "final_calls": int(row["final_calls"] or 0),
         "tokens": int(row["tokens"] or 0),
     }
+
+
+def _reserve_model_call(con: sqlite3.Connection, cfg: dict[str, Any], purpose: str, model: str) -> int:
+    revision = str(cfg.get("budget_revision") or "legacy")
+    max_tokens = int(cfg.get("max_tokens_per_day", 180000))
+    max_calls = int(cfg.get("max_gate_calls_per_day" if purpose == "GATE" else "max_final_calls_per_day", 8 if purpose == "GATE" else 5))
+    reserve = int(cfg.get("gate_token_reserve" if purpose == "GATE" else "final_token_reserve", 6000 if purpose == "GATE" else 30000))
+    call_key = "gate_calls" if purpose == "GATE" else "final_calls"
+
+    # BEGIN IMMEDIATE makes the check+reservation atomic even if two launchd/manual runs overlap.
+    con.execute("BEGIN IMMEDIATE")
+    try:
+        usage = model_usage_today(con, revision)
+        if usage[call_key] >= max_calls or usage["tokens"] + reserve > max_tokens:
+            con.rollback()
+            raise RuntimeError(
+                f"editorial_budget_exhausted:{purpose}:revision={revision}:calls={usage[call_key]}/{max_calls}:tokens={usage['tokens']}+{reserve}/{max_tokens}"
+            )
+        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        cur = con.execute(
+            """INSERT INTO model_usage(usage_date,used_at,purpose,model,budget_revision,tokens_used,success,error)
+               VALUES(?,?,?,?,?,?,-1,NULL)""",
+            (utc_date(), now, purpose, model, revision, reserve),
+        )
+        reservation_id = int(cur.lastrowid)
+        con.commit()
+        return reservation_id
+    except Exception:
+        if con.in_transaction:
+            con.rollback()
+        raise
 
 
 def _parse_tokens(stderr: str) -> int | None:
@@ -71,38 +107,37 @@ def _run_codex(
     *,
     search: bool,
 ) -> dict[str, Any]:
-    usage = model_usage_today(con)
-    max_tokens = int(cfg.get("max_tokens_per_day", 180000))
-    max_calls = int(cfg.get("max_gate_calls_per_day" if purpose == "GATE" else "max_final_calls_per_day", 12 if purpose == "GATE" else 6))
-    used_calls = usage["gate_calls" if purpose == "GATE" else "final_calls"]
-    if usage["tokens"] >= max_tokens or used_calls >= max_calls:
-        raise RuntimeError(f"editorial_budget_exhausted:{purpose}:calls={used_calls}/{max_calls}:tokens={usage['tokens']}/{max_tokens}")
-
     codex = str(cfg.get("codex_path") or "/Users/jh/.codex/plugins/.plugin-appserver/codex")
     model = str(cfg.get("model") or "gpt-5.6-luna")
     effort = str(cfg.get("reasoning_effort") or "low")
     timeout = int(cfg.get("call_timeout_seconds", 90))
-    with tempfile.TemporaryDirectory(prefix="china-tech-editorial-") as td:
-        out_path = Path(td) / "last.json"
-        cmd = [codex]
-        if search:
-            cmd.append("--search")
-        cmd += [
-            "-a", "never", "exec", "--ignore-user-config", "--ignore-rules", "--ephemeral",
-            "--sandbox", "read-only", "-m", model, "-c", f'model_reasoning_effort="{effort}"',
-            "-C", str(root), "-o", str(out_path), prompt,
-        ]
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-        final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else proc.stdout
-        tokens = _parse_tokens(proc.stderr)
-        con.execute(
-            "INSERT INTO model_usage(usage_date,used_at,purpose,model,tokens_used,success,error) VALUES(?,?,?,?,?,?,?)",
-            (utc_date(), datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), purpose, model, tokens, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else proc.stderr[-1200:]),
-        )
+    reservation_id = _reserve_model_call(con, cfg, purpose, model)
+    try:
+        with tempfile.TemporaryDirectory(prefix="china-tech-editorial-") as td:
+            out_path = Path(td) / "last.json"
+            cmd = [codex]
+            if search:
+                cmd.append("--search")
+            cmd += [
+                "-a", "never", "exec", "--ignore-user-config", "--ignore-rules", "--ephemeral",
+                "--sandbox", "read-only", "-m", model, "-c", f'model_reasoning_effort="{effort}"',
+                "-C", str(root), "-o", str(out_path), prompt,
+            ]
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+            final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else proc.stdout
+            tokens = _parse_tokens(proc.stderr)
+            con.execute(
+                "UPDATE model_usage SET tokens_used=?,success=?,error=? WHERE id=?",
+                (tokens if tokens is not None else 0, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else proc.stderr[-1200:], reservation_id),
+            )
+            con.commit()
+            if proc.returncode != 0:
+                raise RuntimeError(f"codex_{purpose.lower()}_failed:{proc.stderr[-500:]}")
+            return _extract_json(final)
+    except Exception as exc:
+        con.execute("UPDATE model_usage SET success=0,error=? WHERE id=?", (f"{type(exc).__name__}: {exc}"[:1200], reservation_id))
         con.commit()
-        if proc.returncode != 0:
-            raise RuntimeError(f"codex_{purpose.lower()}_failed:{proc.stderr[-500:]}")
-        return _extract_json(final)
+        raise
 
 
 def _specific_entity_present(signal: dict[str, Any]) -> bool:
@@ -112,9 +147,12 @@ def _specific_entity_present(signal: dict[str, Any]) -> bool:
 
 
 def should_direct_final(signal: dict[str, Any], cfg: dict[str, Any]) -> bool:
+    # P1 must always pass the cheap gate; score alone must never create a flood of P1 publish packets.
+    if str(signal.get("priority") or "").upper() != "P0":
+        return False
     topic = str(signal.get("topic") or "").casefold()
     tech_topics = {"ai", "llm", "agent", "benchmark", "chip", "gpu", "semiconductor", "memory", "dram", "nand", "robot", "robotics", "humanoid", "ev", "battery", "autonomous"}
-    return int(signal.get("score") or 0) >= int(cfg.get("direct_final_min_score", 10)) and (topic in tech_topics or _specific_entity_present(signal))
+    return int(signal.get("score") or 0) >= int(cfg.get("p0_direct_final_min_score", 10)) and (topic in tech_topics or _specific_entity_present(signal))
 
 
 def gate_prompt(signal: dict[str, Any]) -> str:
@@ -133,6 +171,8 @@ Topic: {signal.get('topic') or 'unknown'}'''
 def final_prompt(signal: dict[str, Any]) -> str:
     return f'''You are the final editorial operator for @KennyChinaTech, an English X account in Stage A (4->100 followers). Positioning: China Tech Intelligence — China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global implications of China technology.
 
+Candidate priority: {signal.get('priority') or 'unknown'}
+Candidate priority: {signal.get('priority') or 'unknown'}
 Candidate:
 Title: {signal.get('title','')}
 Excerpt: {signal.get('excerpt','')}

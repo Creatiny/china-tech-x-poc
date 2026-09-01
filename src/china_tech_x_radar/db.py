@@ -169,6 +169,7 @@ def migrate(con: sqlite3.Connection) -> None:
             used_at TEXT NOT NULL,
             purpose TEXT NOT NULL,
             model TEXT NOT NULL,
+            budget_revision TEXT NOT NULL DEFAULT 'legacy',
             tokens_used INTEGER,
             success INTEGER NOT NULL,
             error TEXT
@@ -231,6 +232,9 @@ def migrate(con: sqlite3.Connection) -> None:
     for name, decl in alert_migrations.items():
         if name not in alert_cols:
             con.execute(f"ALTER TABLE alert ADD COLUMN {name} {decl}")
+    usage_cols = {r[1] for r in con.execute("PRAGMA table_info(model_usage)")}
+    if "budget_revision" not in usage_cols:
+        con.execute("ALTER TABLE model_usage ADD COLUMN budget_revision TEXT NOT NULL DEFAULT 'legacy'")
     outcome_cols = {r[1] for r in con.execute("PRAGMA table_info(outcome_snapshot)")}
     outcome_migrations = {
         "likes": "INTEGER", "replies": "INTEGER", "reposts": "INTEGER", "quotes": "INTEGER",

@@ -89,11 +89,24 @@ class FeishuSender:
 
 def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has_asset: bool) -> str:
     decision = str(packet.get("decision") or "SKIP").upper()
+    priority = str(signal.get("priority") or "P1").upper()
     urgency = int(packet.get("urgency_minutes") or 0)
+    action_short = "POST" if decision == "POST" else "REPLY"
     action_cn = "发 ORIGINAL POST" if decision == "POST" else "去目标帖 REPLY"
     confidence = packet.get("confidence")
+    if priority == "P0":
+        priority_head = "🔥 P0"
+        priority_desc = "最高优先级：优先于其他候选处理"
+        urgency_head = "立即" if not urgency or urgency <= 60 else f"{urgency}分钟内"
+    else:
+        priority_head = "P1"
+        priority_desc = "高价值机会：已通过 P1 推送门槛"
+        urgency_head = f"{urgency}分钟内" if urgency else "尽快"
+
     lines = [
-        f"【China Tech 发布包 #{signal['id']}】",
+        f"【{priority_head}｜{action_short}｜{urgency_head}】",
+        f"信号：{signal.get('title') or ''}",
+        f"级别：{priority}｜{priority_desc}",
         f"结论：{action_cn}" + (f"｜置信度 {confidence:.0%}" if isinstance(confidence, (int, float)) else ""),
         f"时效：{'尽快，约 ' + str(urgency) + ' 分钟内' if urgency else '尽快处理'}",
         "",

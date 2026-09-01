@@ -6,6 +6,7 @@ import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from .alerts import FeishuSender, format_publish_packet
 from .classify import classify
@@ -45,6 +46,57 @@ def source_due(state: dict[str, Any] | None, poll_minutes: int, now: datetime) -
 def load_toml(path: Path) -> dict[str, Any]:
     with path.open("rb") as f:
         return tomllib.load(f)
+
+
+def _sent_packet_counts_today(con: sqlite3.Connection) -> dict[str, int]:
+    tz = ZoneInfo("Asia/Shanghai")
+    now_local = datetime.now(tz)
+    start_local = datetime.combine(now_local.date(), datetime.min.time(), tzinfo=tz)
+    start_utc = start_local.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    rows = con.execute(
+        """SELECT s.priority,a.editorial_packet_json FROM alert a JOIN signal s ON s.id=a.signal_id
+           WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?""",
+        (start_utc,),
+    ).fetchall()
+    counts = {"p0_post": 0, "p0_reply": 0, "p1_post": 0, "p1_reply": 0}
+    for row in rows:
+        try:
+            packet = json.loads(row["editorial_packet_json"] or "{}")
+        except Exception:
+            continue
+        key = f"{str(row['priority'] or 'P1').lower()}_{str(packet.get('decision') or '').lower()}"
+        if key in counts:
+            counts[key] += 1
+    return counts
+
+
+def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> tuple[bool, str]:
+    priority = str(signal.get("priority") or "P1").upper()
+    decision = str(packet.get("decision") or "SKIP").upper()
+    confidence = float(packet.get("confidence") or 0.0)
+    score = int(signal.get("score") or 0)
+    if decision not in {"POST", "REPLY"}:
+        return False, "not_publishable"
+    if decision == "REPLY" and not packet.get("target_url"):
+        return False, "reply_without_verified_target"
+    counts = _sent_packet_counts_today(con)
+    if priority == "P0":
+        if confidence < float(cfg.get("p0_min_confidence", 0.75)):
+            return False, f"p0_confidence_below_threshold:{confidence:.2f}"
+        return True, "p0_immediate"
+    if confidence < float(cfg.get("p1_min_confidence", 0.88)):
+        return False, f"p1_confidence_below_threshold:{confidence:.2f}"
+    if decision == "POST":
+        if score < int(cfg.get("p1_post_min_score", 10)):
+            return False, f"p1_post_score_below_threshold:{score}"
+        if counts["p1_post"] >= int(cfg.get("max_p1_post_packets_per_day", 1)):
+            return False, "p1_post_daily_slot_used"
+        return True, "p1_post_curated"
+    if score < int(cfg.get("p1_reply_min_score", 7)):
+        return False, f"p1_reply_score_below_threshold:{score}"
+    if counts["p1_reply"] >= int(cfg.get("max_p1_reply_packets_per_day", 4)):
+        return False, "p1_reply_daily_cap_reached"
+    return True, "p1_reply_curated"
 
 
 def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) -> dict[str, Any]:
@@ -159,6 +211,17 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         """UPDATE alert SET status='EDITORIAL_SKIP', editorial_status='SKIP', editorial_packet_json=?,
                            editorial_at=?, editorial_model=?, error=NULL WHERE id=?""",
                         (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), signal["alert_id"]),
+                    )
+                    con.commit()
+                    continue
+
+                allowed, policy_reason = notification_policy(con, signal, packet, editorial_cfg)
+                packet["notification_policy"] = policy_reason
+                if not allowed:
+                    con.execute(
+                        """UPDATE alert SET status='EDITORIAL_HOLD', editorial_status='HOLD', editorial_packet_json=?,
+                           editorial_at=?, editorial_model=?, error=? WHERE id=?""",
+                        (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), policy_reason, signal["alert_id"]),
                     )
                     con.commit()
                     continue

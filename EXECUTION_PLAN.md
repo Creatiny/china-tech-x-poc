@@ -1,10 +1,10 @@
-# China Tech X POC — Execution Plan v1.1
+# China Tech X POC — Execution Plan v1.2
 
 ## Authority
 
 Status: `APPROVED / ACTIVE`
 
-Top-level strategy authority: `PROJECT_SPEC.md` v2.1.
+Top-level strategy authority: `PROJECT_SPEC.md` v2.2.
 
 This file defines **how the current spec is executed**. If execution here conflicts with the strategy/spec, `PROJECT_SPEC.md` wins and this plan must be corrected.
 
@@ -287,3 +287,16 @@ Current quota-protection defaults:
 - no OpenAI Platform API key or paid X API is introduced.
 
 If enrichment budget is exhausted, the item is held/error-recorded rather than degrading back to a raw Feishu signal.
+
+## 14. P0/P1 Feishu Handling
+
+Feishu priority is operator-visible in the first line.
+
+- `P0`: immediate publish packet after editorial validation; treat before P1.
+- `P1 REPLY`: only when a verified direct X target exists and the configured score/confidence threshold passes; maximum 4/day.
+- `P1 POST`: only when score/confidence threshold passes; maximum 1/day.
+- excess qualified P1 candidates are held silently for analysis and are not pushed to the operator.
+
+The goal is to send the operator an **action queue**, not a candidate queue. The operator should never need to infer whether a package is P0 or P1.
+
+Editorial quota enforcement uses atomic reservations. Current policy defaults: max 8 gate calls/day, max 5 final/search calls/day, 180K token-proxy/day, with 6K/30K reservation estimates for gate/final calls.

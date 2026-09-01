@@ -3,12 +3,12 @@
 ## Pack Header
 
 - Status: `APPROVED / ACTIVE / MVP-FIRST`
-- Version: `1.3`
+- Version: `1.4`
 - Priority: `P0`
 - Updated: `2026-08-31`
 - Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
-- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.3
-- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.3
+- Requirement: `REQ-CHINA-TECH-X-RADAR-001` v1.4
+- Architecture: `ARCH-CHINA-TECH-X-RADAR-001` v1.4
 - Delivery repository: `Creatiny/china-tech-x-poc`
 - Runtime target: verified Mac mini
 - OPC: optional/deferred until business evidence justifies it
@@ -208,3 +208,15 @@ Deferred until evidence proves a bottleneck:
 - OPC integration.
 
 The X API pilot remains separately blocked.
+
+### Slice 2.6 — Priority-visible / P1-curated Feishu queue
+
+Deliver:
+
+- first-line `P0/P1` label and P0 visual emphasis;
+- immediate P0 packet policy;
+- P1 confidence/score thresholds and daily POST/REPLY caps;
+- `EDITORIAL_HOLD` persistence for publishable-but-not-pushed P1 candidates;
+- atomic budget reservation with policy-revision audit metadata.
+
+Accept when unit tests prove P0 header visibility, the second P1 POST is held after the daily slot is used, and a second model call cannot reserve past an exact configured call cap.

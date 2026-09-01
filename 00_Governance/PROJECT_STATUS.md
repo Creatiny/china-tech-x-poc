@@ -162,3 +162,20 @@ Approved minimal correction under the one-growth-variable + one-measurement-fix 
 - stop treating generic `funding` and `release` as standalone `topic_terms` while keeping them available as impact context after a real technology topic matches.
 
 No OPC, browser automation, paid API, web UI, or new infrastructure is introduced.
+
+## 2026-09-01 P0 Visibility / P1 Queue Correction
+
+Operator feedback showed publish-ready Feishu packets did not expose whether the underlying signal was P0 or P1. Runtime evidence also showed the first publish-packet policy produced too many P1 POST suggestions in a short window and exceeded the intended model-call proxy limits.
+
+Correction:
+
+- every Feishu publish packet now exposes priority in the first line (`🔥 P0` or `P1`);
+- P0 is explicitly highest priority and remains immediate after editorial validation;
+- P1 POST is capped at one/day with score>=10 and confidence>=0.88;
+- P1 REPLY is capped at four/day, requires a verified X target, score>=7 and confidence>=0.88;
+- excess publishable P1 becomes `EDITORIAL_HOLD` and is not pushed;
+- P1 can no longer bypass the cheap editorial gate based on score alone;
+- Codex call limits use atomic pre-call SQLite reservations and budget revision metadata;
+- current quota policy is 8 gates/day, 5 final/search calls/day, 180K token proxy/day.
+
+Outbound Feishu was paused during the repair while signal collection continued.

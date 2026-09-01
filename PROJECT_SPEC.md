@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v2.1
+# China Tech X POC — Canonical Project Spec v2.2
 
 ## 0. Authority
 
@@ -329,3 +329,31 @@ Every Feishu publishing packet must contain:
 `SKIP` decisions are stored but not pushed to the operator. Macro/politics/general-China items without a material technology angle must not become publishing packets.
 
 The enrichment layer uses the existing locally authenticated ChatGPT/Codex runtime, not an OpenAI Platform API key. Low reasoning and daily call/token proxy caps are mandatory to avoid uncontrolled ChatGPT quota consumption. Model usage is logged locally and visible in runtime status.
+
+## 16. Priority-Visible Notification Policy
+
+Every operator-facing Feishu packet must expose classifier priority in the **first line** so the operator can distinguish urgency without opening logs.
+
+Required header forms:
+
+```text
+【🔥 P0｜POST｜立即】
+【🔥 P0｜REPLY｜立即】
+【P1｜POST｜<time window>】
+【P1｜REPLY｜<time window>】
+```
+
+P0 means the highest-priority publishing opportunity and is processed immediately after editorial validation.
+
+P1 is curated rather than streamed. During Stage A, P1 operator notifications are bounded by policy so the operator is not forced to become the second-stage filter:
+
+- P1 POST requires model confidence >=0.88 and classifier score >=10;
+- at most 1 P1 POST packet/day;
+- P1 REPLY requires a verified direct X target, confidence >=0.88, classifier score >=7;
+- at most 4 P1 REPLY packets/day;
+- candidates that pass editorial quality but exceed these P1 slots are stored as `EDITORIAL_HOLD`, not pushed;
+- P0 remains immediate subject to editorial confidence >=0.75.
+
+This notification policy is intentionally aligned with Stage-A output goals: roughly 3–5 strategic replies/day and ~1 original/day when qualified material exists.
+
+Model-quota enforcement must be atomic. Each Codex gate/final call reserves a call/token allowance in SQLite before execution, preventing overlapping runs from overshooting the configured daily budget. Budget accounting is revision-scoped so a new policy can start cleanly while old usage remains auditable.

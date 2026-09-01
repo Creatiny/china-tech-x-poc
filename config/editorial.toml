@@ -5,16 +5,25 @@ model = "gpt-5.6-luna"
 reasoning_effort = "low"
 call_timeout_seconds = 90
 
-# Protect the user's ChatGPT quota. These are call/token proxy limits, not billed-API limits.
-max_gate_calls_per_day = 12
-max_final_calls_per_day = 10
-max_tokens_per_day = 240000
+# Atomic quota budget for the current policy revision.
+budget_revision = "p0-visible-p1-throttle-v2"
+max_gate_calls_per_day = 8
+max_final_calls_per_day = 5
+max_tokens_per_day = 180000
+gate_token_reserve = 6000
+final_token_reserve = 30000
 
-# Obvious high-quality specific tech signals skip the cheap model gate and go straight to final enrichment.
-direct_final_min_score = 10
+# Only P0 may bypass the cheap editorial gate.
+p0_direct_final_min_score = 10
 
 # Only POST/REPLY editorial packets are sent. SKIP is stored silently.
 send_skip_to_feishu = false
-
-# Visual policy: replies default to no image; POST may receive an original editorial data card.
 render_editorial_cards = true
+
+# Operator-notification policy. P0 is immediate; P1 is curated to match Stage-A output targets.
+p0_min_confidence = 0.75
+p1_min_confidence = 0.88
+p1_post_min_score = 10
+p1_reply_min_score = 7
+max_p1_post_packets_per_day = 1
+max_p1_reply_packets_per_day = 4

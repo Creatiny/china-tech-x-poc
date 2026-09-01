@@ -146,3 +146,19 @@ Active contract:
 - model calls/token proxies are logged and capped daily; no OpenAI Platform API key is introduced.
 
 The reported yuan/weak-demand Reuters alert is classified as a false positive and now deterministically drops because generic `China/Chinese` alone cannot satisfy curated-source entity-only qualification.
+
+## 2026-09-01 Day-2 Review Correction — Timeliness + Precision
+
+The first partial Day-2 review found two evidence-backed issues before the Day-3 gate:
+
+1. **source timeliness/coverage**: the existing six-source radar did not contain two timely China Tech items visible in IT之家 RSS at review time — a Unitree firefighting robot item published at 2026-09-01T02:06:16Z and a Huawei Ascend 950 AI-model procurement item published at 2026-09-01T01:23:49Z;
+2. **classifier precision**: two silent editorial skips were caused by generic `release` and `funding` terms being treated as standalone technology topics (a Chinese film story and a university funding-disclosure settlement).
+
+Approved minimal correction under the one-growth-variable + one-measurement-fix rule:
+
+- add IT之家 RSS as one new evidence-backed China Tech discovery source, polled every five minutes;
+- require explicit Chinese China-Tech entities + technology terms on this non-China-focused adapter;
+- add only the Chinese entity/topic vocabulary required for AI/chips/robotics/EV discovery;
+- stop treating generic `funding` and `release` as standalone `topic_terms` while keeping them available as impact context after a real technology topic matches.
+
+No OPC, browser automation, paid API, web UI, or new infrastructure is introduced.

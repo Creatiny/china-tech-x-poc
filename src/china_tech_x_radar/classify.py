@@ -11,9 +11,14 @@ def _match_terms(text: str, terms: list[str]) -> list[str]:
     out: list[str] = []
     for term in terms:
         t = term.casefold()
-        # Boundary-aware matching avoids catastrophic short-token false positives: AI in betrayal, EV in reveals, NIO in innovation.
-        pattern = r"(?<!\w)" + re.escape(t) + r"(?!\w)"
-        if re.search(pattern, text):
+        # Latin/alphanumeric short tokens need word boundaries (AI in betrayal, EV in reveals, NIO in innovation).
+        # CJK words are normally adjacent without whitespace, so substring matching is required for terms such as 华为/机器人/大模型.
+        if re.search(r"[\u3400-\u9fff]", t):
+            matched = t in text
+        else:
+            pattern = r"(?<!\w)" + re.escape(t) + r"(?!\w)"
+            matched = bool(re.search(pattern, text))
+        if matched:
             out.append(term)
     return out
 
@@ -69,6 +74,12 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     if noise:
         priority = "DROP"
         reason = f"noise:{noise[0]}"
+    elif bool(source.get("require_title_entity")) and not title_entities:
+        priority = "DROP"
+        reason = "no_title_china_entity_match"
+    elif bool(source.get("require_title_topic")) and not title_topics:
+        priority = "DROP"
+        reason = "no_title_tech_topic_match"
     elif not topics and not entity_only_ok:
         priority = "DROP"
         reason = "no_tech_topic_match"

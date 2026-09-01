@@ -10,21 +10,24 @@ china_entities = [
   "ymtc", "yangtze memory", "cxmt", "deepseek", "zhipu", "glm", "minimax", "moonshot",
   "kimi", "unitree", "agibot", "ubtech", "xpeng", "nio", "geely", "djI", "lenovo",
   "sensetime", "cambricon", "enflame", "biren", "moore threads", "sicarrier", "ant group",
-  "meituan", "jd.com", "pinduoduo", "shein", "horizon robotics", "modelscope", "wan3", "wan2", "wingtech", "nexperia"
+  "meituan", "jd.com", "pinduoduo", "shein", "horizon robotics", "modelscope", "wan3", "wan2", "wingtech", "nexperia",
+  "华为", "宇树", "智谱", "长鑫", "长鑫存储", "寒武纪", "燧原", "壁仞", "沐曦", "摩尔线程", "阿里巴巴", "腾讯", "小米", "比亚迪", "宁德时代", "字节跳动", "深度求索", "月之暗面", "昇腾"
 ]
 
 topic_terms = [
   "ai", "artificial intelligence", "model", "llm", "agent", "open-source", "open source",
   "semiconductor", "chip", "gpu", "accelerator", "fab", "foundry", "memory", "dram", "nand",
   "robot", "robotics", "humanoid", "ev", "electric vehicle", "battery", "autonomous",
-  "manufacturing", "data center", "datacenter", "cloud", "ipo", "funding", "raises", "earnings",
-  "launch", "release", "benchmark", "export", "sanction", "supply chain"
+  "manufacturing", "data center", "datacenter", "cloud", "ipo", "raises", "earnings",
+  "launch", "benchmark", "export", "sanction", "supply chain",
+  "人工智能", "大模型", "芯片", "半导体", "算力", "机器人", "人形", "电动车", "电动汽车", "电池", "自动驾驶", "智驾", "数据中心", "云计算", "开源", "基准", "量产", "存储", "内存"
 ]
 
 high_impact_terms = [
   "launch", "release", "open-source", "open source", "raises", "funding", "ipo", "earnings",
   "chip", "gpu", "semiconductor", "benchmark", "million", "billion", "export", "sanction",
-  "production", "mass production", "tape out", "tape-out", "acquisition", "partnership"
+  "production", "mass production", "tape out", "tape-out", "acquisition", "partnership",
+  "采购", "量产", "投产", "突破", "融资", "收购"
 ]
 
 noise_terms = [

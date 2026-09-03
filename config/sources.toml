@@ -84,3 +84,186 @@ source_weight = 4
 require_title_entity = true
 require_title_topic = true
 enabled = true
+
+# Reply Radar: direct public X profile pages. These are read-only, $0 sources;
+# the radar never publishes or replies automatically.
+
+[[source]]
+id = "x_jenzhuscott"
+kind = "x_profile"
+name = "X @jenzhuscott"
+handle = "jenzhuscott"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_quxiaoyin"
+kind = "x_profile"
+name = "X @quxiaoyin"
+handle = "quxiaoyin"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_atomsnotbits"
+kind = "x_profile"
+name = "X @AtomsNotBits"
+handle = "AtomsNotBits"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_xingsthatmatter"
+kind = "x_profile"
+name = "X @xingsthatmatter"
+handle = "xingsthatmatter"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_jukan05"
+kind = "x_profile"
+name = "X @jukan05"
+handle = "jukan05"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_firstadopter"
+kind = "x_profile"
+name = "X @firstadopter"
+handle = "firstadopter"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_rmcentush"
+kind = "x_profile"
+name = "X @rmcentush"
+handle = "rmcentush"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_damonchen"
+kind = "x_profile"
+name = "X @damonchen"
+handle = "damonchen"
+poll_minutes = 5
+china_focused = false
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_zanehengsperger"
+kind = "x_profile"
+name = "X @zanehengsperger"
+handle = "zanehengsperger"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_ptrubey"
+kind = "x_profile"
+name = "X @ptrubey"
+handle = "ptrubey"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_wevolverapp"
+kind = "x_profile"
+name = "X @wevolverapp"
+handle = "wevolverapp"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_kawzinvests"
+kind = "x_profile"
+name = "X @kawzinvests"
+handle = "kawzinvests"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_paradislabs"
+kind = "x_profile"
+name = "X @paradislabs"
+handle = "paradislabs"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_futurumequities"
+kind = "x_profile"
+name = "X @futurumequities"
+handle = "futurumequities"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_oopsguess"
+kind = "x_profile"
+name = "X @oopsguess"
+handle = "oopsguess"
+poll_minutes = 10
+china_focused = false
+source_weight = 4
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true

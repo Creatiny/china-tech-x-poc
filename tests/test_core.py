@@ -7,7 +7,7 @@ from pathlib import Path
 
 from china_tech_x_radar.classify import classify
 from china_tech_x_radar.db import connect, insert_signal, iso
-from china_tech_x_radar.sources import parse_feed
+from china_tech_x_radar.sources import parse_feed, parse_x_profile_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
@@ -29,6 +29,23 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["source_item_id"], "r1")
 
+    def test_parse_x_profile_public_ssr(self):
+        import base64
+        tid = "2095207212830671005"
+        enc = base64.b64encode(f"Tweet:{tid}".encode()).decode()
+        body = (
+            f'data-href="/jenzhuscott/status/{tid}" '
+            f'client:{enc}:legacy={{retweeted_status_results:null}} '
+            f'client:{enc}:counts={{bookmark_count:2,favorite_count:12,reply_count:3,retweet_count:4,quote_count:1}} '
+            f'client:{enc}:views={{count:"2048"}} '
+            f'client:{enc}:details={{full_text:"China robotics is moving fast.\\nFactory deployment matters.",created_at_ms:1788371301000}}'
+        ).encode()
+        items = parse_x_profile_html(body, "jenzhuscott")
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["canonical_url"], f"https://x.com/jenzhuscott/status/{tid}")
+        self.assertEqual(items[0]["metrics"]["views"], 2048)
+        self.assertIn("Factory deployment", items[0]["excerpt"])
+
     def test_classify_material_china_ai(self):
         item = {"title": "Zhipu AI launches GLM-5.3 model benchmark", "excerpt": "China AI model release", "published_at": datetime.now(timezone.utc)}
         source = {"china_focused": True, "source_weight": 5}
@@ -44,6 +61,19 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertIn(out["priority"], ("P0", "P1"))
         self.assertIn("x.com/search", out["x_search_url"])
+
+    def test_x_profile_signal_is_verified_reply_target(self):
+        item = {"title": "China DeepSeek AI model update", "excerpt": "DeepSeek AI model", "canonical_url": "https://x.com/example/status/1", "published_at": datetime.now(timezone.utc)}
+        source = {"kind": "x_profile", "china_focused": False, "source_weight": 5, "max_candidate_age_minutes": 120, "p1_max_age_minutes": 120}
+        rules = {
+            "china_entities": ["china", "deepseek"], "topic_terms": ["ai", "model"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes": 30,
+            "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        out = classify(item, source, rules)
+        self.assertEqual(out["target_mode"], "VERIFIED_X_TARGET")
+        self.assertEqual(out["x_search_url"], item["canonical_url"])
+        self.assertEqual(out["priority"], "P1")
 
 
     def test_short_tokens_do_not_match_inside_words(self):
@@ -209,7 +239,7 @@ class CoreTests(unittest.TestCase):
             cfg={"p1_min_confidence":0.88,"p1_post_min_score":10,"max_p1_post_packets_per_day":1,"max_p1_reply_packets_per_day":4}
             allowed, reason = notification_policy(con,{"priority":"P1","score":12},{"decision":"POST","confidence":0.95},cfg)
             self.assertFalse(allowed)
-            self.assertEqual(reason,"p1_post_daily_slot_used")
+            self.assertEqual(reason,"post_daily_cap_reached")
 
     def test_atomic_budget_reservation_blocks_second_call(self):
         with tempfile.TemporaryDirectory() as d:

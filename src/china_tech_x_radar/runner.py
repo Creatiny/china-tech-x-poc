@@ -80,6 +80,14 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
     if decision == "REPLY" and not packet.get("target_url"):
         return False, "reply_without_verified_target"
     counts = _sent_packet_counts_today(con)
+    posts_sent = counts["p0_post"] + counts["p1_post"]
+    replies_sent = counts["p0_reply"] + counts["p1_reply"]
+    max_posts = int(cfg.get("max_post_packets_per_day", cfg.get("max_p1_post_packets_per_day", 1)))
+    max_replies = int(cfg.get("max_reply_packets_per_day", cfg.get("max_p1_reply_packets_per_day", 4)))
+    if decision == "POST" and posts_sent >= max_posts:
+        return False, "post_daily_cap_reached"
+    if decision == "REPLY" and replies_sent >= max_replies:
+        return False, "reply_daily_cap_reached"
     if priority == "P0":
         if confidence < float(cfg.get("p0_min_confidence", 0.75)):
             return False, f"p0_confidence_below_threshold:{confidence:.2f}"
@@ -188,7 +196,9 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             SELECT a.id AS alert_id, s.*
             FROM alert a JOIN signal s ON s.id=a.signal_id
             WHERE a.status='PENDING'
-            ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END, s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
+            ORDER BY CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
+                     CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
+                     s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
             LIMIT ?
             """,
             (max_alerts,),

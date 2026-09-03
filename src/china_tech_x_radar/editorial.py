@@ -10,6 +10,7 @@ import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 GENERIC_ENTITIES = {"china", "chinese"}
 
@@ -39,7 +40,7 @@ def load_editorial_config(root: Path) -> dict[str, Any]:
 
 
 def utc_date() -> str:
-    return datetime.now(timezone.utc).date().isoformat()
+    return datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
 
 
 def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = None) -> dict[str, int]:
@@ -166,7 +167,10 @@ def _specific_entity_present(signal: dict[str, Any]) -> bool:
 
 
 def should_direct_final(signal: dict[str, Any], cfg: dict[str, Any]) -> bool:
-    # P1 must always pass the cheap gate; score alone must never create a flood of P1 publish packets.
+    # Verified X targets are already narrow, timely reply candidates; skip the generic-news gate.
+    if str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET":
+        return int(signal.get("score") or 0) >= int(cfg.get("p1_reply_min_score", 7)) and str(signal.get("priority") or "").upper() in {"P0", "P1"}
+    # P1 news candidates still pass the cheap gate to avoid flooding owned-post review.
     if str(signal.get("priority") or "").upper() != "P0":
         return False
     topic = str(signal.get("topic") or "").casefold()
@@ -208,6 +212,15 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
     return violations
 
 def final_prompt(signal: dict[str, Any]) -> str:
+    direct_target = str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET"
+    if direct_target:
+        target_instruction = (
+            f"This candidate is itself a verified direct X target post: {signal.get('canonical_url')}. "
+            "Do not search for a different target. Decide REPLY or SKIP only; do not turn this X target into an ORIGINAL POST. "
+            "If you choose REPLY, copy this exact URL into target_url and use web search only to verify the China-specific fact or correction you add."
+        )
+    else:
+        target_instruction = "Use web search only as needed to verify facts and find one strong current X target post about this exact event. Choose REPLY, POST, or SKIP."
     return f'''You are the final editorial operator for @KennyChinaTech, an English X account in Stage A (4->100 followers). Positioning: China Tech Intelligence — China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global implications of China technology.
 
 Candidate priority: {signal.get('priority') or 'unknown'}
@@ -220,8 +233,9 @@ Source: {signal.get('source_name','')}
 Source URL: {signal.get('canonical_url') or 'unknown'}
 Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
+Target mode: {signal.get('target_mode') or 'unknown'}
 
-Use web search only as needed to verify facts and find one strong current X target post about this exact event. Choose REPLY, POST, or SKIP. Optimize for relevant follower growth, not output quota.
+{target_instruction} Optimize for relevant follower growth, not output quota.
 
 Decision rules:
 - REPLY when a strong current target exists, timing is still useful, and @KennyChinaTech can add non-generic value.

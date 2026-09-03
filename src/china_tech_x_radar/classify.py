@@ -86,15 +86,15 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     elif not bool(source.get("china_focused")) and not entities:
         priority = "DROP"
         reason = "no_china_entity_match"
-    elif published is not None and age > float(rules.get("max_candidate_age_minutes", 1440)):
+    elif published is not None and age > float(source.get("max_candidate_age_minutes", rules.get("max_candidate_age_minutes", 1440))):
         priority = "DROP"
         reason = f"stale:{age:.0f}m"
     else:
         weight = int(source.get("source_weight", 1))
         score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(high), 2) * 2
-        if age <= float(rules.get("p0_max_age_minutes", 30)) and high and score >= 7:
+        if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and high and score >= 7:
             priority = "P0"
-        elif age <= float(rules.get("p1_max_age_minutes", 360)) and score >= 5:
+        elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= 5:
             priority = "P1"
         else:
             priority = "P2"
@@ -117,13 +117,14 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     topic = next((t for t in topic_pool if t.casefold() not in generic_topics), topic_pool[0] if topic_pool else None)
     if topic is None and entity_only_ok:
         topic = str(source.get("default_topic") or "china_tech")
+    direct_x_target = source.get("kind") == "x_profile" and bool(item.get("canonical_url"))
     return {
         "priority": priority,
         "score": locals().get("score", 0),
         "reason": reason,
         "topic": topic,
-        "x_search_url": make_x_search_url(item.get("title", ""), entity, topic),
-        "target_mode": "TARGET_SEARCH_REQUIRED",
+        "x_search_url": item.get("canonical_url") if direct_x_target else make_x_search_url(item.get("title", ""), entity, topic),
+        "target_mode": "VERIFIED_X_TARGET" if direct_x_target else "TARGET_SEARCH_REQUIRED",
         "suggested_angle": angle_for(topic, item.get("title", "")),
         "age_minutes": age,
     }

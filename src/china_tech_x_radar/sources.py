@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import base64
 import os
 import re
 import urllib.error
@@ -177,12 +178,102 @@ def fetch_github_releases(source: dict[str, Any], state: dict[str, Any] | None) 
     return out, meta, False
 
 
+def _decode_js_string(value: str) -> str:
+    try:
+        return json.loads('"' + value + '"')
+    except Exception:
+        return value.replace(r"\n", "\n").replace(r'\"', '"').replace(r"\/", "/")
+
+
+def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
+    """Extract this account's own visible posts from X public profile SSR HTML."""
+    text = body.decode("utf-8", errors="replace")
+    handle = handle.lstrip("@").strip()
+    if not handle:
+        raise ValueError("x_profile_missing_handle")
+
+    ids: list[str] = []
+    id_re = re.compile(rf"/{re.escape(handle)}/status/(\d+)", re.IGNORECASE)
+    for match in id_re.finditer(text):
+        tweet_id = match.group(1)
+        if tweet_id not in ids:
+            ids.append(tweet_id)
+    if not ids:
+        raise ValueError(f"x_profile_parse_empty:{handle}")
+
+    out: list[dict[str, Any]] = []
+    for tweet_id in ids:
+        encoded = base64.b64encode(f"Tweet:{tweet_id}".encode("utf-8")).decode("ascii")
+        details_key = re.escape(f"client:{encoded}:details")
+        details = re.search(
+            details_key + r'.{0,6000}?full_text:"((?:\\.|[^"\\])*)".*?created_at_ms:(\d+)',
+            text,
+            re.DOTALL,
+        )
+        if not details:
+            continue
+
+        legacy_key = re.escape(f"client:{encoded}:legacy")
+        legacy = re.search(legacy_key + r'.{0,1200}?retweeted_status_results:([^,}]+)', text, re.DOTALL)
+        if legacy and legacy.group(1).strip() != "null":
+            continue
+
+        full_text = clean_text(_decode_js_string(details.group(1)), 1600)
+        if not full_text:
+            continue
+        published_at = datetime.fromtimestamp(int(details.group(2)) / 1000.0, tz=timezone.utc)
+        item: dict[str, Any] = {
+            "source_item_id": tweet_id,
+            "canonical_url": f"https://x.com/{handle}/status/{tweet_id}",
+            "title": clean_text(full_text, 500),
+            "excerpt": full_text,
+            "author": f"@{handle}",
+            "published_at": published_at,
+        }
+
+        counts_key = re.escape(f"client:{encoded}:counts")
+        counts = re.search(
+            counts_key + r'.{0,1200}?bookmark_count:(\d+),favorite_count:(\d+),reply_count:(\d+),retweet_count:(\d+),quote_count:(\d+)',
+            text,
+            re.DOTALL,
+        )
+        if counts:
+            item["metrics"] = {
+                "bookmarks": int(counts.group(1)),
+                "likes": int(counts.group(2)),
+                "replies": int(counts.group(3)),
+                "reposts": int(counts.group(4)),
+                "quotes": int(counts.group(5)),
+            }
+        views_key = re.escape(f"client:{encoded}:views")
+        views = re.search(views_key + r'.{0,500}?count:"?(\d+)"?', text, re.DOTALL)
+        if views:
+            item.setdefault("metrics", {})["views"] = int(views.group(1))
+        out.append(item)
+    return out
+
+
+def fetch_x_profile(source: dict[str, Any], state: dict[str, Any] | None) -> tuple[list[dict[str, Any]], dict[str, str], bool]:
+    handle = str(source.get("handle") or "").lstrip("@").strip()
+    if not handle:
+        raise ValueError("x_profile_missing_handle")
+    status, body, meta = _request(
+        f"https://x.com/{handle}", state,
+        accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    )
+    if status == 304:
+        return [], meta, True
+    return parse_x_profile_html(body, handle), meta, False
+
+
 def fetch_source(source: dict[str, Any], state: dict[str, Any] | None) -> tuple[list[dict[str, Any]], dict[str, str], bool]:
     kind = source.get("kind")
     if kind == "rss":
         return fetch_rss(source, state)
     if kind == "github_releases":
         return fetch_github_releases(source, state)
+    if kind == "x_profile":
+        return fetch_x_profile(source, state)
     raise ValueError(f"unsupported source kind: {kind}")
 
 

@@ -453,6 +453,6 @@ Original content should prioritize useful, save-worthy assets:
 - frameworks and case studies;
 - entrepreneurship lessons and deep arguments.
 
-A pure news summary is not a strategic Original. A qualified live Reply may also carry an `ARTICLE SEED` when the same topic can become a durable reader asset.
+Article topics, core questions, and theses are selected by Kenny after deep research. The realtime radar must not arrange or derive Article topics from news. Once Kenny assigns a topic, the system may support evidence collection, fact-checking, English drafting, charts, and publication packaging.
 
 The experiment compares follower conversion, profile visits, bookmarks, meaningful replies, and qualified business interest per 1,000 impressions. Total views alone do not decide the winner.

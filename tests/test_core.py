@@ -190,7 +190,7 @@ class CoreTests(unittest.TestCase):
         self.assertIn("Human-ready final copy.", text)
         self.assertIn("来源：https://example.com/source", text)
 
-    def test_b_group_packet_shows_strategy_and_article_seed(self):
+    def test_b_group_packet_shows_strategy(self):
         text = format_publish_packet(
             {"id": 10, "priority": "P1", "title": "World model update", "canonical_url": "https://x.com/a/status/1"},
             {"decision": "REPLY", "content_group": "B_OPINION_VALUE", "confidence": 0.93,
@@ -199,13 +199,11 @@ class CoreTests(unittest.TestCase):
              "target_url": "https://x.com/a/status/1", "target_account": "a",
              "final_copy": "Better video isn't enough. The test is whether the model can keep a stable world state while an agent acts inside it.",
              "source_url": "https://example.com/paper", "angle_type": "TECHNICAL_EXPLANATION",
-             "article_seed": "A practical test for world-model state consistency.",
              "urgency_minutes": 45, "publish_note": "Reply now.", "image_mode": "NONE"},
             has_asset=False,
         )
         self.assertTrue(text.startswith("【P1｜REPLY｜B 观点/价值型｜45分钟内】"))
         self.assertIn("核心观点：", text)
-        self.assertIn("ARTICLE SEED：", text)
 
 
     def test_generic_funding_or_release_are_not_tech_topics(self):

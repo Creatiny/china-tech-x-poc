@@ -58,7 +58,7 @@ Publish an original when there is:
 
 Track link/no-link and media treatment as formula variables.
 
-Prioritize save-worthy guides, comparisons, industry maps, technical explanations, frameworks, case studies, and deep arguments. Treat pure news summaries as source material, not the owned-content mainline. Capture an `ARTICLE SEED` when a live topic can answer a durable reader problem.
+Do not select or schedule Article topics from realtime signals. Kenny chooses Article topics and theses after deep research; once assigned, support evidence collection, fact-checking, English drafting, charts, and publication packaging.
 
 ## 5. Mandatory Language Gate
 

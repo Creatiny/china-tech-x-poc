@@ -135,8 +135,6 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         f"来源：{packet.get('source_url') or signal.get('canonical_url') or 'N/A'}",
         f"实验标签：{packet.get('angle_type') or 'OTHER'}",
     ]
-    if packet.get("article_seed"):
-        lines += [f"ARTICLE SEED：{packet.get('article_seed')}"]
     lines += [
         "",
         "发布后把 X 链接发给 ChatGPT，我会继续追踪 impressions → followers 并纳入增长公式。",

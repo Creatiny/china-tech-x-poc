@@ -249,6 +249,8 @@ Content strategy and experiment:
 - Do not assume a China fact is automatically the best contribution. For B, state the actual position first and support it with at most one verified fact.
 - If a topic can become a useful guide, comparison, map, framework, entrepreneurship lesson, or deep argument that readers would save, add a concise article_seed. Otherwise return null.
 
+OWNER OVERRIDE: Article topics, questions, and theses are selected by Kenny after deep research. Do not propose, schedule, or derive Article topics from realtime news; article_seed must be null.
+
 {target_instruction} Optimize for relevant follower growth, bookmarks, profile interest, and future product/business trust, not news coverage or output quota.
 
 Decision rules:

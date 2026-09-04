@@ -29,6 +29,13 @@ Prefer quality over quota. Do not fill the timeline with generic or late replies
 
 ## 3. Reply Selection
 
+Maintain two independent candidate pools:
+
+- A: news/fact additions used as an acquisition control;
+- B: owner opinion, practical value, entrepreneurship lessons, frameworks, and deeper reasoning used as the strategic mainline.
+
+Do not stop B discovery after finding an A candidate. At similar quality, prefer B. Keep at most two A and two B Reply notifications per day.
+
 Prefer replies where:
 
 - target post is still early/growing;
@@ -50,6 +57,8 @@ Publish an original when there is:
 - a winning reply/theme worth developing into owned distribution.
 
 Track link/no-link and media treatment as formula variables.
+
+Prioritize save-worthy guides, comparisons, industry maps, technical explanations, frameworks, case studies, and deep arguments. Treat pure news summaries as source material, not the owned-content mainline. Capture an `ARTICLE SEED` when a live topic can answer a durable reader problem.
 
 ## 5. Mandatory Language Gate
 

@@ -434,3 +434,25 @@ Before a `REPLY` or `POST` packet is sent to the operator:
 4. if it still fails, return `SKIP` and do not send a publishing packet.
 
 A fluent factual draft that fails this voice gate is **not publish-ready**. Daily reviews may identify new repetitive AI-like phrases; once confirmed by the human owner, they must be added to this section and to the runtime language gate.
+
+## 18. Dual-Group Creator Direction Experiment
+
+The account identity is now **Independent views and practical intelligence on China's AI, chips, robotics, and manufacturing**.
+
+News remains a discovery and evidence layer. It is not the account's primary value proposition.
+
+- `A_NEWS_FACT`: timely news/fact additions, China-side data, scope corrections, and industry implications. This remains an acquisition/control group.
+- `B_OPINION_VALUE`: clear opinions, practical technology, entrepreneurship experience, frameworks, conditional predictions, and deep reasoning. This is the strategic mainline.
+
+The radar must evaluate A and B independently. Finding an A candidate must not terminate B discovery. An A Reply cannot be labeled B merely because it contains a useful fact: B requires a clear, contestable owner position. At similar quality, B wins. Daily Reply notification capacity is split at two A and two B packets, with four total as the hard ceiling.
+
+Original content should prioritize useful, save-worthy assets:
+
+- guides and comparisons;
+- industry maps and technical explanations;
+- frameworks and case studies;
+- entrepreneurship lessons and deep arguments.
+
+A pure news summary is not a strategic Original. A qualified live Reply may also carry an `ARTICLE SEED` when the same topic can become a durable reader asset.
+
+The experiment compares follower conversion, profile visits, bookmarks, meaningful replies, and qualified business interest per 1,000 impressions. Total views alone do not decide the winner.

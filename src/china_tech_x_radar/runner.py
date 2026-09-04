@@ -58,7 +58,10 @@ def _sent_packet_counts_today(con: sqlite3.Connection) -> dict[str, int]:
            WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?""",
         (start_utc,),
     ).fetchall()
-    counts = {"p0_post": 0, "p0_reply": 0, "p1_post": 0, "p1_reply": 0}
+    counts = {
+        "p0_post": 0, "p0_reply": 0, "p1_post": 0, "p1_reply": 0,
+        "a_reply": 0, "b_reply": 0,
+    }
     for row in rows:
         try:
             packet = json.loads(row["editorial_packet_json"] or "{}")
@@ -67,6 +70,12 @@ def _sent_packet_counts_today(con: sqlite3.Connection) -> dict[str, int]:
         key = f"{str(row['priority'] or 'P1').lower()}_{str(packet.get('decision') or '').lower()}"
         if key in counts:
             counts[key] += 1
+        if str(packet.get("decision") or "").upper() == "REPLY":
+            group = str(packet.get("content_group") or "").upper()
+            if group == "A_NEWS_FACT":
+                counts["a_reply"] += 1
+            elif group == "B_OPINION_VALUE":
+                counts["b_reply"] += 1
     return counts
 
 
@@ -88,6 +97,14 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
         return False, "post_daily_cap_reached"
     if decision == "REPLY" and replies_sent >= max_replies:
         return False, "reply_daily_cap_reached"
+    if decision == "REPLY":
+        group = str(packet.get("content_group") or "").upper()
+        if group not in {"A_NEWS_FACT", "B_OPINION_VALUE"}:
+            return False, "reply_group_missing"
+        if group == "A_NEWS_FACT" and counts["a_reply"] >= int(cfg.get("max_a_reply_packets_per_day", 2)):
+            return False, "a_reply_daily_cap_reached"
+        if group == "B_OPINION_VALUE" and counts["b_reply"] >= int(cfg.get("max_b_reply_packets_per_day", 2)):
+            return False, "b_reply_daily_cap_reached"
     if priority == "P0":
         if confidence < float(cfg.get("p0_min_confidence", 0.75)):
             return False, f"p0_confidence_below_threshold:{confidence:.2f}"

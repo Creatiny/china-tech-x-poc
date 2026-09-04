@@ -190,6 +190,23 @@ class CoreTests(unittest.TestCase):
         self.assertIn("Human-ready final copy.", text)
         self.assertIn("来源：https://example.com/source", text)
 
+    def test_b_group_packet_shows_strategy_and_article_seed(self):
+        text = format_publish_packet(
+            {"id": 10, "priority": "P1", "title": "World model update", "canonical_url": "https://x.com/a/status/1"},
+            {"decision": "REPLY", "content_group": "B_OPINION_VALUE", "confidence": 0.93,
+             "reason": "Clear independent position",
+             "core_position": "World models need persistent state, not just better video prediction.",
+             "target_url": "https://x.com/a/status/1", "target_account": "a",
+             "final_copy": "Better video isn't enough. The test is whether the model can keep a stable world state while an agent acts inside it.",
+             "source_url": "https://example.com/paper", "angle_type": "TECHNICAL_EXPLANATION",
+             "article_seed": "A practical test for world-model state consistency.",
+             "urgency_minutes": 45, "publish_note": "Reply now.", "image_mode": "NONE"},
+            has_asset=False,
+        )
+        self.assertTrue(text.startswith("【P1｜REPLY｜B 观点/价值型｜45分钟内】"))
+        self.assertIn("核心观点：", text)
+        self.assertIn("ARTICLE SEED：", text)
+
 
     def test_generic_funding_or_release_are_not_tech_topics(self):
         source = {"china_focused": True, "source_weight": 4}
@@ -241,6 +258,26 @@ class CoreTests(unittest.TestCase):
             self.assertFalse(allowed)
             self.assertEqual(reason,"post_daily_cap_reached")
 
+    def test_a_reply_cap_preserves_b_group_capacity(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "groups.db")
+            now = iso()
+            for i in (1, 2):
+                cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (str(i)*64,'s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
+                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{"decision":"REPLY","content_group":"A_NEWS_FACT"}'))
+            con.commit()
+            cfg = {
+                "p1_min_confidence": 0.88, "p1_reply_min_score": 7,
+                "max_reply_packets_per_day": 4, "max_p1_reply_packets_per_day": 4,
+                "max_a_reply_packets_per_day": 2, "max_b_reply_packets_per_day": 2,
+            }
+            allowed_a, reason_a = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","content_group":"A_NEWS_FACT","confidence":0.95,"target_url":"https://x.com/a/status/3"},cfg)
+            allowed_b, reason_b = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/b/status/4"},cfg)
+            self.assertFalse(allowed_a)
+            self.assertEqual(reason_a, "a_reply_daily_cap_reached")
+            self.assertTrue(allowed_b)
+            self.assertEqual(reason_b, "p1_reply_curated")
+
     def test_atomic_budget_reservation_blocks_second_call(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "budget.db")
@@ -279,9 +316,18 @@ class CoreTests(unittest.TestCase):
     def test_language_gate_accepts_short_conversational_reply(self):
         packet = {
             "decision": "REPLY",
+            "content_group": "A_NEWS_FACT",
             "final_copy": "CXMT still hasn't shared yields or stack capacity. If qualification goes well, commercial shipments could start in 2027.",
         }
         self.assertEqual(language_gate_violations(packet), [])
+
+    def test_b_group_requires_explicit_core_position(self):
+        packet = {
+            "decision": "REPLY",
+            "content_group": "B_OPINION_VALUE",
+            "final_copy": "Shanghai AI Lab can run one inference pipeline across three domestic chips.",
+        }
+        self.assertIn("b_group_missing_core_position", language_gate_violations(packet))
 
 
 if __name__ == "__main__":

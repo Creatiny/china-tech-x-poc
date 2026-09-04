@@ -14,6 +14,7 @@ EVENT × TARGET ACCOUNT/SIZE × TARGET POST AGE
 
 For every published reply/original record:
 
+- content group: `A_NEWS_FACT` or `B_OPINION_VALUE`;
 - topic and event type;
 - target account and approximate follower count;
 - target post age when we reply and visible target impressions if available;
@@ -23,6 +24,8 @@ For every published reply/original record:
 - external-link use;
 - later impressions, engagements, likes, replies, reposts, quotes, bookmarks and profile visits when available;
 - daily total follower snapshots.
+
+The primary A/B comparison is followers, profile visits, bookmarks, meaningful replies, and qualified business interest per 1,000 impressions. Total impressions are a distribution measure, not the sole definition of content value.
 
 ## Buckets
 

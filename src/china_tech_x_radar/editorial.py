@@ -209,6 +209,12 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
         violations.append("em_dash_heavy")
     if re.search(r"(?im)^\s*(reply|post|analysis|takeaway|conclusion)\s*:", copy):
         violations.append("label_inside_copy")
+    if decision == "REPLY":
+        group = str(packet.get("content_group") or "").upper()
+        if group not in {"A_NEWS_FACT", "B_OPINION_VALUE"}:
+            violations.append("missing_content_group")
+        if group == "B_OPINION_VALUE" and not str(packet.get("core_position") or "").strip():
+            violations.append("b_group_missing_core_position")
     return violations
 
 def final_prompt(signal: dict[str, Any]) -> str:
@@ -217,7 +223,7 @@ def final_prompt(signal: dict[str, Any]) -> str:
         target_instruction = (
             f"This candidate is itself a verified direct X target post: {signal.get('canonical_url')}. "
             "Do not search for a different target. Decide REPLY or SKIP only; do not turn this X target into an ORIGINAL POST. "
-            "If you choose REPLY, copy this exact URL into target_url and use web search only to verify the China-specific fact or correction you add."
+            "If you choose REPLY, copy this exact URL into target_url and use web search only to verify evidence for the selected A fact contribution or B owner position."
         )
     else:
         target_instruction = "Use web search only as needed to verify facts and find one strong current X target post about this exact event. Choose REPLY, POST, or SKIP."
@@ -235,16 +241,24 @@ Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
 Target mode: {signal.get('target_mode') or 'unknown'}
 
-{target_instruction} Optimize for relevant follower growth, not output quota.
+Strategic positioning override: Independent views and practical intelligence on China's AI, chips, robotics, and manufacturing. News is discovery material and evidence, not the account identity.
+
+Content strategy and experiment:
+- A_NEWS_FACT is the acquisition/control group: a timely China-side fact, number, scope correction, or industry implication.
+- B_OPINION_VALUE is the strategic mainline: a clear personal judgment, disagreement/agreement, missing variable, conditional prediction, practical lesson, or deeper technical/business interpretation.
+- Do not assume a China fact is automatically the best contribution. For B, state the actual position first and support it with at most one verified fact.
+- If a topic can become a useful guide, comparison, map, framework, entrepreneurship lesson, or deep argument that readers would save, add a concise article_seed. Otherwise return null.
+
+{target_instruction} Optimize for relevant follower growth, bookmarks, profile interest, and future product/business trust, not news coverage or output quota.
 
 Decision rules:
-- REPLY when a strong current target exists, timing is still useful, and @KennyChinaTech can add non-generic value.
-- POST when the event deserves owned distribution and no better live target is verified.
+- REPLY when a strong current target exists, timing is still useful, and @KennyChinaTech can add either a qualified A contribution or, preferably, a qualified B contribution.
+- POST when the topic deserves owned distribution because it contains an independent thesis or durable practical value. A news summary alone is not enough.
 - SKIP when weak, late, off-positioning, duplicative, or there is no differentiated angle.
 
 If REPLY or POST, write FINAL English copy ready to paste into X and obey PROJECT_SPEC.md Section 17 as a mandatory gate. Sound like a knowledgeable person joining a conversation, never a report, press release, analyst note, or AI summary. Lead with the reaction or strongest fact. Use short ordinary words, natural contractions, one main point, and at most two supporting facts. No headings, labels, generic praise, filler, forced hashtags, formal conclusion, forced cleverness, repeated template structure, or more than one em dash.
 
-REPLY must answer the target post's exact claim, read as a continuation of the conversation, use 1-3 short sentences, and stay at or below 80 words. POST must put the strongest fact first, use 2-5 short paragraphs, and stay at or below 130 words.
+REPLY must answer the target post's exact claim, read as a continuation of the conversation, use 1-3 short sentences, and stay at or below 80 words. Classify it as A_NEWS_FACT or B_OPINION_VALUE. For B, core_position is mandatory and the English copy must lead with that position rather than a data dump. POST must contain an independent thesis or useful conclusion, use 2-5 short paragraphs, and stay at or below 130 words.
 
 Never use these default phrases: "One caveat", "One data caveat", "The bigger signal", "The bigger question", "What caught my eye", "Worth noting", "It is worth noting", "This suggests that", "This points to", "The key test is", "The key test is not", "This isn't just", "This is not just", "In other words", "The real story", or "One concrete datapoint missing". Avoid contrived "X is new. Y isn't." and repeated "not X, but Y" framing. Read the copy aloud mentally and rewrite it before returning JSON if it does not sound natural. Add a concrete China-specific fact, correction, comparison, technical explanation, data point, or useful global implication. Do not overclaim.
 
@@ -257,7 +271,7 @@ Visual decision:
 - If EDITORIAL_CARD, image_title <=70 chars and each of 2-3 image_points <=55 chars. Use verified facts only.
 
 Return ONLY one-line JSON with exactly these keys:
-{{"decision":"REPLY|POST|SKIP","confidence":0.0,"reason":"short editorial reason","target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"CHINA_CONTEXT|GLOBAL_IMPLICATION|COMPARISON|DATA_POINT|TECHNICAL_EXPLANATION|CONTRARIAN|FACT_ADD|OTHER","urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
+{{"decision":"REPLY|POST|SKIP","content_group":"A_NEWS_FACT|B_OPINION_VALUE","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"CHINA_CONTEXT|GLOBAL_IMPLICATION|COMPARISON|DATA_POINT|TECHNICAL_EXPLANATION|CONTRARIAN|FACT_ADD|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
 def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -> dict[str, Any]:

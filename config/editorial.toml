@@ -6,7 +6,7 @@ reasoning_effort = "low"
 call_timeout_seconds = 90
 
 # Reply-first quota. This is ChatGPT/Codex subscription usage, not paid X API traffic.
-budget_revision = "reply-first-x-profile-v3"
+budget_revision = "dual-group-opinion-value-v1"
 max_gate_calls_per_day = 12
 max_final_calls_per_day = 10
 max_tokens_per_day = 360000
@@ -27,5 +27,7 @@ p1_post_min_score = 10
 p1_reply_min_score = 7
 max_post_packets_per_day = 1
 max_reply_packets_per_day = 4
+max_a_reply_packets_per_day = 2
+max_b_reply_packets_per_day = 2
 max_p1_post_packets_per_day = 1
 max_p1_reply_packets_per_day = 4

@@ -94,6 +94,12 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
     action_short = "POST" if decision == "POST" else "REPLY"
     action_cn = "发 ORIGINAL POST" if decision == "POST" else "去目标帖 REPLY"
     confidence = packet.get("confidence")
+    content_group = str(packet.get("content_group") or "").upper()
+    group_labels = {
+        "A_NEWS_FACT": "A 新闻/事实型",
+        "B_OPINION_VALUE": "B 观点/价值型",
+    }
+    group_label = group_labels.get(content_group)
     if priority == "P0":
         priority_head = "🔥 P0"
         priority_desc = "最高优先级：优先于其他候选处理"
@@ -104,7 +110,7 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         urgency_head = f"{urgency}分钟内" if urgency else "尽快"
 
     lines = [
-        f"【{priority_head}｜{action_short}｜{urgency_head}】",
+        f"【{priority_head}｜{action_short}{'｜' + group_label if group_label else ''}｜{urgency_head}】",
         f"信号：{signal.get('title') or ''}",
         f"级别：{priority}｜{priority_desc}",
         f"结论：{action_cn}" + (f"｜置信度 {confidence:.0%}" if isinstance(confidence, (int, float)) else ""),
@@ -112,6 +118,10 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         "",
         f"为什么：{packet.get('reason') or ''}",
     ]
+    if group_label:
+        lines += [f"实验分组：{group_label}"]
+    if packet.get("core_position"):
+        lines += [f"核心观点：{packet.get('core_position')}"]
     if decision == "REPLY":
         lines += [f"目标帖：{packet.get('target_url') or 'N/A'}", f"目标账号：{packet.get('target_account') or 'N/A'}"]
     lines += [
@@ -124,6 +134,10 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         "",
         f"来源：{packet.get('source_url') or signal.get('canonical_url') or 'N/A'}",
         f"实验标签：{packet.get('angle_type') or 'OTHER'}",
+    ]
+    if packet.get("article_seed"):
+        lines += [f"ARTICLE SEED：{packet.get('article_seed')}"]
+    lines += [
         "",
         "发布后把 X 链接发给 ChatGPT，我会继续追踪 impressions → followers 并纳入增长公式。",
     ]

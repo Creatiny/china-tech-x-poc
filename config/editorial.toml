@@ -7,9 +7,9 @@ call_timeout_seconds = 90
 
 # Reply-first quota. This is ChatGPT/Codex subscription usage, not paid X API traffic.
 budget_revision = "dual-group-opinion-value-v1"
-max_gate_calls_per_day = 12
-max_final_calls_per_day = 10
-max_tokens_per_day = 360000
+max_gate_calls_per_day = 8
+max_final_calls_per_day = 5
+max_tokens_per_day = 180000
 gate_token_reserve = 6000
 final_token_reserve = 30000
 

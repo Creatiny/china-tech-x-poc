@@ -298,3 +298,120 @@ p1_max_age_minutes = 240
 max_qualified_per_poll = 3
 source_weight = 2
 enabled = true
+
+[[source]]
+id = "x_ycombinator"
+kind = "x_profile"
+name = "X @ycombinator"
+handle = "ycombinator"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_andrewyng"
+kind = "x_profile"
+name = "X @AndrewYNg"
+handle = "AndrewYNg"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_karenxcheng"
+kind = "x_profile"
+name = "X @karenxcheng"
+handle = "karenxcheng"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_nateberkopec"
+kind = "x_profile"
+name = "X @nateberkopec"
+handle = "nateberkopec"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_jackclarksf"
+kind = "x_profile"
+name = "X @jackclarkSF"
+handle = "jackclarkSF"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_intellectronica"
+kind = "x_profile"
+name = "X @intellectronica"
+handle = "intellectronica"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_vasuman"
+kind = "x_profile"
+name = "X @vasuman"
+handle = "vasuman"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_mihail_eric"
+kind = "x_profile"
+name = "X @mihail_eric"
+handle = "mihail_eric"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_shao_meng"
+kind = "x_profile"
+name = "X @shao__meng"
+handle = "shao__meng"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true

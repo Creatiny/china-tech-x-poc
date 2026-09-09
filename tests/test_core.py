@@ -11,7 +11,7 @@ from china_tech_x_radar.sources import parse_feed, parse_x_profile_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
-from china_tech_x_radar.runner import notification_policy
+from china_tech_x_radar.runner import notification_policy, _reply_copy_score
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt
 
 
@@ -299,6 +299,14 @@ class CoreTests(unittest.TestCase):
             allowed,reason=notification_policy(con,{"priority":"P0","score":12},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/a/status/9"},cfg)
             self.assertTrue(allowed)
             self.assertEqual(reason,"p0_immediate")
+
+    def test_reply_copy_score_handles_x_reply_mentions(self):
+        expected = "这个方向的价值不只是把包做小，而是把每种语言维护一套 grammar 改成一个模型按上下文猜 token 类型。"
+        actual = "@shao__meng @shuding 这个方向的价值不只是把包做小，而是把每种语言维护一套 grammar 改成一个模型按上下文猜 token 类型。"
+        self.assertGreaterEqual(_reply_copy_score(expected, actual), 0.95)
+
+    def test_reply_copy_score_rejects_unrelated_reply(self):
+        self.assertLess(_reply_copy_score("AI capacity planning needs the whole system", "Great post, thanks for sharing"), 0.3)
 
     def test_atomic_budget_reservation_blocks_second_call(self):
         with tempfile.TemporaryDirectory() as d:

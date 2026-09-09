@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import sqlite3
 import tomllib
+import difflib
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -21,7 +23,7 @@ from .db import (
     record_cycle_start,
     save_source_state,
 )
-from .sources import fetch_source, fingerprint
+from .sources import fetch_source, fingerprint, fetch_account_posts_from_url
 from .visuals import render_editorial_card
 
 
@@ -129,6 +131,106 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
     return True, "p1_reply_curated"
 
 
+def _normalize_reply_copy(text: str | None) -> str:
+    value = str(text or "").casefold()
+    value = re.sub(r"https?://\S+", " ", value)
+    # X commonly prepends one or more @handles to reply text in rendered timelines.
+    value = re.sub(r"^(?:\s*@[-_a-z0-9]+)+\s*", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"[^\w\u3400-\u9fff]+", " ", value, flags=re.UNICODE)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _reply_copy_score(expected: str | None, actual: str | None) -> float:
+    a = _normalize_reply_copy(expected)
+    b = _normalize_reply_copy(actual)
+    if not a or not b:
+        return 0.0
+    if a in b or b in a:
+        return min(len(a), len(b)) / max(len(a), len(b))
+    seq = difflib.SequenceMatcher(None, a, b).ratio()
+    aset, bset = set(a.split()), set(b.split())
+    jaccard = len(aset & bset) / max(1, len(aset | bset))
+    return max(seq, jaccard)
+
+
+def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChinaTech", max_items: int = 3) -> dict[str, int]:
+    """Find the user's published replies from the already-known target post URLs.
+
+    No manual reply URL is required. Recently SENT reply alerts are revisited at most once every
+    five minutes for up to 48 hours. When a visible @KennyChinaTech reply matches the suggested
+    copy, published_action is created/updated automatically.
+    """
+    now = datetime.now(timezone.utc)
+    cutoff = (now.timestamp() - 48 * 3600)
+    cutoff_iso = datetime.fromtimestamp(cutoff, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+    check_before = datetime.fromtimestamp(now.timestamp() - 5 * 60, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+    rows = con.execute(
+        """SELECT a.id alert_id,a.signal_id,a.sent_at,a.editorial_packet_json,
+                  a.reply_reconcile_attempts,a.reply_reconcile_last_checked_at,
+                  s.topic,s.published_at
+             FROM alert a JOIN signal s ON s.id=a.signal_id
+            WHERE a.status='SENT' AND a.sent_at>=? AND a.matched_published_url IS NULL
+              AND json_extract(a.editorial_packet_json,'$.decision')='REPLY'
+              AND (a.reply_reconcile_last_checked_at IS NULL OR a.reply_reconcile_last_checked_at<=?)
+              AND coalesce(a.reply_reconcile_attempts,0)<24
+            ORDER BY a.sent_at DESC LIMIT ?""",
+        (cutoff_iso, check_before, max_items),
+    ).fetchall()
+    checked = matched = 0
+    for row in rows:
+        checked += 1
+        packet = json.loads(row["editorial_packet_json"] or "{}")
+        target_url = str(packet.get("target_url") or "").strip()
+        expected = str(packet.get("final_copy") or "").strip()
+        checked_at = iso()
+        try:
+            candidates = fetch_account_posts_from_url(target_url, handle) if target_url else []
+            best = None
+            best_score = 0.0
+            for item in candidates:
+                score = _reply_copy_score(expected, item.get("excerpt"))
+                if score > best_score:
+                    best, best_score = item, score
+            if best is not None and best_score >= 0.62:
+                published_url = str(best.get("canonical_url") or "")
+                posted_at = iso(best.get("published_at")) if best.get("published_at") else checked_at
+                actual_text = str(best.get("excerpt") or expected)
+                existing = con.execute("SELECT id FROM published_action WHERE signal_id=? ORDER BY id DESC LIMIT 1", (row["signal_id"],)).fetchone()
+                if existing:
+                    con.execute(
+                        "UPDATE published_action SET published_url=?,published_text=?,posted_at=? WHERE id=?",
+                        (published_url, actual_text, posted_at, existing["id"]),
+                    )
+                else:
+                    con.execute(
+                        """INSERT INTO published_action(
+                               signal_id,target_url,published_url,published_text,posted_at,action_type,event_type,
+                               target_account,target_posted_at,angle_type,media_type,has_external_link
+                           ) VALUES(?,?,?,?,?,'REPLY',?,?,?,?, 'NONE',0)""",
+                        (row["signal_id"], target_url, published_url, actual_text, posted_at, row["topic"],
+                         packet.get("target_account"), row["published_at"], packet.get("angle_type")),
+                    )
+                con.execute(
+                    """UPDATE alert SET matched_published_url=?,matched_at=?,reply_reconcile_last_checked_at=?,
+                           reply_reconcile_attempts=coalesce(reply_reconcile_attempts,0)+1 WHERE id=?""",
+                    (published_url, checked_at, checked_at, row["alert_id"]),
+                )
+                matched += 1
+            else:
+                con.execute(
+                    "UPDATE alert SET reply_reconcile_last_checked_at=?,reply_reconcile_attempts=coalesce(reply_reconcile_attempts,0)+1 WHERE id=?",
+                    (checked_at, row["alert_id"]),
+                )
+            con.commit()
+        except Exception:
+            con.execute(
+                "UPDATE alert SET reply_reconcile_last_checked_at=?,reply_reconcile_attempts=coalesce(reply_reconcile_attempts,0)+1 WHERE id=?",
+                (checked_at, row["alert_id"]),
+            )
+            con.commit()
+    return {"checked": checked, "matched": matched}
+
+
 def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) -> dict[str, Any]:
     now = datetime.now(timezone.utc)
     source_cfg = load_toml(root / "config" / "sources.toml")
@@ -216,6 +318,7 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                 save_source_state(con, source_id, success=False, error=msg)
                 counters["source_errors"].append({"source_id": source_id, "error": msg})
 
+        reconcile_sent_replies(con)
         sender = FeishuSender()
         max_alerts = int(rules.get("max_alerts_per_cycle", 3))
         pending = con.execute(

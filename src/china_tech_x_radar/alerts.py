@@ -138,8 +138,14 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         f"来源：{packet.get('source_url') or signal.get('canonical_url') or 'N/A'}",
         f"实验标签：{packet.get('angle_type') or 'OTHER'}",
     ]
-    lines += [
-        "",
-        "发布后把 X 链接发给 ChatGPT，我会继续追踪 STOP → ENGAGE → PROFILE → FOLLOW REASON → FOLLOW。",
-    ]
+    if decision == "REPLY":
+        lines += [
+            "",
+            "发布后无需回传链接：系统会从目标帖自动识别 @KennyChinaTech 的回复并回填 URL；只有自动识别失败时才会提示补链接。",
+        ]
+    else:
+        lines += [
+            "",
+            "发布后如方便可回传 X 链接；原创 Post 的自动识别也会继续完善。",
+        ]
     return "\n".join(lines)

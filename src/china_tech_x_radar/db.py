@@ -228,6 +228,10 @@ def migrate(con: sqlite3.Connection) -> None:
         "editorial_at": "TEXT",
         "editorial_model": "TEXT",
         "asset_path": "TEXT",
+        "reply_reconcile_last_checked_at": "TEXT",
+        "reply_reconcile_attempts": "INTEGER NOT NULL DEFAULT 0",
+        "matched_published_url": "TEXT",
+        "matched_at": "TEXT",
     }
     for name, decl in alert_migrations.items():
         if name not in alert_cols:

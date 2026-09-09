@@ -266,6 +266,26 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
     return out
 
 
+def fetch_account_posts_from_url(url: str, handle: str) -> list[dict[str, Any]]:
+    """Read one public X page and extract visible posts authored by `handle`.
+
+    Used for post-publication reconciliation: the target post URL is already known from the
+    editorial packet, so no X search/API credential is required.
+    """
+    status, body, _ = _request(
+        url, None,
+        accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    )
+    if status == 304:
+        return []
+    try:
+        return parse_x_profile_html(body, handle)
+    except ValueError as exc:
+        if str(exc).startswith("x_profile_parse_empty:"):
+            return []
+        raise
+
+
 def fetch_x_profile(source: dict[str, Any], state: dict[str, Any] | None) -> tuple[list[dict[str, Any]], dict[str, str], bool]:
     handle = str(source.get("handle") or "").lstrip("@").strip()
     if not handle:

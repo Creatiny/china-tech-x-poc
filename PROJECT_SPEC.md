@@ -364,3 +364,35 @@ At similar quality, prefer B. Daily A/B caps are notification ceilings only, nev
 ## 21. Article Owner Authority
 
 Article topics, core questions, and theses are selected by Kenny after sufficient research or after a shorter idea has demonstrated value. The realtime radar must not schedule, quota, or derive Article topics from daily news. Once Kenny assigns an Article topic, the system may support research, evidence collection, fact checking, Chinese drafting, visuals, and publication packaging.
+
+
+## 22. Creator Monitoring Quality Gate
+
+Direct X creator monitoring is intentionally curated. The objective is not maximum coverage; it is high-signal access to people who can improve Kenny's understanding and create worthwhile conversations with the AI-productivity audience.
+
+### Core technical creator admission
+
+Prefer people who meet at least one:
+- active AI/ML researcher publishing or discussing original research;
+- engineer/builder working directly on agents, AI coding, harnesses, evals, reliability, inference, world models, robotics, or AI systems;
+- creator with repeated first-hand experiments, code, benchmarks, system design, or deployment lessons;
+- primary technical leader whose posts expose important research direction before it becomes generic news.
+
+### Exclusion / downgrade
+
+Do not directly monitor accounts whose dominant value is:
+- stock-price/ticker commentary or trading calls;
+- get-rich-with-AI, side-hustle, automated-income, or exaggerated money claims;
+- engagement farming / hype reposting without original technical evidence;
+- generic AI tool lists with no real testing;
+- partisan/geopolitical content unrelated to the target audience;
+- broad lifestyle/creator content with only occasional AI mentions.
+
+Such accounts can still appear through event-specific global search when a particular post is independently valuable, but they do not deserve a persistent creator slot.
+
+### Monitoring tiers
+- `core_technical`: direct high-frequency monitoring;
+- `technical_fact`: lower-priority first-hand industry/engineering source;
+- `global_search_only`: not persistently monitored; eligible only when a specific post/event passes the editorial gate.
+
+For direct creator monitoring, technical quality outranks follower count and virality.

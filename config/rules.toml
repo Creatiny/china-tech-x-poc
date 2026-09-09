@@ -15,11 +15,11 @@ china_entities = [
 ]
 
 topic_terms = [
-  "ai", "artificial intelligence", "model", "llm", "agent", "open-source", "open source",
+  "ai", "artificial intelligence", "agi", "model", "llm", "agent", "agents", "agentic", "open-source", "open source",
   "semiconductor", "chip", "gpu", "accelerator", "fab", "foundry", "memory", "dram", "nand",
   "robot", "robotics", "humanoid", "ev", "electric vehicle", "battery", "autonomous",
   "manufacturing", "data center", "datacenter", "cloud", "ipo", "raises", "earnings",
-  "launch", "benchmark", "export", "sanction", "supply chain",
+  "launch", "benchmark", "eval", "evals", "evaluation", "reasoning", "world model", "world models", "reinforcement learning", "rl", "coding agent", "agentic coding", "export", "sanction", "supply chain",
   "人工智能", "大模型", "芯片", "半导体", "算力", "机器人", "人形", "电动车", "电动汽车", "电池", "自动驾驶", "智驾", "数据中心", "云计算", "开源", "基准", "量产", "存储", "内存"
 ]
 

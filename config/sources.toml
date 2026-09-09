@@ -96,7 +96,8 @@ handle = "jenzhuscott"
 poll_minutes = 1
 china_focused = false
 audience_focused = true
-source_weight = 5
+source_weight = 3
+require_title_topic = true
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
 enabled = true
@@ -125,8 +126,9 @@ audience_focused = true
 source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_xingsthatmatter"
 kind = "x_profile"
@@ -138,8 +140,9 @@ audience_focused = true
 source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_jukan05"
 kind = "x_profile"
@@ -164,8 +167,9 @@ audience_focused = true
 source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_rmcentush"
 kind = "x_profile"
@@ -177,8 +181,9 @@ audience_focused = true
 source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_damonchen"
 kind = "x_profile"
@@ -203,8 +208,9 @@ audience_focused = true
 source_weight = 4
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_ptrubey"
 kind = "x_profile"
@@ -242,8 +248,9 @@ audience_focused = true
 source_weight = 4
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_paradislabs"
 kind = "x_profile"
@@ -255,8 +262,9 @@ audience_focused = true
 source_weight = 4
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_futurumequities"
 kind = "x_profile"
@@ -268,8 +276,9 @@ audience_focused = true
 source_weight = 4
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "x_oopsguess"
 kind = "x_profile"
@@ -281,8 +290,9 @@ audience_focused = true
 source_weight = 4
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
-enabled = true
+enabled = false
 
+# disabled_by_v3_creator_quality_gate: off-positioning / trading / politics / broad-noise
 [[source]]
 id = "global_ai_productivity"
 kind = "rss"
@@ -411,6 +421,279 @@ handle = "shao__meng"
 poll_minutes = 2
 china_focused = false
 audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_karpathy"
+kind = "x_profile"
+name = "X @karpathy — Andrej Karpathy"
+handle = "karpathy"
+creator_role = "research_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_simonw"
+kind = "x_profile"
+name = "X @simonw — Simon Willison"
+handle = "simonw"
+creator_role = "llm_tools_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_hamelhusain"
+kind = "x_profile"
+name = "X @hamelhusain — Hamel Husain"
+handle = "hamelhusain"
+creator_role = "evals_reliability"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_sh_reya"
+kind = "x_profile"
+name = "X @sh_reya — Shreya Shankar"
+handle = "sh_reya"
+creator_role = "evals_data_ai_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_eugeneyan"
+kind = "x_profile"
+name = "X @eugeneyan — Eugene Yan"
+handle = "eugeneyan"
+creator_role = "applied_ai_evals"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_chipro"
+kind = "x_profile"
+name = "X @chipro — Chip Huyen"
+handle = "chipro"
+creator_role = "ai_engineering_agents"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_badlogicgames"
+kind = "x_profile"
+name = "X @badlogicgames — Mario Zechner"
+handle = "badlogicgames"
+creator_role = "pi_agent_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_mitsuhiko"
+kind = "x_profile"
+name = "X @mitsuhiko — Armin Ronacher"
+handle = "mitsuhiko"
+creator_role = "ai_coding_systems"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_gneubig"
+kind = "x_profile"
+name = "X @gneubig — Graham Neubig"
+handle = "gneubig"
+creator_role = "openhands_agent_research"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_drjimfan"
+kind = "x_profile"
+name = "X @DrJimFan — Jim Fan"
+handle = "DrJimFan"
+creator_role = "robotics_world_models"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_fchollet"
+kind = "x_profile"
+name = "X @fchollet — François Chollet"
+handle = "fchollet"
+creator_role = "reasoning_arc_agi"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_lilianweng"
+kind = "x_profile"
+name = "X @lilianweng — Lilian Weng"
+handle = "lilianweng"
+creator_role = "ai_research_safety_agents"
+creator_quality = "core_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_lopopolo"
+kind = "x_profile"
+name = "X @_lopopolo — Ryan Lopopolo"
+handle = "_lopopolo"
+creator_role = "harness_agent_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_onusoz"
+kind = "x_profile"
+name = "X @onusoz — Onur Solmaz"
+handle = "onusoz"
+creator_role = "openclaw_local_agents"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_dexhorthy"
+kind = "x_profile"
+name = "X @dexhorthy — Dex Horthy"
+handle = "dexhorthy"
+creator_role = "harness_engineering"
+creator_quality = "core_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_ylecun"
+kind = "x_profile"
+name = "X @ylecun — Yann LeCun"
+handle = "ylecun"
+creator_role = "world_models_research"
+creator_quality = "core_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_drfeifei"
+kind = "x_profile"
+name = "X @drfeifei — Fei-Fei Li"
+handle = "drfeifei"
+creator_role = "spatial_intelligence_world_models"
+creator_quality = "core_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_demishassabis"
+kind = "x_profile"
+name = "X @demishassabis — Demis Hassabis"
+handle = "demishassabis"
+creator_role = "frontier_ai_world_models"
+creator_quality = "core_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
 source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120

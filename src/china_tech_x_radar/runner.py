@@ -48,11 +48,15 @@ def load_toml(path: Path) -> dict[str, Any]:
         return tomllib.load(f)
 
 
-def _sent_packet_counts_today(con: sqlite3.Connection) -> dict[str, int]:
+def _sent_packet_counts_today(con: sqlite3.Connection, cfg: dict[str, Any] | None = None) -> dict[str, int]:
     tz = ZoneInfo("Asia/Shanghai")
     now_local = datetime.now(tz)
     start_local = datetime.combine(now_local.date(), datetime.min.time(), tzinfo=tz)
     start_utc = start_local.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    if cfg and cfg.get("notification_epoch"):
+        epoch = str(cfg.get("notification_epoch"))
+        if epoch > start_utc:
+            start_utc = epoch
     rows = con.execute(
         """SELECT s.priority,a.editorial_packet_json FROM alert a JOIN signal s ON s.id=a.signal_id
            WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?""",
@@ -88,7 +92,7 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
         return False, "not_publishable"
     if decision == "REPLY" and not packet.get("target_url"):
         return False, "reply_without_verified_target"
-    counts = _sent_packet_counts_today(con)
+    counts = _sent_packet_counts_today(con, cfg)
     posts_sent = counts["p0_post"] + counts["p1_post"]
     replies_sent = counts["p0_reply"] + counts["p1_reply"]
     max_posts = int(cfg.get("max_post_packets_per_day", cfg.get("max_p1_post_packets_per_day", 1)))

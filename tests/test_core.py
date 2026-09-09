@@ -287,6 +287,19 @@ class CoreTests(unittest.TestCase):
             self.assertTrue(allowed)
             self.assertEqual(reason,"p1_reply_curated")
 
+    def test_p0_bypasses_daily_reply_cap(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "p0.db")
+            now = iso()
+            for i in range(4):
+                cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", ((str(i+1)*64)[:64],'s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
+                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\",\"content_group\":\"B_OPINION_VALUE\"}'))
+            con.commit()
+            cfg={"p0_min_confidence":0.75,"max_reply_packets_per_day":4,"max_b_reply_packets_per_day":2,"max_p1_reply_packets_per_day":4}
+            allowed,reason=notification_policy(con,{"priority":"P0","score":12},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/a/status/9"},cfg)
+            self.assertTrue(allowed)
+            self.assertEqual(reason,"p0_immediate")
+
     def test_atomic_budget_reservation_blocks_second_call(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "budget.db")

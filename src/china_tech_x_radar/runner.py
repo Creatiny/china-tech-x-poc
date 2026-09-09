@@ -92,6 +92,11 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
         return False, "not_publishable"
     if decision == "REPLY" and not packet.get("target_url"):
         return False, "reply_without_verified_target"
+    # P0 is exceptional by definition and must not be suppressed by ordinary P1 daily caps.
+    if priority == "P0":
+        if confidence < float(cfg.get("p0_min_confidence", 0.75)):
+            return False, f"p0_confidence_below_threshold:{confidence:.2f}"
+        return True, "p0_immediate"
     counts = _sent_packet_counts_today(con, cfg)
     posts_sent = counts["p0_post"] + counts["p1_post"]
     replies_sent = counts["p0_reply"] + counts["p1_reply"]
@@ -109,10 +114,6 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
             return False, "a_reply_daily_cap_reached"
         if group == "B_OPINION_VALUE" and counts["b_reply"] >= int(cfg.get("max_b_reply_packets_per_day", 2)):
             return False, "b_reply_daily_cap_reached"
-    if priority == "P0":
-        if confidence < float(cfg.get("p0_min_confidence", 0.75)):
-            return False, f"p0_confidence_below_threshold:{confidence:.2f}"
-        return True, "p0_immediate"
     if confidence < float(cfg.get("p1_min_confidence", 0.88)):
         return False, f"p1_confidence_below_threshold:{confidence:.2f}"
     if decision == "POST":

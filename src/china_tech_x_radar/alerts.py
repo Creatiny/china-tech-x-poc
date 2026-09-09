@@ -17,6 +17,8 @@ class FeishuSender:
         self.receive_id = os.environ.get("CHINA_TECH_FEISHU_RECEIVE_ID", "")
         self.receive_id_type = os.environ.get("CHINA_TECH_FEISHU_RECEIVE_ID_TYPE", "open_id")
         self._token: str | None = None
+        # Feishu is reachable directly; do not inherit unrelated macOS capture/VPN proxies.
+        self._opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
     def available(self) -> bool:
         return bool(self.app_id and self.app_secret and self.receive_id)
@@ -30,7 +32,7 @@ class FeishuSender:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with self._opener.open(req, timeout=20) as r:
             data = json.loads(r.read())
         token = data.get("tenant_access_token")
         if not token:
@@ -49,7 +51,7 @@ class FeishuSender:
             headers={"Authorization": "Bearer " + token, "Content-Type": "application/json; charset=utf-8"},
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with self._opener.open(req, timeout=20) as r:
             data = json.loads(r.read())
         if data.get("code") != 0:
             raise RuntimeError(f"Feishu send error code={data.get('code')} msg={data.get('msg')}")
@@ -76,7 +78,7 @@ class FeishuSender:
             headers={"Authorization": "Bearer " + token, "Content-Type": f"multipart/form-data; boundary={boundary}"},
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with self._opener.open(req, timeout=30) as r:
             data = json.loads(r.read())
         if data.get("code") != 0 or not (data.get("data") or {}).get("image_key"):
             raise RuntimeError(f"Feishu image upload error code={data.get('code')} msg={data.get('msg')}")

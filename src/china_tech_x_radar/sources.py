@@ -14,6 +14,19 @@ from email.utils import parsedate_to_datetime
 from typing import Any
 
 USER_AGENT = "ChinaTechXPoc/0.1 (+https://github.com/Creatiny/china-tech-x-poc)"
+
+
+def _urlopen(req: urllib.request.Request, timeout: int):
+    """Open external discovery traffic through the project-specific proxy when configured.
+
+    This intentionally does not inherit a potentially unrelated macOS HTTP proxy (for example
+    a local capture proxy used by another project).
+    """
+    proxy = str(os.environ.get("CHINA_TECH_HTTP_PROXY") or "").strip()
+    if proxy:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": proxy, "https": proxy}))
+        return opener.open(req, timeout=timeout)
+    return urllib.request.urlopen(req, timeout=timeout)
 TAG_RE = re.compile(r"<[^>]+>")
 WS_RE = re.compile(r"\s+")
 
@@ -122,7 +135,7 @@ def _request(url: str, state: dict[str, Any] | None, *, accept: str | None = Non
             headers["If-Modified-Since"] = state["last_modified"]
     req = urllib.request.Request(url, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=25) as r:
+        with _urlopen(req, timeout=25) as r:
             return r.status, r.read(1_500_000), {
                 "etag": r.headers.get("ETag") or "",
                 "last_modified": r.headers.get("Last-Modified") or "",
@@ -155,7 +168,7 @@ def fetch_github_releases(source: dict[str, Any], state: dict[str, Any] | None) 
             headers["If-Modified-Since"] = headers_state["last_modified"]
     req = urllib.request.Request(url, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=25) as r:
+        with _urlopen(req, timeout=25) as r:
             status = r.status
             body = r.read(1_500_000)
             meta = {"etag": r.headers.get("ETag") or "", "last_modified": r.headers.get("Last-Modified") or ""}

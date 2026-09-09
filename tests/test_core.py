@@ -345,6 +345,18 @@ class CoreTests(unittest.TestCase):
         self.assertIn(out["priority"], {"P0", "P1"})
         self.assertIn("productivity=", out["reason"])
 
+
+    def test_audience_source_can_apply_stricter_p1_threshold(self):
+        item = {"title": "AI agent update", "excerpt": "agent workflow", "published_at": datetime.now(timezone.utc)}
+        source = {"china_focused": False, "audience_focused": True, "require_productivity_term": True, "source_weight": 2, "p1_min_score": 9}
+        rules = {
+            "china_entities": [], "topic_terms": ["ai", "agent"],
+            "productivity_terms": ["agent", "workflow"], "high_impact_terms": [], "noise_terms": [],
+            "p0_max_age_minutes": 30, "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        out = classify(item, source, rules)
+        self.assertEqual(out["priority"], "P2")
+
     def test_editorial_prompt_enforces_new_language_and_viewpoint_rules(self):
         prompt = final_prompt({"priority":"P1","title":"AI coding agent launch","excerpt":"workflow","source_name":"S","canonical_url":"source","reason":"r","topic":"agent","target_mode":"TARGET_SEARCH_REQUIRED"})
         self.assertIn("Original posts are ALWAYS Chinese", prompt)

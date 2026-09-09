@@ -96,9 +96,11 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     else:
         weight = int(source.get("source_weight", 1))
         score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(productivity), 2) * 2 + min(len(high), 2) * 2
-        if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and high and score >= 7:
+        p0_min_score = int(source.get("p0_min_score", 7))
+        p1_min_score = int(source.get("p1_min_score", 5))
+        if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and high and score >= p0_min_score:
             priority = "P0"
-        elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= 5:
+        elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= p1_min_score:
             priority = "P1"
         else:
             priority = "P2"

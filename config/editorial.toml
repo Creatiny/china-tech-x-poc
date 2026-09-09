@@ -6,7 +6,7 @@ reasoning_effort = "low"
 call_timeout_seconds = 90
 
 # Bounded editorial budget. This is ChatGPT/Codex subscription usage, not paid X API traffic.
-budget_revision = "dual-group-opinion-value-v1"
+budget_revision = "ai-productivity-viewpoint-v3"
 max_gate_calls_per_day = 8
 max_final_calls_per_day = 5
 max_tokens_per_day = 180000

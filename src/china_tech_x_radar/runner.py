@@ -150,6 +150,8 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             initialized_before = bool(state and state.get("last_success_at"))
             try:
                 items, meta, not_modified = fetch_source(source, state)
+                qualified_this_poll = 0
+                max_qualified_this_poll = int(source.get("max_qualified_per_poll", 1000000))
                 if not_modified:
                     save_source_state(con, source_id, success=True, item_count=0)
                     counters["sources_success"] += 1
@@ -190,7 +192,10 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     if not initialized_before:
                         if published is None or result["age_minutes"] > float(rules.get("bootstrap_alert_max_age_minutes", 120)):
                             continue
+                    if qualified_this_poll >= max_qualified_this_poll:
+                        continue
                     ensure_alert(con, signal_id, result["priority"])
+                    qualified_this_poll += 1
                     counters["qualified_signals"] += 1
                 save_source_state(
                     con,

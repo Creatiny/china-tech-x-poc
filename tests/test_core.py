@@ -12,7 +12,7 @@ from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy
-from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today
+from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt
 
 
 class CoreTests(unittest.TestCase):
@@ -90,7 +90,7 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(out["priority"], "DROP")
 
 
-    def test_pre_gate_diagnosis_prioritizes_reply_growth(self):
+    def test_pre_gate_diagnosis_does_not_require_reply_volume(self):
         metrics = {
             "cycle_count": 2, "cycle_success_rate": 1.0, "review_worth_rate": 0.8,
             "reply_actions_total": 0, "original_posts_total": 0, "published_actions_total": 0,
@@ -100,13 +100,12 @@ class CoreTests(unittest.TestCase):
             "milestone_is_due": False, "evaluated_milestone_day": 3, "experiment_day": 1,
             "process_pass": False, "business_pass": False,
             "targets": {
-                "cycle_success_rate_min": 0.95, "reply_actions_total_min": 6,
-                "original_posts_total_min": 2, "followers_total_min": 8, "max_impressions_min": 100,
+                "cycle_success_rate_min": 0.95, "followers_total_min": 8,
                 "review_worth_rate_min": 0.5,
             },
         }
         d = diagnose(metrics, gate)
-        self.assertEqual(d["bottleneck"], "REPLY_ACQUISITION_PACE")
+        self.assertEqual(d["bottleneck"], "FOLLOWER_CONVERSION")
 
     def test_day15_growth_gate_requires_followers_and_distribution(self):
         metrics = {
@@ -305,6 +304,8 @@ class CoreTests(unittest.TestCase):
     def test_language_gate_rejects_ai_template_reply(self):
         packet = {
             "decision": "REPLY",
+            "content_group": "A_NEWS_FACT",
+            "content_bucket": "WHAT_CHANGES",
             "final_copy": "The bigger signal is that China's supply chain is changing. This suggests that the market will follow.",
         }
         violations = language_gate_violations(packet)
@@ -315,6 +316,7 @@ class CoreTests(unittest.TestCase):
         packet = {
             "decision": "REPLY",
             "content_group": "A_NEWS_FACT",
+            "content_bucket": "WHAT_CHANGES",
             "final_copy": "CXMT still hasn't shared yields or stack capacity. If qualification goes well, commercial shipments could start in 2027.",
         }
         self.assertEqual(language_gate_violations(packet), [])
@@ -323,9 +325,41 @@ class CoreTests(unittest.TestCase):
         packet = {
             "decision": "REPLY",
             "content_group": "B_OPINION_VALUE",
+            "content_bucket": "WHAT_I_BELIEVE",
             "final_copy": "Shanghai AI Lab can run one inference pipeline across three domestic chips.",
         }
         self.assertIn("b_group_missing_core_position", language_gate_violations(packet))
+
+
+    def test_global_ai_productivity_source_can_qualify_without_china_entity(self):
+        item = {"title": "New AI coding agent adds persistent memory and verification", "excerpt": "developer workflow automation", "published_at": datetime.now(timezone.utc)}
+        source = {"china_focused": False, "audience_focused": True, "require_productivity_term": True, "source_weight": 5}
+        rules = {
+            "china_entities": ["china", "qwen"],
+            "topic_terms": ["ai", "agent", "coding"],
+            "productivity_terms": ["agent", "coding", "developer", "workflow", "verification"],
+            "high_impact_terms": ["launch"], "noise_terms": [],
+            "p0_max_age_minutes": 30, "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+        }
+        out = classify(item, source, rules)
+        self.assertIn(out["priority"], {"P0", "P1"})
+        self.assertIn("productivity=", out["reason"])
+
+    def test_editorial_prompt_enforces_new_language_and_viewpoint_rules(self):
+        prompt = final_prompt({"priority":"P1","title":"AI coding agent launch","excerpt":"workflow","source_name":"S","canonical_url":"source","reason":"r","topic":"agent","target_mode":"TARGET_SEARCH_REQUIRED"})
+        self.assertIn("Original posts are ALWAYS Chinese", prompt)
+        self.assertIn("Replies MUST follow the verified parent-post language", prompt)
+        self.assertIn("WHAT_I_BELIEVE", prompt)
+        self.assertIn("News is raw material", prompt)
+
+    def test_chinese_template_is_rejected_by_language_gate(self):
+        packet = {
+            "decision": "POST",
+            "content_group": "B_OPINION_VALUE",
+            "content_bucket": "WHAT_I_BELIEVE",
+            "final_copy": "真正重要的不是模型参数，而是验证。",
+        }
+        self.assertTrue(any(v.startswith("banned_phrase:真正重要的不是") for v in language_gate_violations(packet)))
 
 
 if __name__ == "__main__":

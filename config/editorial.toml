@@ -5,7 +5,7 @@ model = "gpt-5.6-luna"
 reasoning_effort = "low"
 call_timeout_seconds = 90
 
-# Reply-first quota. This is ChatGPT/Codex subscription usage, not paid X API traffic.
+# Bounded editorial budget. This is ChatGPT/Codex subscription usage, not paid X API traffic.
 budget_revision = "dual-group-opinion-value-v1"
 max_gate_calls_per_day = 8
 max_final_calls_per_day = 5
@@ -20,7 +20,7 @@ p0_direct_final_min_score = 10
 send_skip_to_feishu = false
 render_editorial_cards = true
 
-# Operator-notification policy. P0 is immediate; P1 is curated to match Stage-A output targets.
+# Operator-notification policy. These are attention-protection ceilings, NOT publishing quotas.
 p0_min_confidence = 0.75
 p1_min_confidence = 0.88
 p1_post_min_score = 10

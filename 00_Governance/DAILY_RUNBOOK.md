@@ -1,135 +1,70 @@
-# Daily Runbook v2.0
+# Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v2.3 and `EXECUTION_PLAN.md` v1.2.
+Authority: `PROJECT_SPEC.md` v3.0 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
-Grow relevant followers while producing clean evidence for the growth formula. Do not optimize posting volume for its own sake.
+Find and surface only things worth telling people who care about AI technology and turning AI into productivity.
 
-## 1. Receive / Review Personal Feishu Signals
+There is no daily publishing quota.
 
-Production China Tech publishing signals arrive **only in the operator's personal Feishu**.
+## 1. Discover
 
-For each qualified P0/P1 signal, check:
+Continuously scan:
 
-- freshness;
-- source quality;
-- fit with China Tech positioning;
-- live X conversation/target quality;
-- whether we can add China context, data, comparison, technical explanation, or global implication.
+- global AI/agent/coding/productivity developments;
+- China-side AI/tech evidence with differentiated value;
+- live X discussions suitable for high-value replies;
+- useful lessons from Kenny's own AI building/research work.
 
-## 2. Stage-A Publishing Target
+## 2. Classify
 
-When enough qualified opportunities exist:
+Assign:
 
-- 3–5 strategic replies/day;
-- approximately one differentiated original post on active days.
+- `WHAT_I_BELIEVE`;
+- `WHAT_I_LEARNED`;
+- `WHAT_CHANGES`;
+- `SKIP`.
 
-Prefer quality over quota. Do not fill the timeline with generic or late replies merely to satisfy the count.
+## 3. Select POST / REPLY / SKIP
 
-## 3. Reply Selection
+### POST
+Only when there is a real thesis + evidence + audience consequence. Draft in Chinese.
 
-Maintain two independent candidate pools:
+### REPLY
+Only with a verified direct X target and one of the four reply-value types. Follow parent language.
 
-- A: news/fact additions used as an acquisition control;
-- B: owner opinion, practical value, entrepreneurship lessons, frameworks, and deeper reasoning used as the strategic mainline.
+### SKIP
+News restatement, generic implication, low-value/late target, or weak follow reason.
 
-Do not stop B discovery after finding an A candidate. At similar quality, prefer B. Keep at most two A and two B Reply notifications per day.
+## 4. Publish
 
-Prefer replies where:
+Human publishes manually.
 
-- target post is still early/growing;
-- target account is relevant to China AI/chips/robotics/EV/global-tech discussion;
-- the conversation already has or is likely to gain attention;
-- our reply adds differentiated information or interpretation;
-- wording is concise and human, not generic AI prose.
-
-Record target account and target-post age whenever possible.
-
-## 4. Original Selection
-
-Publish an original when there is:
-
-- a material current signal;
-- unique China-side data/context;
-- a useful synthesis/comparison;
-- a differentiated thesis/global implication;
-- a winning reply/theme worth developing into owned distribution.
-
-Track link/no-link and media treatment as formula variables.
-
-Do not select or schedule Article topics from realtime signals. Kenny chooses Article topics and theses after deep research; once assigned, support evidence collection, fact-checking, English drafting, charts, and publication packaging.
-
-## 5. Mandatory Language Gate
-
-Before showing any paste-ready Reply or Original Post to the operator, apply `PROJECT_SPEC.md` Section 17.
-
-- Reply: direct response to the target claim, 1–3 short sentences, normally <=80 words.
-- Original: strongest fact first, 2–5 short paragraphs, normally <=130 words.
-- Reject banned template phrases, report/analyst tone, generic filler, forced contrast, and em-dash-heavy prose.
-- Rewrite once when the draft fails.
-- If it still fails, store `SKIP`; do not send the publishing packet.
-
-## 6. Human Publish
-
-Publishing remains manual on X. No automatic reply/post/DM is authorized.
-
-After publishing, return the X URL to ChatGPT when practical so the action can be linked to the stored signal and formula record.
-
-## 7. Outcome Capture
-
-Capture public/native outcomes as available:
-
-- impressions;
-- engagements;
-- likes/replies/reposts/quotes/bookmarks;
-- profile visits when visible;
-- daily follower total.
-
-Unknowns remain null, never zero.
-
-## 8. Daily KPI + Formula Review
+## 5. Review
 
 Review:
 
-- follower total/delta;
-- reply and original counts;
-- 100/300/1000+ impression repetition;
-- source/alert latency and misses;
-- target tier and target-post age;
-- angle/hook/media/link performance;
-- formula sample status;
-- first broken growth stage.
+- STOP;
+- ENGAGE;
+- PROFILE INTEREST;
+- FOLLOW REASON;
+- FOLLOW;
+- which thesis/lesson should be repeated or deepened;
+- which high-impression replies failed to convert;
+- alert quality and operator time.
 
-Then choose **at most one growth variable** to change/bias the next day and, if necessary, one measurement repair.
+Do not use “publish more” as a default corrective action.
 
-## 9. Milestone Reviews
 
-Use `OPERATING_KPI.md` for Day 3 / 7 / 10 / 15 / 30 gates.
+## 6. A/B Reply Handling
 
-If on track: continue the proven direction.
+For each qualified reply target, classify `A_NEWS_FACT` (fact/correction/case acquisition reply) or `B_OPINION_VALUE` (owner viewpoint or real-practice reply). B is the strategic mainline. Existing daily A/B limits are notification ceilings, never output goals.
 
-If off track: diagnose in order:
+## 7. Human Voice Gate
 
-```text
-signal quality/coverage
- -> target quality
- -> reply timing
- -> content angle/value
- -> impressions/distribution
- -> profile/follower conversion
- -> original-content distribution
-```
+Before any packet reaches the operator, apply `PROJECT_SPEC.md` Section 19. A fluent draft that sounds like an AI summary is not publish-ready.
 
-Do not add infrastructure unless the failed stage is actually an infrastructure bottleneck.
+## 8. Article Authority
 
-## 10. Growth Formula Evidence
-
-Use `GROWTH_FORMULA.md`.
-
-- 1 win = anecdote;
-- 2 = hypothesis;
-- >=3 repeated wins = candidate;
-- >=5 repeated wins + follower-positive cohorts = scale bias.
-
-Never declare a formula from one breakout post.
+Do not derive or schedule Article topics from realtime signals. Kenny selects Article topics/theses; the system supports them after assignment.

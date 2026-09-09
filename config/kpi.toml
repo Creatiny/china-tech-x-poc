@@ -1,75 +1,48 @@
 [baseline]
 followers = 4
-tracked_posts = 15
-total_views = 396
-provisional_avg_views_per_tracked_post = 26.4
-note = "Follower growth is the primary POC business KPI. Commercial monetization becomes a gated downstream objective after audience leverage exists."
+note = "Relevant follower growth and follow reason are primary. Posting volume is not a KPI."
 
 [milestone.day3]
 cycle_success_rate_min = 0.95
 median_alert_latency_minutes_max = 15
 review_worth_rate_min = 0.50
-reply_actions_total_min = 6
-original_posts_total_min = 2
 followers_total_min = 8
-max_impressions_min = 100
-business_signal_mode = "FOLLOWER_COLD_START"
+business_signal_mode = "FOLLOW_REASON_COLD_START"
 
 [milestone.day7]
 cycle_success_rate_min = 0.97
 median_alert_latency_minutes_max = 10
 review_worth_rate_min = 0.60
-reply_actions_total_min = 18
-original_posts_total_min = 5
 followers_total_min = 15
-actions_over_100_impressions_min = 3
-max_impressions_min = 300
-business_signal_mode = "FOLLOWER_TRACTION"
+business_signal_mode = "FOLLOW_REASON_TRACTION"
 
 [milestone.day10]
 cycle_success_rate_min = 0.97
 median_alert_latency_minutes_max = 10
 review_worth_rate_min = 0.65
-reply_actions_total_min = 27
-original_posts_total_min = 7
 followers_total_min = 25
-actions_over_100_impressions_min = 5
-max_impressions_min = 500
 median_operator_minutes_per_day_max = 30
-business_signal_mode = "REPEATABLE_GROWTH"
+business_signal_mode = "FOLLOW_REASON_REPEATABILITY"
 
 [milestone.day15]
 cycle_success_rate_min = 0.98
 median_alert_latency_minutes_max = 10
 review_worth_rate_min = 0.70
-reply_actions_total_min = 40
-original_posts_total_min = 10
 followers_total_min = 40
-actions_over_300_impressions_min = 3
-max_impressions_min = 1000
 median_operator_minutes_per_day_max = 30
-business_signal_mode = "AUDIENCE_ENGINE"
+business_signal_mode = "AUDIENCE_IDENTITY_EMERGING"
 
 [milestone.day30]
 cycle_success_rate_min = 0.98
 median_alert_latency_minutes_max = 10
 review_worth_rate_min = 0.75
-reply_actions_total_min = 90
-original_posts_total_min = 25
 followers_total_min = 100
-actions_over_300_impressions_min = 10
-actions_over_1000_impressions_min = 3
-max_impressions_min = 5000
 median_operator_minutes_per_day_max = 30
-business_signal_mode = "MONTH1_GROWTH_VALIDATED"
+business_signal_mode = "MONTH1_FOLLOW_REASON_VALIDATED"
 
 [stretch.day30]
 followers_total = 200
-reply_actions_total = 150
-original_posts_total = 30
-actions_over_1000_impressions = 5
-max_impressions = 10000
-note = "Stretch means strong Month-1 traction, not a required gate."
+note = "Stretch is directional; no output-volume requirements are attached."
 
 [growth_horizon]
 day60_followers_min = 250
@@ -79,11 +52,4 @@ day90_followers_target = 1000
 month6_followers_min = 2000
 month6_followers_target = 5000
 month12_followers_target = 10000
-note = "These are project planning targets calibrated to current account size, 30-minute operator budget, current X research, and observed creator case studies. Recalibrate from actual Day-30 follower conversion."
-
-[monetization_readiness]
-monitor_inbound_from_followers = 500
-prepare_sponsorship_media_kit_from_followers = 1000
-actively_test_brand_affiliate_collabs_from_followers = 2000
-commercial_scale_target_followers = 10000
-note = "No universal sponsor threshold exists. These are internal readiness gates; engagement quality and niche relevance can justify earlier opportunities."
+note = "Recalibrate from actual follower conversion."

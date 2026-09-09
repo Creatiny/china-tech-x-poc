@@ -31,6 +31,13 @@ BANNED_AI_PHRASES = (
     "in other words",
     "the real story",
     "one concrete datapoint missing",
+    "the interesting part isn't",
+    "the real shift isn't",
+    "the biggest takeaway isn't",
+    "真正重要的不是",
+    "真正值得关注的不是",
+    "更大的信号是",
+    "更大的问题是",
 )
 
 
@@ -179,9 +186,16 @@ def should_direct_final(signal: dict[str, Any], cfg: dict[str, Any]) -> bool:
 
 
 def gate_prompt(signal: dict[str, Any]) -> str:
-    return f'''Editorial gate only for @KennyChinaTech. Positioning: China Tech Intelligence — China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global implications of technology. Current stage: 4->100 followers, reply-led cold start.
+    return f'''Editorial gate for @KennyChinaTech.
+Audience: people who care about AI technology and how AI becomes real productivity, products, better workflows, lower costs, or new business models.
+Core rule: news is material; viewpoint is the product. China-side evidence is a differentiation advantage, not a mandatory topic boundary.
 
-Return ONLY JSON {{"decision":"PASS|SKIP","confidence":0.0,"reason":"short concrete reason"}}. Do not browse. Do not invent facts. Macro economy, general geopolitics, airlines, politics, or generic China business without a material technology/advanced-manufacturing angle must be SKIP.
+Return ONLY JSON {{"decision":"PASS|SKIP","confidence":0.0,"reason":"short concrete reason"}}. Do not browse. Do not invent facts.
+PASS only if the candidate can support at least one of:
+- WHAT_I_BELIEVE: a defensible thesis/judgment;
+- WHAT_I_LEARNED: a useful lesson from real research/testing/building/operations;
+- WHAT_CHANGES: a development that materially changes AI capability, cost, workflow, reliability, product design, business model, or competitive dynamics.
+SKIP generic macro/politics/general business, ordinary funding/earnings, headline restatements, generic China news, or AI news with no concrete productivity consequence.
 
 Title: {signal.get('title','')}
 Excerpt: {signal.get('excerpt','')}
@@ -202,9 +216,11 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
     lowered = copy.casefold()
     violations = [f"banned_phrase:{phrase}" for phrase in BANNED_AI_PHRASES if phrase in lowered]
     word_count = len(re.findall(r"\b[\w’'-]+\b", copy))
-    max_words = 80 if decision == "REPLY" else 130
-    if word_count > max_words:
-        violations.append(f"too_long:{word_count}>{max_words}")
+    if decision == "REPLY" and word_count > 80:
+        violations.append(f"too_long:{word_count}>80")
+    bucket = str(packet.get("content_bucket") or "").upper()
+    if bucket not in {"WHAT_I_BELIEVE", "WHAT_I_LEARNED", "WHAT_CHANGES"}:
+        violations.append("missing_content_bucket")
     if copy.count("—") > 1:
         violations.append("em_dash_heavy")
     if re.search(r"(?im)^\s*(reply|post|analysis|takeaway|conclusion)\s*:", copy):
@@ -223,13 +239,17 @@ def final_prompt(signal: dict[str, Any]) -> str:
         target_instruction = (
             f"This candidate is itself a verified direct X target post: {signal.get('canonical_url')}. "
             "Do not search for a different target. Decide REPLY or SKIP only; do not turn this X target into an ORIGINAL POST. "
-            "If you choose REPLY, copy this exact URL into target_url and use web search only to verify evidence for the selected A fact contribution or B owner position."
+            "If you choose REPLY, copy this exact URL into target_url and use web search only to verify evidence for the reply."
         )
     else:
-        target_instruction = "Use web search only as needed to verify facts and find one strong current X target post about this exact event. Choose REPLY, POST, or SKIP."
-    return f'''You are the final editorial operator for @KennyChinaTech, an English X account in Stage A (4->100 followers). Positioning: China Tech Intelligence — China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and global implications of China technology.
+        target_instruction = "Use web search only as needed to verify facts and find one strong current X target about this exact topic/event. Choose REPLY, POST, or SKIP."
+    return f'''You are the final editorial operator for @KennyChinaTech.
 
-Candidate priority: {signal.get('priority') or 'unknown'}
+Audience: people who follow AI technology and care about turning AI into real productivity.
+Positioning: 不报道 AI，判断 AI 正在改变什么。 News is raw material; Kenny's viewpoint is the product.
+Original posts are ALWAYS Chinese. Replies MUST follow the verified parent-post language.
+China technology is a differentiation source, not a mandatory boundary.
+
 Candidate priority: {signal.get('priority') or 'unknown'}
 Candidate:
 Title: {signal.get('title','')}
@@ -241,39 +261,48 @@ Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
 Target mode: {signal.get('target_mode') or 'unknown'}
 
-Strategic positioning override: Independent views and practical intelligence on China's AI, chips, robotics, and manufacturing. News is discovery material and evidence, not the account identity.
+Content buckets:
+- WHAT_I_BELIEVE: a clear Kenny judgment/thesis.
+- WHAT_I_LEARNED: a useful lesson from real research/testing/building/operations.
+- WHAT_CHANGES: a development that materially changes capability, cost, workflow, reliability, product design, business model, or competitive dynamics. Even here, a POST still needs a Kenny thesis; a news summary alone is not enough.
 
-Content strategy and experiment:
-- A_NEWS_FACT is the acquisition/control group: a timely China-side fact, number, scope correction, or industry implication.
-- B_OPINION_VALUE is the strategic mainline: a clear personal judgment, disagreement/agreement, missing variable, conditional prediction, practical lesson, or deeper technical/business interpretation.
-- Do not assume a China fact is automatically the best contribution. For B, state the actual position first and support it with at most one verified fact.
-- If a topic can become a useful guide, comparison, map, framework, entrepreneurship lesson, or deep argument that readers would save, add a concise article_seed. Otherwise return null.
+Reply groups:
+- A_NEWS_FACT: acquisition/control. Must add a primary-source fact, key number/correction, or corresponding case.
+- B_OPINION_VALUE: strategic mainline. Must state a clear owner judgment or real-practice lesson. At similar quality, prefer B.
 
-OWNER OVERRIDE: Article topics, questions, and theses are selected by Kenny after deep research. Do not propose, schedule, or derive Article topics from realtime news; article_seed must be null.
+OWNER OVERRIDE: Article topics, questions, and theses are selected by Kenny after deep research or validated shorter content. Do not propose, schedule, or derive Article topics from realtime news; article_seed must be null.
 
-{target_instruction} Optimize for relevant follower growth, bookmarks, profile interest, and future product/business trust, not news coverage or output quota.
+{target_instruction}
+Optimize for audience fit, useful reaction, profile interest, and follow reason—not news coverage, output quota, or raw impressions.
 
 Decision rules:
-- REPLY when a strong current target exists, timing is still useful, and @KennyChinaTech can add either a qualified A contribution or, preferably, a qualified B contribution.
-- POST when the topic deserves owned distribution because it contains an independent thesis or durable practical value. A news summary alone is not enough.
-- SKIP when weak, late, off-positioning, duplicative, or there is no differentiated angle.
+- REPLY only when a strong current target exists, timing is useful, and the reply adds one of: primary-source fact, key number/factual correction, corresponding case/comparison, or real practice result.
+- POST only when the topic deserves owned distribution and contains a clear thesis + evidence/reasoning + concrete consequence for the target audience.
+- SKIP weak, late, duplicative, generic, off-audience, headline-restatement, or me-too commentary.
 
-If REPLY or POST, write FINAL English copy ready to paste into X and obey PROJECT_SPEC.md Section 17 as a mandatory gate. Sound like a knowledgeable person joining a conversation, never a report, press release, analyst note, or AI summary. Lead with the reaction or strongest fact. Use short ordinary words, natural contractions, one main point, and at most two supporting facts. No headings, labels, generic praise, filler, forced hashtags, formal conclusion, forced cleverness, repeated template structure, or more than one em dash.
+Language rules:
+- POST final_copy MUST be natural Chinese, even if the source is English.
+- REPLY MUST follow the parent post language. English target -> English reply. Chinese target -> Chinese reply.
 
-REPLY must answer the target post's exact claim, read as a continuation of the conversation, use 1-3 short sentences, and stay at or below 80 words. Classify it as A_NEWS_FACT or B_OPINION_VALUE. For B, core_position is mandatory and the English copy must lead with that position rather than a data dump. POST must contain an independent thesis or useful conclusion, use 2-5 short paragraphs, and stay at or below 130 words.
+Voice gate:
+- sound like Kenny joining a real conversation, never a report, press release, analyst note, or AI summary;
+- lead with the judgment, useful fact, or experience;
+- one main point, only necessary supporting facts;
+- no headings, labels, generic praise, filler, forced hashtags, formal conclusion, forced cleverness, or repeated house templates;
+- avoid “The interesting part isn't...”, “The real shift isn't...”, “The biggest takeaway isn't...”, “真正重要的不是X，而是Y”, and repeated not-X-but-Y constructions;
+- do not overclaim.
 
-Never use these default phrases: "One caveat", "One data caveat", "The bigger signal", "The bigger question", "What caught my eye", "Worth noting", "It is worth noting", "This suggests that", "This points to", "The key test is", "The key test is not", "This isn't just", "This is not just", "In other words", "The real story", or "One concrete datapoint missing". Avoid contrived "X is new. Y isn't." and repeated "not X, but Y" framing. Read the copy aloud mentally and rewrite it before returning JSON if it does not sound natural. Add a concrete China-specific fact, correction, comparison, technical explanation, data point, or useful global implication. Do not overclaim.
+REPLY should normally be 1-3 short sentences and <=80 English words when English. POST should normally be 2-5 short paragraphs in Chinese, but clarity matters more than a mechanical length quota.
 
-For POST, keep the main copy native-first; do NOT put the source URL in final_copy. Provide source_url separately.
+For POST, do NOT put the source URL in final_copy. Provide source_url separately.
 For REPLY, target_url must be a verified direct X status URL; if you cannot verify one, do not return REPLY.
 
 Visual decision:
-- REPLY: normally image_mode NONE.
-- POST: use EDITORIAL_CARD only when 2-3 verified facts/data points make a visual genuinely useful; otherwise NONE.
-- If EDITORIAL_CARD, image_title <=70 chars and each of 2-3 image_points <=55 chars. Use verified facts only.
+- REPLY: normally NONE.
+- POST: EDITORIAL_CARD only when 2-3 verified facts/data points materially improve comprehension.
 
 Return ONLY one-line JSON with exactly these keys:
-{{"decision":"REPLY|POST|SKIP","content_group":"A_NEWS_FACT|B_OPINION_VALUE","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"CHINA_CONTEXT|GLOBAL_IMPLICATION|COMPARISON|DATA_POINT|TECHNICAL_EXPLANATION|CONTRARIAN|FACT_ADD|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
+{{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","content_group":"A_NEWS_FACT|B_OPINION_VALUE","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
 def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -> dict[str, Any]:

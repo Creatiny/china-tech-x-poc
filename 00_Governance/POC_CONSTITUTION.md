@@ -1,123 +1,66 @@
-# China Tech X POC Constitution v1.3
+# China Tech X POC Constitution v2.0
 
 ## 1. North Star
 
-Build a large, relevant China Tech follower base and owned distribution asset on X, discover the repeatable follower-growth formula, and monetize that audience leverage later through aligned commercial opportunities.
+Build a relevant audience around one promise:
 
-## 2. Priority Hierarchy
+> **关注 AI，也关注 AI 到底怎样变成真正的生产力。**
 
-### P0 — Audience growth validation
+Relevant follower growth and durable follow reason outrank posting volume.
 
-Prove or falsify that better signal timing, target selection, differentiated China Tech context, and original-content treatment create repeatable relevant follower growth. Milestone follower KPI and formula discovery are the primary POC authority.
+## 2. Non-Negotiable Principles
 
-### P1 — Repeatable operating loop
+1. News is material; viewpoint is the product.
+2. Content topics may vary; the audience must remain coherent.
+3. Original content is Chinese only.
+4. Replies follow the parent-post language.
+5. No daily minimum post/reply/Article quota.
+6. China is a differentiation source, not a universal topic gate.
+7. Prefer real practice, evidence, numbers, primary sources, and concrete cases over generic commentary.
+8. High impressions without engagement/profile/follow conversion are not sufficient evidence of success.
+9. Publishing remains human-controlled.
+10. Tools and infrastructure must solve measured bottlenecks, not create activity for its own sake.
 
-Create a reliable signal -> alert -> human action -> outcome loop within 30 minutes/day.
+## 3. Content System
 
-### P2 — Automation efficiency
+All publishable content belongs to:
 
-Automate only the bottlenecks proven by P0/P1 evidence.
+- `WHAT_I_BELIEVE`;
+- `WHAT_I_LEARNED`;
+- `WHAT_CHANGES`.
 
-### P3 — Platform learning
+A pure headline/news summary normally fails the gate.
 
-OPC, AI Marketing OS, local-model routing, and generalized agent infrastructure are downstream learning objectives.
+## 4. Reply Value Gate
 
-## 3. Non-Negotiable Rules
+A surfaced reply must add one of:
 
-1. Business evidence outranks tool exploration and infrastructure completeness.
-2. No infrastructure component may block a runnable business experiment unless it is actually required for signal acquisition, operator notification, legal/platform compliance, paid-spend control, or publishing authority.
-3. No tool is adopted without a proven bottleneck, expected benefit, cost, success metric, and exit path.
-4. The China Tech account positioning remains frozen during the active 30-day POC unless the human owner explicitly changes it.
-5. Publishing quotas cannot replace qualified distribution opportunities.
-6. Posts and replies remain human-published unless a separate publishing-authority gate is approved.
-7. Paid data access requires an evidence-backed budget gate and hard spend stop.
-8. A failed optional subsystem must degrade gracefully rather than stop the core business loop.
-9. Technical history is preserved, but stale architecture decisions do not override a later explicit human product decision.
+- primary-source information;
+- a key number/factual correction;
+- a corresponding case/comparison;
+- a real practice result.
 
-## 4. Account Positioning
-
-**China Tech Intelligence** — explain what is happening in China technology and why it matters globally.
-
-## 5. Core Content Pillars
-
-- China AI
-- Semiconductors and AI infrastructure
-- Robotics and hardware
-- EV and advanced manufacturing
-- China tech and global business
-
-The operating system may prioritize a smaller subset when evidence shows stronger distribution.
-
-## 6. Roles
+## 5. Roles
 
 ### Human operator
-
-- final product and strategy judgment;
-- publishing authority;
-- requirement/architecture/paid-spend decisions;
-- final reply selection and editing;
-- outcome interpretation.
+Final strategy judgment and X publishing authority.
 
 ### ChatGPT
-
-- analysis and research;
-- reply/original-post drafting and refinement;
-- experiment review;
-- evidence-backed operating recommendations.
+Research, viewpoint development, live topic/reply discovery, drafting, analytics review, and thesis accumulation.
 
 ### Mac mini runtime
-
-- free-source polling;
-- normalization and deduplication;
-- deterministic filtering;
-- personal Feishu alert delivery;
-- growth-formula variable/outcome storage;
-- local evidence storage;
-- health logging.
-
-### Eden
-
-- research, creator intelligence, memory, and retrospective analysis;
-- not the sole realtime discovery path;
-- use should be selective while credits are scarce.
-
-### MomentGrid OPC
-
-- optional implementation/governance control plane;
-- not required before business validation;
-- never part of the per-signal runtime path;
-- may be reconnected when evidence shows enough implementation/governance complexity to justify it.
+Continuous collection, prefiltering, editorial enrichment, Feishu opportunities, evidence storage, health logging.
 
 ### X
+Distribution and market feedback; manual publishing only.
 
-- distribution and market feedback;
-- manual publishing only in the active experiment;
-- paid API blocked until a separate budget gate.
+## 6. Self Check
 
-## 7. Tool Admission Rule
+Before action:
 
-Every proposed tool must answer:
-
-```text
-Problem solved:
-Evidence that problem exists:
-Expected impact:
-Mandatory cost:
-Success metric:
-Failure condition:
-Exit/migration path:
-Why now:
-```
-
-If `Why now` cannot be answered with business evidence, defer the tool.
-
-## 8. Self Check Before Any Action
-
-1. Does this create or improve business evidence now?
-2. Does this improve signal timeliness, actionability, distribution probability, or operator time?
-3. Is the bottleneck proven rather than assumed?
-4. Can a cheaper/smaller mechanism test the same hypothesis?
-5. Is the capability verified rather than inferred?
-6. Does the action cross a requirement, architecture, paid-spend, publishing, secret-access, destructive, or policy boundary?
-
-If 1–4 do not justify the work, backlog it. If 6 is yes, stop at the corresponding Human Gate.
+1. Does this help the target AI-productivity audience?
+2. Is there a real viewpoint/lesson/change?
+3. Is it more than a news restatement?
+4. Can we support it with evidence or practice?
+5. Does it strengthen a follow reason?
+6. Is the language rule satisfied?

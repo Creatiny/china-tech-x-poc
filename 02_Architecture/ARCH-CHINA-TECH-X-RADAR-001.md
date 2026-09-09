@@ -229,7 +229,7 @@ Daily follower snapshots are joined as cohorts rather than falsely assigning ove
 
 Raw deterministic P0/P1 output is not operator-facing. Ambiguous candidates may pass through a low-reasoning no-search gate; high-confidence tech candidates and gate-passed candidates receive final bounded Codex enrichment with web verification/search as needed.
 
-The final result is `POST`, `REPLY`, or `SKIP`. `SKIP` is stored silently. `REPLY` requires a verified direct X status URL. `POST/REPLY` receives paste-ready conversational English copy, source provenance, urgency, and an explicit visual decision.
+The final result is `POST`, `REPLY`, or `SKIP`. `SKIP` is stored silently. `REPLY` requires a verified direct X status URL. `POST/REPLY` receives paste-ready conversational copy, source provenance, urgency, and an explicit visual decision. POST is Chinese; REPLY follows the verified target post language.
 
 The runtime uses the already authenticated local ChatGPT/Codex OAuth runtime. Daily gate/final call limits and logged token-proxy caps prevent uncontrolled quota consumption. No OpenAI Platform API key is required.
 
@@ -292,7 +292,7 @@ No component in this architecture may create a chargeable X read/stream or publi
 Editorial enrichment and Feishu delivery are separate gates. A publishable packet is evaluated by `priority × decision × confidence × score × daily-slot` policy before it reaches Feishu.
 
 - P0 passes immediately after the P0 confidence floor.
-- P1 POST/REPLY uses stricter thresholds and daily caps.
+- P1 POST/REPLY uses stricter thresholds and notification ceilings. These are attention-protection ceilings, not output targets.
 - rejected-by-policy publishable candidates become `EDITORIAL_HOLD` with the packet preserved.
 - Feishu formatting includes the priority in the first line.
 

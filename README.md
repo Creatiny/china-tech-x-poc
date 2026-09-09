@@ -10,7 +10,7 @@ This repository is the canonical product, experiment, and operating definition f
 
 ## North Star
 
-Build a large, relevant English-language China Tech audience on X, discover the repeatable follower-growth formula, then monetize audience leverage through aligned commercial cooperation and platform/affiliate/owned-media opportunities. During the current POC, **relevant follower growth is the primary business KPI**.
+Build a relevant audience on X around AI technology and how AI becomes real productivity. **News is material; viewpoint is the product. Original content is Chinese; replies follow the parent-post language. Relevant follower growth and follow reason are the primary business KPIs.**
 
 ## Current Priority — Business Validation First
 

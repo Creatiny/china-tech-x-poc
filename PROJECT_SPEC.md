@@ -1,458 +1,366 @@
-# China Tech X POC — Canonical Project Spec v2.3
+# China Tech X POC — Canonical Project Spec v3.0
 
 ## 0. Authority
 
-**Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`
-
-**Effective:** 2026-09-01
+**Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
+**Effective:** `2026-09-09`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
+If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.
 
-If another repository document, old issue, old PR, conversation, historical change proposal, or runtime comment conflicts with this file, **this file wins unless the human owner explicitly approves a newer spec revision and it is merged to `main`**.
-
-Detailed canonical documents subordinate to this spec are:
-
-1. `EXECUTION_PLAN.md` — active execution sequence;
-2. `00_Governance/OPERATING_KPI.md` — exact milestone KPI;
-3. `00_Governance/GROWTH_FORMULA.md` — formula variables/evidence standard;
-4. `00_Governance/PROJECT_STATUS.md` — current runtime/experiment state;
-5. `01_Requirements/REQ-CHINA-TECH-X-RADAR-001.md` — product/runtime requirements;
-6. `02_Architecture/ARCH-CHINA-TECH-X-RADAR-001.md` — runtime architecture;
-7. `03_Packs/PACK-CHINA-TECH-X-RADAR-001.md` — executable delivery plan;
-8. `00_Governance/POC_CONSTITUTION.md` — governance principles.
-
-Historical documents remain for auditability but do not override this spec.
+Historical files remain for auditability only. They do not control current execution.
 
 ## 1. Business Goal
 
-Build `@KennyChinaTech` into a large, relevant English-language **China Tech audience and distribution asset on X**, then monetize that audience through aligned commercial cooperation and platform/affiliate/owned-media opportunities.
+Build `@KennyChinaTech` into a trusted X account for people who:
 
-The business sequence is fixed:
+- care about AI technology;
+- care more about what AI changes than about launch-news itself;
+- want to turn AI into real productivity, products, better workflows, lower cost, or new business models.
 
-```text
-Relevant follower growth
-    -> owned distribution
-    -> China Tech authority / audience leverage
-    -> commercial partnerships and other monetization
-```
+The account is no longer operated as an English-language China-tech news account.
 
-### Current North Star
-
-During the current POC, the primary business KPI is **relevant follower growth**.
-
-Revenue is the ultimate objective, but **early revenue is not a Day-30 requirement** and no artificial paid service may be invented merely to claim monetization validation.
-
-## 2. Account Positioning
-
-**China Tech Intelligence — what is happening in China technology and why it matters globally.**
-
-Primary pillars:
-
-- China AI / foundation models / agents;
-- semiconductors and AI infrastructure;
-- robotics and hardware;
-- EV and advanced manufacturing;
-- China Tech global-business implications.
-
-The account should become valuable because it is **early, specific, useful, and China-context-rich**, not because it reposts generic news.
-
-## 3. Growth Strategy
-
-### Stage A — 4 to 100 followers
-
-**Reply-led cold start.**
-
-Operating target when qualified opportunities exist:
-
-- 3–5 high-quality strategic replies/day;
-- approximately 1 differentiated original China Tech post on active days;
-- prioritize early participation in relevant conversations already earning attention;
-- reply value must add China context, data, comparison, technical explanation, or a global implication;
-- no generic praise, AI filler, or spam.
-
-Effort mix: approximately `70% reply acquisition / 30% original authority`.
-
-### Stage B — 100 to 500 followers
-
-**Dual engine.**
-
-- continue 3–5 targeted replies/day;
-- 1–2 original posts/day when qualified material exists;
-- build recurring signature analysis formats;
-- deliberately develop peer relationships in China AI/chips/robotics/EV;
-- reuse proven topics/angles rather than broadening indiscriminately.
-
-Effort mix: approximately `50% reply acquisition / 50% original content`.
-
-### Stage C — 500+ followers
-
-**Owned distribution first.**
-
-- original content becomes the primary growth asset;
-- replies remain targeted acquisition;
-- monitor X-native original-content qualification and commercial inbound;
-- commercialization cannot damage niche trust or positioning.
-
-## 4. Milestone KPI
-
-Starting baseline: **4 followers**.
-
-| Gate | Follower KPI | Minimum execution/distribution evidence |
-|---|---:|---|
-| Day 3 | >=8 | >=6 quality replies, >=2 originals, >=1 action >=100 impressions |
-| Day 7 | >=15 | >=18 replies, >=5 originals, >=3 actions >=100, >=1 >=300 |
-| Day 10 | >=25 | >=27 replies, >=7 originals, >=5 actions >=100, >=1 >=500 |
-| Day 15 | >=40 | >=40 replies, >=10 originals, >=3 actions >=300, >=1 >=1,000 |
-| Day 30 | **>=100** | >=90 replies, >=25 originals, >=10 actions >=300, >=3 >=1,000, >=1 >=5,000 |
-| Day 30 stretch | >=200 | >=150 replies, 30 originals, >=5 >=1,000, >=1 >=10,000 |
-
-Longer planning targets:
-
-- Day 60: >=250 minimum / 500 target;
-- Day 90: >=500 minimum / 1,000 target;
-- Month 6: 2,000–5,000 relevant followers;
-- Month 12: 10,000+ target.
-
-`00_Governance/OPERATING_KPI.md` contains the complete definitions and wins if a table detail here is accidentally omitted; any **strategic** conflict still requires this spec to be revised.
-
-## 5. Growth Formula Objective
-
-The POC is not satisfied by merely hitting output quotas. It must discover the repeatable formula that produces followers.
-
-Working equation:
+The operating sequence is:
 
 ```text
-EVENT / TOPIC
-× TARGET ACCOUNT / TARGET SIZE
-× TARGET-POST AGE
-× REPLY OR ORIGINAL ANGLE
-× HOOK / MEDIA / LINK TREATMENT
-× TIMING
-→ IMPRESSIONS / ENGAGEMENT
-→ PROFILE INTEREST
-→ FOLLOWER GROWTH
+Useful viewpoint / real practice / consequential change
+    -> right audience stops and reads
+    -> trust + recognizable point of view
+    -> profile interest
+    -> relevant follows
+    -> durable audience asset
 ```
 
-Priority hypotheses:
+**North Star:** relevant follower growth caused by a clear follow reason, not posting volume or raw impressions.
 
-1. useful replies `<30 min` outperform later replies;
-2. highly relevant `100K–1M` targets may outperform `>=1M` mega accounts because reply competition is lower;
-3. `CHINA_CONTEXT`, `GLOBAL_IMPLICATION`, and `COMPARISON` outperform generic fact restatement;
-4. China AI, semiconductors/AI infrastructure, and robotics outperform generic China business coverage;
-5. native original posts may outperform link-first news-summary posts.
+## 2. Audience and Positioning
 
-Evidence standard:
+### Audience
 
-- 1 success = anecdote;
-- 2 = hypothesis;
-- >=3 repeated wins = `CANDIDATE_GROWTH_FORMULA`;
-- >=5 repeated wins plus follower-positive daily cohorts = strong evidence; bias future operations toward it.
+One coherent audience:
 
-Do not sacrifice a clearly superior live opportunity simply to balance experiments.
+> People who follow AI technology and care about turning AI into real productivity.
 
-## 6. Daily Operating Loop
+Typical members include AI builders, developers, founders, product people, operators, investors, and serious AI users.
+
+### Positioning
+
+Internal positioning:
+
+> **不报道 AI，判断 AI 正在改变什么。**
+
+English shorthand:
+
+> **Don’t report AI. Think about what AI changes.**
+
+China technology remains an important source of differentiated evidence and first-hand context, but **China is no longer a hard boundary for topic selection**.
+
+A China-related item is worth publishing only when it matters to the target audience. A global AI/agent/coding/productivity item may be worth publishing even when it has no China entity.
+
+## 3. Content Product
+
+News is raw material. **The product is Kenny's point of view.**
+
+Every publishable item should fit at least one of these three buckets:
+
+1. **WHAT I BELIEVE** — a clear judgment/thesis;
+2. **WHAT I LEARNED** — a conclusion from real research, testing, building, or operating work;
+3. **WHAT CHANGES** — a new development that materially changes cost, capability, workflow, product design, business model, or competitive dynamics.
+
+A candidate that only answers “what happened?” is normally `SKIP`.
+
+### So-What Test
+
+For `WHAT CHANGES`, the content must answer at least one:
+
+- What cost falls?
+- What old workflow becomes obsolete?
+- What previously impossible task becomes possible?
+- What changes for builders/developers?
+- What changes for founders/companies?
+- What changes for individual productivity?
+- What common interpretation is probably wrong or incomplete?
+
+## 4. Language Policy
+
+### Original content
+
+**All original posts, threads, and X Articles are published in Chinese.**
+
+This is a hard rule. Do not split the account into parallel Chinese and English original-content tracks.
+
+### Replies
+
+Reply language follows the parent post:
+
+- Chinese parent post -> Chinese reply;
+- English parent post -> English reply;
+- other languages -> follow the parent language when practical, otherwise only reply when a natural high-quality response is possible.
+
+X translation is treated as sufficient for cross-language discovery. Language is not used to split the target audience.
+
+## 5. Editorial Priority
+
+Priority order:
+
+1. **Own viewpoint**;
+2. **Real practice / learned insight**;
+3. **Consequential new technology/change**;
+4. ordinary news summary — normally skip.
+
+The system should prefer one memorable judgment over ten generic news updates.
+
+## 6. Reply Policy
+
+Replies remain an acquisition/distribution channel, but are not a quota.
+
+A reply is worth surfacing only when it adds at least one of:
+
+1. first-hand / primary-source information;
+2. a key number or factual correction;
+3. a relevant corresponding case/comparison;
+4. a real practice result or lesson.
+
+Generic agreement, generic “deeper implication” commentary, praise, filler, and AI-style restatement are `SKIP`.
+
+Repeated template structures should be avoided, especially:
+
+- “真正重要的不是 X，而是 Y”;
+- “The interesting part isn’t X. It’s Y.”;
+- “The real shift isn’t X. It’s Y.”;
+- “The biggest takeaway isn’t X. It’s Y.”
+
+These are not forbidden as language, but repeated use is a quality failure.
+
+## 7. Original Content Policy
+
+An original post should normally contain:
+
+- a clear thesis in Kenny's voice;
+- evidence, a real case, or explicit reasoning;
+- a useful consequence for the target audience;
+- a reason to remember/follow the account for similar thinking later.
+
+China-side evidence is a differentiation advantage, not a publishing requirement.
+
+## 8. Article Policy
+
+X Article is no longer a routine output target.
+
+Preferred progression:
 
 ```text
-5-minute source polling
-  -> deterministic relevance/freshness filter
-  -> P0/P1 qualified signal
-  -> PERSONAL FEISHU alert only
-  -> human verifies/selects X target
-  -> human publishes reply/original
-  -> published URL returned/recorded
-  -> action variables + outcomes captured
-  -> daily KPI + formula review
-  -> identify first broken growth stage
-  -> change at most one growth variable next cycle/day
+idea / practice observation
+ -> short post or reply test
+ -> repeated audience interest / richer evidence
+ -> thread or series
+ -> Article only when the thesis deserves durable long-form treatment
 ```
 
-### Notification authority
+No Article quota exists.
 
-- **Personal Feishu is verified and is the only production alert channel.**
-- Feishu group chat is prohibited for China Tech production alerts.
-- Email is not the primary realtime alert path.
+## 9. Publishing-Volume Policy
 
-### Publishing authority
+There is **no minimum daily post quota** and **no minimum daily reply quota**.
 
-- X posts/replies remain **human-published only**.
-- No automatic post/reply/DM publishing is authorized.
+Explicitly removed as operating requirements:
 
-## 7. Daily Review / Decision Rule
+- “must publish one original every day”;
+- “must publish 2/3/5 replies every day”;
+- hotspot/news-count targets;
+- Article-count targets;
+- milestone pass/fail based on number of posts or replies.
 
-Every day, review:
+The system must still continuously discover and surface strong `POST` and `REPLY` opportunities. Quality gates determine output, not a quota.
 
-1. source misses / source health / signal latency;
-2. alert review-worth precision;
-3. reply and original counts;
-4. target account, target size, target-post age;
-5. angle/hook/media/link treatment;
-6. impressions and engagement;
-7. follower snapshot and follower delta;
-8. formula report and repeated winners;
-9. first broken growth stage.
+Notification ceilings may exist to protect operator attention/model cost; a ceiling is not a publishing target.
 
-If KPI is on track, continue the proven direction.
+## 10. Follow-Reason Funnel
 
-If KPI is off track:
+Every review evaluates:
 
-- diagnose the **first broken stage**;
-- change at most one business/growth variable;
-- allow one measurement/instrumentation repair if necessary;
-- do not respond by adding infrastructure unless evidence proves infrastructure is the blocker.
+```text
+STOP -> ENGAGE -> PROFILE INTEREST -> FOLLOW REASON -> RELEVANT FOLLOW
+```
 
-## 8. Current Runtime
+Interpretation:
 
-Production service:
+- **STOP**: does the opening make the right person stop?
+- **ENGAGE**: likes/replies/bookmarks/reposts or meaningful reading signal;
+- **PROFILE INTEREST**: does the post make the reader want to know who Kenny is?
+- **FOLLOW REASON**: does the profile/content history promise more of the same value?
+- **RELEVANT FOLLOW**: did the account gain the intended audience?
 
-`/Users/jh/services/china-tech-x-radar`
+Reply impressions without engagement/profile/follow conversion are distribution evidence only, not success.
 
-Production runtime:
+## 11. Publication Gate
 
-- native Python + SQLite;
-- launchd cycle approximately every 5 minutes;
-- daily review job;
-- exact dedupe;
-- deterministic rules;
-- formula-variable/action/outcome ledger;
-- personal Feishu alerts;
-- no Docker dependency;
-- no model API dependency;
-- no paid X API;
-- no automatic publishing.
+Before recommending `POST`, answer:
 
-Source set is intentionally narrow and evidence-driven. A concrete Nexperia/Wingtech miss justified adding a focused Reuters China Tech path; future source expansion requires another documented miss or coverage gap.
+1. Is there a real Kenny viewpoint?
+2. Is it useful to people turning AI into productivity?
+3. Is it more than information they can obtain from the headline/search?
+4. Is there evidence, practice, data, or a concrete case?
+5. Will a reader understand how Kenny thinks after reading it?
+6. Does it strengthen a future follow reason?
 
-## 9. Current Experiment
+If most are no -> `SKIP`.
 
-The valid audience-first Shadow Test clock restarted only after the intended operator explicitly confirmed personal Feishu delivery.
+Before recommending `REPLY`, additionally require one of the four reply-value types in Section 6 and a verified direct X target.
 
-Start: **2026-08-31 20:27:44 Asia/Shanghai** (`2026-08-31T12:27:44Z`).
+## 12. Discovery Scope
 
-Baseline followers: **4**.
+The discovery system must cover both:
 
-Formal growth-formula sample #1:
+### A. Global AI-productivity signals
 
-- X URL: `https://x.com/KennyChinaTech/status/2094405136366047694`;
-- type: `ORIGINAL`;
-- event: `SEMICONDUCTOR` — Nexperia/Wingtech;
-- treatment: `CHINA_CONTEXT × CONTRAST × IMAGE × EXTERNAL_LINK`;
-- outcome tracking active;
-- one sample is anecdotal only, not a formula.
+- AI agents / agent runtime;
+- AI coding / software development;
+- model capability/cost changes that alter real workflows;
+- automation / AI-native workflows;
+- multi-agent systems / verification / evals / reliability;
+- AI products and business-model shifts;
+- world models when they change real capabilities;
+- robotics when AI moves from demo to useful deployment.
 
-## 10. Commercialization Sequence
+### B. China differentiation signals
 
-Commercialization is downstream of audience growth.
+- Chinese models, agents, AI coding and developer ecosystem;
+- China-side primary sources not widely seen in English;
+- semiconductors/compute when they alter AI economics/capability;
+- robotics/manufacturing when deployment, cost, or scale matters;
+- China/global comparisons that materially change the target audience's understanding.
 
-Internal readiness gates:
+Pure macro, politics, generic finance, ordinary company news, or generic China business remains out of scope unless the AI/productivity consequence is concrete.
 
-- `<500 followers`: focus on growth;
-- `500+`: monitor aligned commercial/affiliate/brand inbound and X-native eligibility progress;
-- `1,000+`: prepare basic media kit;
-- `2,000+`: actively test highly aligned brand / sponsorship / affiliate collaborations;
-- `10,000+`: target a repeatable commercial-partnership pipeline.
+## 13. Operating Roles
 
-These are internal planning gates, not universal sponsor-industry thresholds. Audience quality can justify earlier aligned inbound opportunities.
+### ChatGPT
 
-## 11. Cost / Tool / OPC Boundaries
+- continuously find strong topics and live X reply targets under this spec;
+- verify facts when needed;
+- develop the point of view instead of rewriting headlines;
+- draft all originals in Chinese;
+- draft replies in the parent-post language;
+- review analytics and identify follow-reason failures;
+- use the user's real projects/research as a source of `WHAT I LEARNED` content when relevant.
+
+### Mac mini radar
+
+- continuous low-cost signal collection;
+- deterministic prefiltering;
+- editorial enrichment;
+- personal Feishu publish-ready opportunity packets;
+- outcome/evidence capture;
+- no automatic X publishing.
+
+### Human operator
+
+- final judgment/edit;
+- manual X publishing;
+- provides published URLs/outcomes when practical.
+
+## 14. Feishu Publishing Packet Contract
+
+Personal Feishu remains the only production alert route.
+
+Raw candidates stay internal. Operator-facing packets must be high-value `POST` or `REPLY` opportunities.
+
+Each packet contains:
+
+- `P0/P1` priority;
+- `POST` or `REPLY` recommendation;
+- content bucket: `WHAT_I_BELIEVE | WHAT_I_LEARNED | WHAT_CHANGES`;
+- short reason and “why this matters to AI productivity”;
+- verified X target for `REPLY`;
+- final paste-ready copy using the language policy;
+- source/provenance kept separate;
+- visual recommendation only when useful.
+
+`SKIP` remains silent.
+
+## 15. KPI Authority
+
+`00_Governance/OPERATING_KPI.md` defines measurement details.
+
+Hard principle: **no KPI rewards publishing volume for its own sake**.
+
+Track:
+
+- relevant follower total/delta;
+- impressions by action type as distribution evidence;
+- engagements and saves when available;
+- profile visits when available;
+- follow conversion / follow-reason evidence;
+- recurring topic/thesis patterns that create the intended audience;
+- alert precision and operator time as system-health metrics.
+
+## 16. Costs / Publishing Boundaries
 
 - mandatory new paid spend: `$0` unless separately approved;
 - paid X API remains blocked;
-- Eden may be used selectively for creator/research intelligence, not as the sole realtime path;
-- OPC is optional and cannot block business validation;
-- Docker/Colima, TrendRadar repair, browser automation, model scoring, web UI, and local models remain deferred unless KPI evidence names the bottleneck they solve.
+- no automatic post/reply/DM publishing;
+- model usage remains capped and observable;
+- tools/infrastructure are added only when they solve a measured bottleneck.
 
-## 12. Human Gates
+## 17. Explicitly Superseded Rules
 
-Stop for human approval only when execution requires:
+The following no longer control execution:
 
-- changing this product/business strategy or architecture boundary;
-- paid spend/chargeable service;
-- automatic publishing authority;
-- missing account permission/secret that cannot be safely derived;
-- destructive/irreversible external action;
-- material platform-policy/legal ambiguity.
+- “English-language China Tech audience” as the account definition;
+- “China Tech Intelligence” as a news-first positioning;
+- China entity as a universal prerequisite for a publishable signal;
+- Stage-A `3–5 replies/day` target;
+- `~1 original/day` target;
+- milestone minimum counts for replies/originals;
+- reply-led cold start as the dominant identity strategy;
+- paste-ready English copy for every publish packet;
+- routine Article production;
+- optimizing for news volume/hotspot coverage;
+- treating high reply impressions as success without conversion.
 
-Ordinary implementation, source fixes justified by observed misses, tests, PRs, deployments, and KPI/formula instrumentation may proceed without repeated approval.
+## 18. Current Strategic Thesis
 
-## 13. Explicitly Superseded Decisions
+The account should become known for:
 
-The following are historical and **must not control current execution**:
+> **Kenny 对“AI 如何真正变成生产力”的持续判断。**
 
-- Day-30 target of ~20 followers;
-- money-first Day-15/Day-30 cash requirements or invented paid research/service offers;
-- Feishu group chat as an authorized China Tech signal destination;
-- any statement that the personal Feishu route is unverified;
-- OPC as a prerequisite or per-signal runtime dependency;
-- Docker/TrendRadar/browser/model/UI as MVP prerequisites;
-- fixed low-volume daily posting plans that ignore qualified opportunity supply;
-- treating a single viral post as proof of the growth formula;
-- treating API `code=0` as proof of human-visible notification delivery.
-
-## 14. Definition of Success for This POC
-
-The 30-day POC succeeds when:
-
-1. relevant followers reach at least 100 from a baseline of 4;
-2. growth is supported by repeatable distribution, not one isolated viral post;
-3. at least one candidate growth formula is supported by repeated evidence, or the system has clearly falsified the leading hypotheses and identified the next growth bottleneck;
-4. operation fits the human time budget closely enough to continue;
-5. the runtime reliably discovers and personally alerts timely opportunities without paid X data or automated publishing.
-
-The POC is a **growth-mechanism validation**, not the final monetization milestone.
-
-## 15. Feishu Publishing Packet Contract
-
-Personal Feishu is a **publishing-decision surface**, not a raw signal dump.
-
-Raw P0/P1 candidates remain internal until they pass editorial enrichment. The production pipeline is:
+The durable asset is not the number of posts. It is an accumulating thesis library built through:
 
 ```text
-rules/relevance candidate
- -> low-cost editorial gate where needed
- -> ChatGPT OAuth/Codex final verification + editorial decision
- -> SKIP silently OR produce POST/REPLY packet
- -> personal Feishu only
+belief -> evidence -> practice -> correction -> stronger belief
 ```
 
-Every Feishu publishing packet must contain:
+The operating question is no longer:
 
-- direct recommendation: `POST` or `REPLY`;
-- short reason;
-- urgency;
-- verified direct X target for `REPLY` (otherwise it may not recommend REPLY);
-- final conversational English copy ready to paste;
-- source URL separate from main POST copy;
-- explicit visual decision;
-- when useful for POST, an attached original editorial data card using verified facts;
-- concise publish note.
+> 今天有什么新闻可以发？
 
-`SKIP` decisions are stored but not pushed to the operator. Macro/politics/general-China items without a material technology angle must not become publishing packets.
+It is:
 
-The enrichment layer uses the existing locally authenticated ChatGPT/Codex runtime, not an OpenAI Platform API key. Low reasoning and daily call/token proxy caps are mandatory to avoid uncontrolled ChatGPT quota consumption. Model usage is logged locally and visible in runtime status.
+> **今天有什么东西，值得告诉这群真正想把 AI 变成生产力的人？**
 
-## 16. Priority-Visible Notification Policy
 
-Every operator-facing Feishu packet must expose classifier priority in the **first line** so the operator can distinguish urgency without opening logs.
+## 19. Mandatory Human Voice Gate
 
-Required header forms:
+This is a publishing gate, not a stylistic preference. It applies to Chinese originals and replies in any language.
 
-```text
-【🔥 P0｜POST｜立即】
-【🔥 P0｜REPLY｜立即】
-【P1｜POST｜<time window>】
-【P1｜REPLY｜<time window>】
-```
+Final copy must sound like Kenny joining a real conversation, not a report, press release, research memo, or AI summary. Lead with the actual judgment, useful fact, or experience; make one main point; remove generic filler, formal conclusions, forced rhetorical symmetry, and repetitive house templates; and contain no internal heading, label, process note, or source note inside paste-ready copy.
 
-P0 means the highest-priority publishing opportunity and is processed immediately after editorial validation.
+A Reply must respond to the exact claim, normally use 1–3 short sentences, and add one of the four approved reply-value types. An original Post must be Chinese and must contain a real thesis or useful conclusion; a news summary is not publishable owned content.
 
-P1 is curated rather than streamed. During Stage A, P1 operator notifications are bounded by policy so the operator is not forced to become the second-stage filter:
+Avoid by default, in either language: `One caveat`, `The bigger signal`, `The bigger question`, `What caught my eye`, `Worth noting`, `This suggests that`, `This points to`, `The key test is`, `This isn't just`, `In other words`, `The real story`, `The interesting part isn't X. It's Y.`, `The real shift isn't X. It's Y.`, `The biggest takeaway isn't X. It's Y.`, `真正重要的不是X，而是Y`, `真正值得关注的不是X，而是Y`, `更大的信号是`, `更大的问题是`, repeated `not X, but Y` / `不是X，而是Y`, and em-dash-heavy prose.
 
-- P1 POST requires model confidence >=0.88 and classifier score >=10;
-- at most 1 P1 POST packet/day;
-- P1 REPLY requires a verified direct X target, confidence >=0.88, classifier score >=7;
-- at most 4 P1 REPLY packets/day;
-- candidates that pass editorial quality but exceed these P1 slots are stored as `EDITORIAL_HOLD`, not pushed;
-- P0 remains immediate subject to editorial confidence >=0.75.
+If a draft fails the voice gate, rewrite once. If it still fails, `SKIP`.
 
-This notification policy is intentionally aligned with Stage-A output goals: roughly 3–5 strategic replies/day and ~1 original/day when qualified material exists.
+## 20. A/B Reply Classification Under v3.0
 
-Model-quota enforcement must be atomic. Each Codex gate/final call reserves a call/token allowance in SQLite before execution, preventing overlapping runs from overshooting the configured daily budget. Budget accounting is revision-scoped so a new policy can start cleanly while old usage remains auditable.
+The existing A/B reply mechanism remains active, but it is subordinate to the three content buckets and the new audience strategy.
 
-## 17. Mandatory Human Voice Standard for Replies and Original Posts
+- `A_NEWS_FACT`: acquisition/control reply. It must add a primary-source fact, key number/correction, or useful case. It does not define account identity.
+- `B_OPINION_VALUE`: strategic mainline. It expresses a clear owner judgment or a real practice lesson, normally mapping to `WHAT_I_BELIEVE` or `WHAT_I_LEARNED`.
 
-This section is a **publishing gate**, not a writing preference. Every model, ChatGPT session, agent, runtime prompt, and human-facing publishing packet must apply it before recommending `REPLY` or `POST`.
+At similar quality, prefer B. Daily A/B caps are notification ceilings only, never output quotas. For owned original content, even `WHAT_CHANGES` must contain a clear Kenny thesis or useful conclusion.
 
-### 17.1 Shared voice rules
+## 21. Article Owner Authority
 
-All final English copy must:
-
-- sound like a knowledgeable person joining an X conversation, not a report, press release, research memo, or AI summary;
-- lead with the actual reaction, fact, or point; no scene-setting introduction;
-- use short, ordinary words and natural contractions where they fit;
-- make one main point, supported by no more than two useful facts;
-- keep attribution and uncertainty clear without adding policy-style disclaimers;
-- remove anything that does not help the reader understand or respond;
-- contain no heading, label, bullet list, process note, source note, or explanation inside the paste-ready copy;
-- avoid forced cleverness, symmetrical contrast, rhetorical flourish, and repeated house templates;
-- pass the read-aloud test: it should sound natural if said to another informed person.
-
-### 17.2 Reply rules
-
-A Reply must:
-
-- respond directly to the exact claim in the target post;
-- read as a continuation of that conversation, not a standalone mini-essay;
-- add one specific China-side fact, correction, comparison, or useful implication;
-- normally use 1–3 short sentences and no more than 80 words;
-- avoid repeating the original post before adding value;
-- avoid generic agreement, praise, throat-clearing, and formal conclusion sentences.
-
-### 17.3 Original Post rules
-
-An Original Post must:
-
-- open with the most interesting verified fact or a plain-spoken observation;
-- explain why it matters in direct language;
-- normally use 2–5 short paragraphs and no more than 130 words;
-- include only the numbers needed to support the point;
-- avoid sounding like a newswire summary, company announcement, or analyst note;
-- keep source links outside the main copy under the existing publishing-packet contract.
-
-### 17.4 Banned default phrases and structures
-
-The following phrases are banned unless the human owner explicitly asks for one in a specific draft:
-
-- `One caveat...`
-- `One data caveat...`
-- `The bigger signal...`
-- `The bigger question...`
-- `What caught my eye...`
-- `Worth noting...` / `It is worth noting...`
-- `This suggests that...`
-- `This points to...`
-- `The key test is...` / `The key test is not...`
-- `This isn't just...` / `This is not just...`
-- `In other words...`
-- `The real story...`
-- `One concrete datapoint missing...`
-
-Also prohibited by default:
-
-- contrived `X is new. Y isn't.` constructions;
-- repeated `not X, but Y` framing;
-- more than one em dash in a draft;
-- three-part rhetorical lists written for cadence rather than clarity;
-- generic endings that merely restate the previous sentence.
-
-### 17.5 Enforcement
-
-Before a `REPLY` or `POST` packet is sent to the operator:
-
-1. check the copy against Sections 17.1–17.4;
-2. rewrite it if any rule fails;
-3. run the check again;
-4. if it still fails, return `SKIP` and do not send a publishing packet.
-
-A fluent factual draft that fails this voice gate is **not publish-ready**. Daily reviews may identify new repetitive AI-like phrases; once confirmed by the human owner, they must be added to this section and to the runtime language gate.
-
-## 18. Dual-Group Creator Direction Experiment
-
-The account identity is now **Independent views and practical intelligence on China's AI, chips, robotics, and manufacturing**.
-
-News remains a discovery and evidence layer. It is not the account's primary value proposition.
-
-- `A_NEWS_FACT`: timely news/fact additions, China-side data, scope corrections, and industry implications. This remains an acquisition/control group.
-- `B_OPINION_VALUE`: clear opinions, practical technology, entrepreneurship experience, frameworks, conditional predictions, and deep reasoning. This is the strategic mainline.
-
-The radar must evaluate A and B independently. Finding an A candidate must not terminate B discovery. An A Reply cannot be labeled B merely because it contains a useful fact: B requires a clear, contestable owner position. At similar quality, B wins. Daily Reply notification capacity is split at two A and two B packets, with four total as the hard ceiling.
-
-Original content should prioritize useful, save-worthy assets:
-
-- guides and comparisons;
-- industry maps and technical explanations;
-- frameworks and case studies;
-- entrepreneurship lessons and deep arguments.
-
-Article topics, core questions, and theses are selected by Kenny after deep research. The realtime radar must not arrange or derive Article topics from news. Once Kenny assigns a topic, the system may support evidence collection, fact-checking, English drafting, charts, and publication packaging.
-
-The experiment compares follower conversion, profile visits, bookmarks, meaningful replies, and qualified business interest per 1,000 impressions. Total views alone do not decide the winner.
+Article topics, core questions, and theses are selected by Kenny after sufficient research or after a shorter idea has demonstrated value. The realtime radar must not schedule, quota, or derive Article topics from daily news. Once Kenny assigns an Article topic, the system may support research, evidence collection, fact checking, Chinese drafting, visuals, and publication packaging.

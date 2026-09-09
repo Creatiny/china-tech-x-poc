@@ -1,302 +1,156 @@
-# China Tech X POC — Execution Plan v1.2
+# China Tech X POC — Execution Plan v2.0
 
-## Authority
+**Status:** `APPROVED / ACTIVE`  
+**Authority:** `PROJECT_SPEC.md` v3.0  
+**Effective:** `2026-09-09`
 
-Status: `APPROVED / ACTIVE`
+## 1. Current Mode
 
-Top-level strategy authority: `PROJECT_SPEC.md` v2.2.
+`AI_PRODUCTIVITY_AUDIENCE / VIEWPOINT_FIRST`
 
-This file defines **how the current spec is executed**. If execution here conflicts with the strategy/spec, `PROJECT_SPEC.md` wins and this plan must be corrected.
+The old `REPLY_LED_COLD_START` output plan is retired.
 
-## 1. Current Stage
+No daily minimum exists for posts, replies, threads, or Articles.
 
-`STAGE_A / 4_TO_100_FOLLOWERS / REPLY_LED_COLD_START`
+## 2. Continuous Discovery
 
-Valid experiment start: `2026-08-31 20:27:44 Asia/Shanghai`.
+The system continues to find both original-post topics and reply targets.
 
-Baseline: `4 followers`.
+Discovery must cover:
 
-Primary Day-30 target: `>=100 relevant followers`; stretch: `>=200`.
+1. global AI / agents / AI coding / automation / model economics / verification / world models / real deployment;
+2. China-side AI and technology evidence that gives the account differentiated insight;
+3. the user's own real AI-building/research work as a source of `WHAT_I_LEARNED` ideas.
 
-## 2. Division of Work
+A signal is not publishable merely because it is recent.
 
-### Mac mini runtime — automatic
+## 3. Candidate Classification
 
-Every ~5 minutes:
+Every candidate is classified as:
 
-1. poll active free/traceable China Tech sources;
-2. normalize and exact-dedupe;
-3. classify relevance/freshness;
-4. identify P0/P1 opportunities;
-5. send qualified publishing signals to **personal Feishu only**;
-6. persist source/signal/alert evidence;
-7. keep operating if one source fails.
+- `WHAT_I_BELIEVE`;
+- `WHAT_I_LEARNED`;
+- `WHAT_CHANGES`;
+- `SKIP`.
 
-### ChatGPT — analysis/operator support
+Then decide `POST`, `REPLY`, or `SKIP`.
 
-For qualified opportunities:
+### POST
 
-1. verify the event/source when needed;
-2. choose whether the opportunity is better for `REPLY`, `ORIGINAL`, or `SKIP`;
-3. identify the best available X target when possible;
-4. draft natural English copy with a differentiated China-specific angle;
-5. recommend image/link treatment;
-6. record the final published URL and formula variables once supplied;
-7. track outcomes and daily formula evidence;
-8. diagnose the first broken growth stage.
+Use when the idea deserves owned distribution and contains a real thesis.
+All final original copy is Chinese.
 
-### Human operator — manual authority
+### REPLY
 
-Only the human:
+Use only when there is a verified direct X target and we can add one of:
 
-1. receives personal Feishu publishing signals;
-2. opens/selects the X target;
-3. performs final judgment/edit;
-4. manually publishes reply/original;
-5. returns the published X URL to ChatGPT when practical.
+- primary-source fact;
+- key number/correction;
+- corresponding case/comparison;
+- real practice result.
 
-No automatic X publishing is authorized.
+Reply in the parent-post language.
 
-## 3. Stage-A Daily Operating Target
+### SKIP
 
-When qualified opportunities exist:
+Use for:
 
-- **3–5 strategic replies/day**;
-- **~1 differentiated original post on active days**;
-- replies should favor early, relevant conversations already attracting attention;
-- no publishing simply to hit a quota if quality is insufficient.
+- headline restatement;
+- generic news summary;
+- vague “what this really means” commentary without evidence;
+- off-audience topics;
+- late/me-too replies;
+- generic praise/filler;
+- items that do not create a follow reason.
 
-Target human time: approximately `<=30 minutes/day` median once the workflow stabilizes.
+## 4. ChatGPT Workflow
 
-## 4. Signal-to-Publish Workflow
+For each strong candidate:
 
-```text
-SOURCE EVENT
-    ↓
-5-min radar
-    ↓
-P0/P1 qualification
-    ↓
-personal Feishu
-    ↓
-REPLY / ORIGINAL / SKIP decision
-    ↓
-human publish
-    ↓
-published X URL
-    ↓
-formula metadata + outcome snapshots
-    ↓
-daily KPI/formula review
-```
+1. verify facts and recency when needed;
+2. identify the audience consequence;
+3. identify Kenny's actual point of view;
+4. decide content bucket;
+5. choose POST/REPLY/SKIP;
+6. for REPLY, find and verify the strongest current X target;
+7. write natural copy with no recurring AI template;
+8. recommend media only when it materially improves comprehension;
+9. surface only publish-worthy opportunities to the operator.
 
-### Feishu signal must contain
+## 5. Language Execution
 
-- what happened;
-- why it matters;
-- freshness;
-- source URL;
-- direct X target if known, otherwise a live-search route;
-- suggested action: reply/original/skip;
-- suggested angle;
-- urgency/expiry.
+- `POST`, Thread, Article: **Chinese only**.
+- `REPLY`: follow parent-post language.
+- Source language does not determine original-post language.
+- Translation availability on X means the account does not maintain two original-language identities.
 
-## 5. Formula Data Captured
+## 6. Feishu Queue
 
-For each published action, record as available:
+Feishu remains an **action queue**, not a raw signal feed.
 
-- event type/topic;
-- `REPLY` or `ORIGINAL`;
-- target account;
-- target follower count/tier;
-- target-post age at reply;
-- target impressions at reply time;
-- angle;
-- hook;
-- media treatment;
-- external-link usage;
-- impressions/engagement later;
-- daily account followers/profile visits when available.
+P0/P1 notification ceilings remain allowed to protect attention and model budget, but they are **maximums only** and must never be interpreted as daily output goals.
 
-Formula authority: `00_Governance/GROWTH_FORMULA.md`.
+Each packet must state:
 
-## 6. First Formula Search Sequence
-
-### Samples 1–10 — baseline
-
-Goal: instrumentation quality and natural variance.
-
-Do not chase a single winner. Collect clean metadata while prioritizing the best business opportunity.
-
-Primary observations:
-
-- `<30m` vs later replies;
-- `100K–1M` vs `>=1M` target accounts;
-- China-context/global-implication/comparison vs generic angles;
-- AI/chips/robotics topic performance;
-- native/no-link vs link-containing originals.
-
-### Samples 10–20 — hypothesis formation
-
-Identify directional differences. Two wins are still only a hypothesis.
-
-Bias nothing strongly unless quality is obvious.
-
-### Samples 20–30 — candidate formula
-
-If one combination has >=3 repeated wins, label it `CANDIDATE_GROWTH_FORMULA` and modestly increase its share of future opportunities.
-
-### >=5 repeated wins + follower-positive cohorts
-
-Promote to `SCALE_BIAS`:
-
-- prioritize matching events;
-- prioritize proven target tier/accounts;
-- prefer proven timing window;
-- default to the proven angle/treatment unless the event clearly requires another approach.
-
-Continue retaining some alternative samples so the formula can be falsified.
+- priority;
+- POST/REPLY;
+- content bucket;
+- why the target audience should care;
+- final copy;
+- target URL for reply;
+- source/provenance;
+- urgency;
+- visual recommendation when useful.
 
 ## 7. Daily Review
 
-Every day review:
+Review the funnel:
 
-1. follower count and delta;
-2. replies/originals completed;
-3. action impressions and repeated reach thresholds;
-4. source misses and notification latency;
-5. strongest/weakest target/timing/angle combinations;
-6. formula sample count/status;
-7. first broken growth stage;
-8. one adjustment for the next day.
+```text
+STOP -> ENGAGE -> PROFILE INTEREST -> FOLLOW REASON -> FOLLOW
+```
 
-Allowed response to a miss:
+Also review:
 
-- **one growth/business variable change**;
-- optionally **one measurement repair**.
+- which viewpoints generated meaningful reaction;
+- which real-practice posts felt uniquely attributable to Kenny;
+- which replies borrowed distribution but failed to convert;
+- which topics attracted the wrong audience;
+- whether the profile/content history makes the account's promise obvious;
+- source/alert precision and operator time.
 
-Not allowed by default:
+Do **not** diagnose “too few posts” as a primary bottleneck.
 
-- adding infrastructure because KPI is bad;
-- changing multiple content variables at once;
-- broadening sources without a concrete miss;
-- lowering content quality to create samples.
+## 8. Article Execution
 
-## 8. Milestone Gates
+Article is downstream of validated interest:
 
-### Day 3
+```text
+idea -> post/reply -> repeated interest/evidence -> thread/series -> Article
+```
 
-Target: `>=8 followers`.
+No scheduled Article cadence exists.
 
-If missed, inspect in order:
+## 9. Immediate Active Work
 
-1. enough quality replies/originals?
-2. replies early enough?
-3. targets have relevant attention?
-4. impressions above Day-0 baseline?
-5. impressions exist but no follows -> profile/positioning conversion problem.
+1. keep existing China-side radar healthy;
+2. broaden discovery to global AI-productivity signals without removing China differentiation;
+3. change editorial prompts to viewpoint-first and new language policy;
+4. remove old output quotas from KPI logic/config;
+5. continue searching live X for high-value reply opportunities;
+6. use actual account data to measure conversion, not just reply impressions;
+7. build a reusable `Kenny AI Productivity Thesis Library` from repeated beliefs and lessons.
 
-### Day 7
+## 10. Old Plan Cleanup
 
-Target: `>=15 followers` plus repeated distribution evidence.
+Superseded and inactive:
 
-Need first meaningful target/timing/angle hypotheses.
+- Stage-A `3–5 replies/day`;
+- `~1 original/day`;
+- fixed reply/original milestone counts;
+- English-only content production;
+- China-news-first selection;
+- “reply-led” as the main account strategy;
+- Article as routine publishing output.
 
-### Day 10
-
-Target: `>=25 followers`.
-
-Need evidence that growth is not one isolated post.
-
-### Day 15
-
-Target: `>=40 followers`.
-
-If volume/distribution are healthy but followers are weak, strategy/positioning/target selection becomes the priority review—not infrastructure.
-
-### Day 30
-
-Minimum: `>=100 followers`; stretch `>=200`.
-
-Need repeated distribution and a candidate/proven growth formula or a clearly falsified hypothesis with a specific next bottleneck.
-
-## 9. Source Expansion Rule
-
-A source may be added/tuned only when one of these occurs:
-
-- a material China Tech event was missed;
-- an event arrived materially too late;
-- active source reliability degrades;
-- formula evidence identifies a topic/target area with insufficient discovery coverage.
-
-Example already applied: Nexperia/Wingtech exposed a Reuters coverage miss, so a focused Reuters China Tech path was added. This does **not** authorize generic news-source expansion.
-
-## 10. Tool Admission Rule
-
-OPC, TrendRadar repair, browser automation, model scoring, Web UI, local LLMs, Eden expansion, or paid X APIs are admitted only if daily/milestone evidence names the bottleneck they solve.
-
-The default response to weak follower growth is to improve:
-
-`signal → target → timing → angle → distribution → profile conversion`.
-
-## 11. Commercialization Transition
-
-The current Stage-A plan does not optimize revenue.
-
-Readiness checkpoints:
-
-- 500 followers: monitor aligned inbound and X-native eligibility progress;
-- 1,000: prepare media kit;
-- 2,000: actively test highly aligned brand/sponsor/affiliate collaborations;
-- 10,000+: target a repeatable commercial partnership pipeline.
-
-If a high-quality inbound commercial opportunity appears earlier, it can be evaluated without changing the primary growth strategy.
-
-## 12. Current Immediate Actions
-
-1. keep six-source production radar healthy;
-2. personal Feishu remains the only realtime signal channel;
-3. accumulate the first 10 clean formula samples;
-4. prioritize quality early replies because the account is still at Stage A;
-5. continue originals when a material event supports a differentiated thesis;
-6. capture outcomes and follower snapshots;
-7. perform daily review and change no more than one growth variable;
-8. evaluate Day-3 KPI first, then Day 7/10/15/30.
-
-## 13. Feishu Publish-Packet Execution
-
-Do not send raw classifier output to the operator.
-
-For a new qualified candidate:
-
-1. deterministic rules remove obvious noise;
-2. generic/ambiguous candidates run a low-reasoning editorial gate without web search;
-3. obvious high-quality tech candidates or gate `PASS` candidates run final editorial enrichment with web verification/search as needed;
-4. final model selects `REPLY`, `POST`, or `SKIP`;
-5. `SKIP` is stored silently;
-6. `REPLY` requires a verified direct X status target and receives final paste-ready reply copy;
-7. `POST` receives final native-first copy, source kept separate, and an original editorial card when the model says a visual adds value;
-8. only `POST/REPLY` packets go to personal Feishu.
-
-Current quota-protection defaults:
-
-- low reasoning;
-- maximum 12 gate calls/day;
-- maximum 10 final/search calls/day;
-- maximum 240,000 logged model tokens/day as an internal proxy stop;
-- no OpenAI Platform API key or paid X API is introduced.
-
-If enrichment budget is exhausted, the item is held/error-recorded rather than degrading back to a raw Feishu signal.
-
-## 14. P0/P1 Feishu Handling
-
-Feishu priority is operator-visible in the first line.
-
-- `P0`: immediate publish packet after editorial validation; treat before P1.
-- `P1 REPLY`: only when a verified direct X target exists and the configured score/confidence threshold passes; maximum 4/day.
-- `P1 POST`: only when score/confidence threshold passes; maximum 1/day.
-- excess qualified P1 candidates are held silently for analysis and are not pushed to the operator.
-
-The goal is to send the operator an **action queue**, not a candidate queue. The operator should never need to infer whether a package is P0 or P1.
-
-Editorial quota enforcement uses atomic reservations. Current policy defaults: max 8 gate calls/day, max 5 final/search calls/day, 180K token-proxy/day, with 6K/30K reservation estimates for gate/final calls.
+Historical references may remain in archived change/evidence files only.

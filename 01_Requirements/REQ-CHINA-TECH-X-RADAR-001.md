@@ -3,8 +3,8 @@
 ## 1. Requirement Metadata
 
 - Status: `APPROVED`
-- Version: `1.4`
-- Date: `2026-08-31`
+- Version: `2.0`
+- Date: `2026-09-09`
 - Change proposals: `CP-001-REALTIME-CHINA-TECH-RADAR`, `CP-002-BUSINESS-VALIDATION-FIRST`, `CP-003-AUDIENCE-FIRST-GROWTH-FORMULA`
 - Active pack: `PACK-CHINA-TECH-X-RADAR-001` v1.4
 - Paid extension: `PACK-CHINA-TECH-X-XAPI-PILOT-001` (`BLOCKED`)
@@ -17,7 +17,7 @@ Provide one operator with timely, traceable China Tech opportunities and an evid
 
 ## 3. Primary User
 
-A single human operator building the English-language `@KennyChinaTech` account.
+A single human operator building `@KennyChinaTech` for an AI-technology + AI-productivity audience. Original content is Chinese; replies follow the parent-post language.
 
 ## 4. Core Jobs
 
@@ -48,7 +48,7 @@ A single human operator building the English-language `@KennyChinaTech` account.
 - **FR-009**: The MVP shall exact-deduplicate by source-item identity, canonical URL, and/or stable content fingerprint.
 - **FR-010**: Near-duplicate clustering is deferred until duplicate-alert evidence shows exact dedupe is insufficient.
 - **FR-011**: Deterministic relevance rules shall run before any optional model call.
-- **FR-012**: Initial rules shall cover China AI, semiconductors/AI infrastructure, robotics/hardware, EV/advanced manufacturing, and China-tech global-business impact.
+- **FR-012**: Initial rules shall cover global AI/agents/AI coding/automation/model-economics/productivity plus China-side AI/compute/robotics/manufacturing signals that provide differentiated evidence.
 - **FR-013**: Qualified items shall be classified at minimum as `P0`, `P1`, `P2`, or `DROP` with a human-readable reason.
 - **FR-014**: P0/P1 shall have an expiry/review-by time.
 - **FR-015**: Model scoring is optional and shall not be introduced until deterministic-rule quality is measured.
@@ -87,7 +87,7 @@ A single human operator building the English-language `@KennyChinaTech` account.
 - **FR-052**: The runtime shall produce a formula report comparing event/topic, target tier, target-post age bucket, angle, hook, media, and link treatment.
 - **FR-053**: A single breakout post shall not be classified as a proven growth formula; >=3 repeated wins are required for a candidate and >=5 repeated wins plus follower-positive cohorts for scale bias.
 - **FR-054**: The active milestone follower targets are Day 3 >=8, Day 7 >=15, Day 10 >=25, Day 15 >=40, Day 30 >=100, with Day-30 stretch >=200.
-- **FR-055**: During Stage A, the operating target is approximately 3–5 qualified strategic replies/day and roughly one differentiated original on active days when material exists; quality/opportunity supply outranks quota completion.
+- **FR-055**: No minimum daily POST/REPLY/Article quota is allowed. The runtime shall continuously discover both POST and REPLY opportunities and surface only candidates that pass the viewpoint/audience-value gate.
 
 ### Runtime and storage
 
@@ -175,7 +175,7 @@ The Day-30 minimum follower target is 100 from a baseline of 4. If the target is
 - **FR-057**: A candidate shall receive editorial `POST`, `REPLY`, or `SKIP` classification before operator notification.
 - **FR-058**: `SKIP` shall be silent to the operator and persisted for precision analysis.
 - **FR-059**: A `REPLY` recommendation requires a verified direct X status URL; otherwise final editorial must choose `POST` or `SKIP`.
-- **FR-060**: `POST/REPLY` packets shall include final humanized English copy ready to paste, a direct reason/urgency, source provenance, and an explicit visual recommendation.
+- **FR-060**: `POST/REPLY` packets shall include final humanized copy ready to paste, a direct reason/urgency, source provenance, and an explicit visual recommendation. POST copy must be Chinese; REPLY copy must follow the parent-post language.
 - **FR-061**: When a POST benefits from a simple visual, the runtime may generate an original data/editorial card from verified facts and attach it to the personal Feishu packet; copyrighted source photography shall not be assumed reusable.
 - **FR-062**: Editorial enrichment shall use the existing locally authenticated ChatGPT/Codex OAuth runtime unless a later model-routing change is approved; no OpenAI Platform API key is required by this feature.
 - **FR-063**: Editorial model calls/tokens shall be locally logged and bounded by configurable daily caps.
@@ -185,6 +185,6 @@ The Day-30 minimum follower target is 100 from a baseline of 4. If the target is
 - **FR-064**: Every operator-facing Feishu publish packet shall show `P0` or `P1` in its first line.
 - **FR-065**: P0 packets shall be visually distinct and explicitly labeled highest priority.
 - **FR-066**: P1 packets shall be curated according to configurable confidence/score and per-day POST/REPLY caps; excess candidates shall be held silently rather than pushed.
-- **FR-067**: Current Stage-A defaults are maximum 1 P1 POST packet/day and 4 P1 REPLY packets/day; P1 REPLY requires a verified direct X target.
+- **FR-067**: Current P1 notification ceilings are maximum 1 POST packet/day and 4 REPLY packets/day to protect operator attention; these ceilings are not publishing targets. P1 REPLY requires a verified direct X target.
 - **FR-068**: Model quota checks shall atomically reserve call/token allowance before launching Codex so concurrent/overlapping runs cannot exceed configured call caps by race condition.
 - **FR-069**: Model usage shall retain budget-policy revision metadata so historical usage remains auditable after a quota-policy change.

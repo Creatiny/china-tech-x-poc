@@ -116,7 +116,8 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         f"结论：{action_cn}" + (f"｜置信度 {confidence:.0%}" if isinstance(confidence, (int, float)) else ""),
         f"时效：{'尽快，约 ' + str(urgency) + ' 分钟内' if urgency else '尽快处理'}",
         "",
-        f"为什么：{packet.get('reason') or ''}",
+        f"内容类型：{packet.get('content_bucket') or '未标注'}",
+        f"为什么值得这群人看：{packet.get('reason') or ''}",
     ]
     if group_label:
         lines += [f"实验分组：{group_label}"]
@@ -137,6 +138,6 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
     ]
     lines += [
         "",
-        "发布后把 X 链接发给 ChatGPT，我会继续追踪 impressions → followers 并纳入增长公式。",
+        "发布后把 X 链接发给 ChatGPT，我会继续追踪 STOP → ENGAGE → PROFILE → FOLLOW REASON → FOLLOW。",
     ]
     return "\n".join(lines)

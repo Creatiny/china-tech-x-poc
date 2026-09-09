@@ -42,16 +42,16 @@ def make_x_search_url(title: str, entity: str | None, topic: str | None) -> str:
 def angle_for(topic: str | None, title: str) -> str:
     t = (topic or "").casefold()
     if any(x in t for x in ("chip", "gpu", "semiconductor", "memory", "dram", "nand")):
-        return "Angle: explain the China supply-chain implication, what bottleneck this removes, and what still depends on foreign tooling/compute."
+        return "Angle: explain what this changes for AI capability, cost, reliability, or deployment; use China supply-chain context only when it materially changes the conclusion."
     if any(x in t for x in ("robot", "humanoid")):
         return "Angle: separate demo hype from deployment economics—cost, reliability, production scale, and actual factory use."
     if any(x in t for x in ("ev", "battery", "autonomous")):
-        return "Angle: connect the product news to manufacturing scale, cost curve, and global-market impact."
+        return "Angle: focus on whether AI/automation is moving from demo to useful deployment, and what changes in cost, reliability, or workflow."
     if any(x in t for x in ("ai", "model", "llm", "agent", "benchmark", "open-source", "open source")):
-        return "Angle: compare capability, openness, inference economics, and what this changes for global AI builders—not just benchmark rank."
+        return "Angle: judge what this changes for builders and real productivity—capability, cost, reliability, workflow, or verification—not just benchmark rank."
     if any(x in t for x in ("ipo", "funding", "earnings")):
         return "Angle: focus on what the capital event says about demand, capacity expansion, and the competitive cycle."
-    return "Angle: add a China-specific fact or second-order global implication instead of repeating the headline."
+    return "Angle: do not repeat the headline; identify the concrete consequence for people using AI to build, work, automate, or make decisions."
 
 
 def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any], now: datetime | None = None) -> dict[str, Any]:
@@ -59,6 +59,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     title_text = item.get("title", "")
     text = f"{title_text} {item.get('excerpt','')}"
     entities = _match_terms(text, list(rules.get("china_entities", [])))
+    productivity = _match_terms(text, list(rules.get("productivity_terms", [])))
     title_entities = _match_terms(title_text, list(rules.get("china_entities", [])))
     topics = _match_terms(text, list(rules.get("topic_terms", [])))
     title_topics = _match_terms(title_text, list(rules.get("topic_terms", [])))
@@ -83,15 +84,18 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     elif not topics and not entity_only_ok:
         priority = "DROP"
         reason = "no_tech_topic_match"
-    elif not bool(source.get("china_focused")) and not entities:
+    elif not bool(source.get("china_focused")) and not bool(source.get("audience_focused")) and not entities:
         priority = "DROP"
         reason = "no_china_entity_match"
+    elif bool(source.get("require_productivity_term")) and not productivity:
+        priority = "DROP"
+        reason = "no_ai_productivity_match"
     elif published is not None and age > float(source.get("max_candidate_age_minutes", rules.get("max_candidate_age_minutes", 1440))):
         priority = "DROP"
         reason = f"stale:{age:.0f}m"
     else:
         weight = int(source.get("source_weight", 1))
-        score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(high), 2) * 2
+        score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(productivity), 2) * 2 + min(len(high), 2) * 2
         if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and high and score >= 7:
             priority = "P0"
         elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= 5:
@@ -103,6 +107,8 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
             bits.append("entity=" + entities[0])
         if topics:
             bits.append("topic=" + topics[0])
+        if productivity:
+            bits.append("productivity=" + productivity[0])
         if high:
             bits.append("impact=" + high[0])
         reason = "; ".join(bits)

@@ -10,7 +10,9 @@ if [[ -f "$HOME/.china-tech-x-radar.env" ]]; then
 fi
 export CHINA_TECH_RADAR_ROOT="$ROOT"
 export CHINA_TECH_RADAR_DB="${CHINA_TECH_RADAR_DB:-$ROOT/runtime/china-tech-x.db}"
-if [[ "${CHINA_TECH_ALERTS_ENABLED:-0}" == "1" ]]; then
+if [[ "${CHINA_TECH_FORCE_NO_SEND:-0}" == "1" ]]; then
+  exec "$ROOT/.venv/bin/china-tech-x-radar" run --no-send
+elif [[ "${CHINA_TECH_ALERTS_ENABLED:-0}" == "1" ]]; then
   exec "$ROOT/.venv/bin/china-tech-x-radar" run
 else
   exec "$ROOT/.venv/bin/china-tech-x-radar" run --no-send

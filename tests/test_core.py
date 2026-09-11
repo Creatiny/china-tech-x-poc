@@ -189,19 +189,20 @@ class CoreTests(unittest.TestCase):
         self.assertIn("Human-ready final copy.", text)
         self.assertIn("来源：https://example.com/source", text)
 
-    def test_b_group_packet_shows_strategy(self):
+    def test_reply_packet_has_no_legacy_ab_group(self):
         text = format_publish_packet(
             {"id": 10, "priority": "P1", "title": "World model update", "canonical_url": "https://x.com/a/status/1"},
-            {"decision": "REPLY", "content_group": "B_OPINION_VALUE", "confidence": 0.93,
+            {"decision": "REPLY", "content_bucket": "WHAT_I_BELIEVE", "confidence": 0.93,
              "reason": "Clear independent position",
              "core_position": "World models need persistent state, not just better video prediction.",
              "target_url": "https://x.com/a/status/1", "target_account": "a",
              "final_copy": "Better video isn't enough. The test is whether the model can keep a stable world state while an agent acts inside it.",
-             "source_url": "https://example.com/paper", "angle_type": "TECHNICAL_EXPLANATION",
+             "source_url": "https://example.com/paper", "angle_type": "THESIS",
              "urgency_minutes": 45, "publish_note": "Reply now.", "image_mode": "NONE"},
             has_asset=False,
         )
-        self.assertTrue(text.startswith("【P1｜REPLY｜B 观点/价值型｜45分钟内】"))
+        self.assertTrue(text.startswith("【P1｜REPLY｜45分钟内】"))
+        self.assertNotIn("实验分组", text)
         self.assertIn("核心观点：", text)
 
 
@@ -255,35 +256,29 @@ class CoreTests(unittest.TestCase):
             self.assertFalse(allowed)
             self.assertEqual(reason,"post_daily_cap_reached")
 
-    def test_a_reply_cap_preserves_b_group_capacity(self):
+    def test_reply_daily_ceiling_has_no_ab_split(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "groups.db")
             now = iso()
             for i in (1, 2):
-                cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (str(i)*64,'s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
-                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{"decision":"REPLY","content_group":"A_NEWS_FACT"}'))
+                cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (f'{i:064x}','s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
+                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\"}'))
             con.commit()
-            cfg = {
-                "p1_min_confidence": 0.88, "p1_reply_min_score": 7,
-                "max_reply_packets_per_day": 4, "max_p1_reply_packets_per_day": 4,
-                "max_a_reply_packets_per_day": 2, "max_b_reply_packets_per_day": 2,
-            }
-            allowed_a, reason_a = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","content_group":"A_NEWS_FACT","confidence":0.95,"target_url":"https://x.com/a/status/3"},cfg)
-            allowed_b, reason_b = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/b/status/4"},cfg)
-            self.assertFalse(allowed_a)
-            self.assertEqual(reason_a, "a_reply_daily_cap_reached")
-            self.assertTrue(allowed_b)
-            self.assertEqual(reason_b, "p1_reply_curated")
+            cfg = {"p1_min_confidence":0.88,"p1_reply_min_score":7,"max_reply_packets_per_day":6,"max_p1_reply_packets_per_day":6}
+            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/3"},cfg)
+            self.assertTrue(allowed)
+            self.assertEqual(reason,"p1_reply_curated")
+
 
     def test_notification_epoch_ignores_old_sent_packets(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "epoch.db")
             old = "2026-09-09T01:00:00Z"
             cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", ('e'*64,'s','S','x_profile','old',old,'P1',9,'r',old))
-            con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',old,old,'SENT','READY','{\"decision\":\"REPLY\",\"content_group\":\"B_OPINION_VALUE\"}'))
+            con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',old,old,'SENT','READY','{\"decision\":\"REPLY\"}'))
             con.commit()
-            cfg={"notification_epoch":"2026-09-09T06:55:00Z","p1_min_confidence":0.88,"p1_reply_min_score":7,"max_reply_packets_per_day":4,"max_b_reply_packets_per_day":2,"max_p1_reply_packets_per_day":4}
-            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/a/status/2"},cfg)
+            cfg={"notification_epoch":"2026-09-09T06:55:00Z","p1_min_confidence":0.88,"p1_reply_min_score":7,"max_reply_packets_per_day":4,"max_p1_reply_packets_per_day":4}
+            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/2"},cfg)
             self.assertTrue(allowed)
             self.assertEqual(reason,"p1_reply_curated")
 
@@ -293,10 +288,10 @@ class CoreTests(unittest.TestCase):
             now = iso()
             for i in range(4):
                 cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", ((str(i+1)*64)[:64],'s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
-                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\",\"content_group\":\"B_OPINION_VALUE\"}'))
+                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\"}'))
             con.commit()
-            cfg={"p0_min_confidence":0.75,"max_reply_packets_per_day":4,"max_b_reply_packets_per_day":2,"max_p1_reply_packets_per_day":4}
-            allowed,reason=notification_policy(con,{"priority":"P0","score":12},{"decision":"REPLY","content_group":"B_OPINION_VALUE","confidence":0.95,"target_url":"https://x.com/a/status/9"},cfg)
+            cfg={"p0_min_confidence":0.75,"max_reply_packets_per_day":4,"max_p1_reply_packets_per_day":4}
+            allowed,reason=notification_policy(con,{"priority":"P0","score":12},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/9"},cfg)
             self.assertTrue(allowed)
             self.assertEqual(reason,"p0_immediate")
 
@@ -337,7 +332,6 @@ class CoreTests(unittest.TestCase):
     def test_language_gate_rejects_ai_template_reply(self):
         packet = {
             "decision": "REPLY",
-            "content_group": "A_NEWS_FACT",
             "content_bucket": "WHAT_CHANGES",
             "final_copy": "The bigger signal is that China's supply chain is changing. This suggests that the market will follow.",
         }
@@ -348,20 +342,19 @@ class CoreTests(unittest.TestCase):
     def test_language_gate_accepts_short_conversational_reply(self):
         packet = {
             "decision": "REPLY",
-            "content_group": "A_NEWS_FACT",
             "content_bucket": "WHAT_CHANGES",
             "final_copy": "CXMT still hasn't shared yields or stack capacity. If qualification goes well, commercial shipments could start in 2027.",
         }
         self.assertEqual(language_gate_violations(packet), [])
 
-    def test_b_group_requires_explicit_core_position(self):
+    def test_reply_does_not_require_legacy_content_group(self):
         packet = {
             "decision": "REPLY",
-            "content_group": "B_OPINION_VALUE",
             "content_bucket": "WHAT_I_BELIEVE",
-            "final_copy": "Shanghai AI Lab can run one inference pipeline across three domestic chips.",
+            "core_position": "Verification matters.",
+            "final_copy": "I've seen the same failure mode in production. Verification is the hard part after an agent says it's done.",
         }
-        self.assertIn("b_group_missing_core_position", language_gate_violations(packet))
+        self.assertEqual(language_gate_violations(packet), [])
 
 
     def test_global_ai_productivity_source_can_qualify_without_china_entity(self):
@@ -400,7 +393,6 @@ class CoreTests(unittest.TestCase):
     def test_chinese_template_is_rejected_by_language_gate(self):
         packet = {
             "decision": "POST",
-            "content_group": "B_OPINION_VALUE",
             "content_bucket": "WHAT_I_BELIEVE",
             "final_copy": "真正重要的不是模型参数，而是验证。",
         }

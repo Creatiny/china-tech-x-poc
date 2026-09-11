@@ -352,14 +352,18 @@ Avoid by default, in either language: `One caveat`, `The bigger signal`, `The bi
 
 If a draft fails the voice gate, rewrite once. If it still fails, `SKIP`.
 
-## 20. A/B Reply Classification Under v3.0
+## 20. Single Reply Standard
 
-The existing A/B reply mechanism remains active, but it is subordinate to the three content buckets and the new audience strategy.
+The legacy A/B Reply experiment is retired. There is no A/B reply split or A/B quota. Every Reply is judged by one standard: **does this add something worth reading from Kenny for the AI → productivity audience?**
 
-- `A_NEWS_FACT`: acquisition/control reply. It must add a primary-source fact, key number/correction, or useful case. It does not define account identity.
-- `B_OPINION_VALUE`: strategic mainline. It expresses a clear owner judgment or a real practice lesson, normally mapping to `WHAT_I_BELIEVE` or `WHAT_I_LEARNED`.
+A Reply is publishable only when it contributes at least one of:
+- a primary-source fact or factual correction that materially changes the discussion;
+- a key number/metric that changes the conclusion;
+- a corresponding China/global case that adds useful context;
+- a first-hand result from Kenny's own research, testing, building, or operations;
+- a clear judgment about what changes for capability, cost, reliability, workflow, product design, business model, or real productivity.
 
-At similar quality, prefer B. Daily A/B caps are notification ceilings only, never output quotas. For owned original content, even `WHAT_CHANGES` must contain a clear Kenny thesis or useful conclusion.
+A factual addition is not a separate content strategy. If it does not strengthen Kenny's worldview, help the target cohort, or create a reason to follow, `SKIP`. Reply value is tracked through `angle_type`, not an experiment group.
 
 ## 21. Article Owner Authority
 

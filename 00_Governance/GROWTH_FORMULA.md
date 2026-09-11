@@ -21,7 +21,6 @@ AUDIENCE FIT
 
 - `POST` or `REPLY`;
 - content bucket: `WHAT_I_BELIEVE | WHAT_I_LEARNED | WHAT_CHANGES`;
-- reply group when applicable: `A_NEWS_FACT | B_OPINION_VALUE`;
 - topic/thesis;
 - evidence type: practice / primary source / data / case / synthesis;
 - target account/post age for replies when available;
@@ -51,5 +50,3 @@ High-impression/zero-conversion reply patterns are explicitly **not** promoted a
 5. Chinese originals improve voice authenticity and recognizability;
 6. China-side primary evidence can differentiate global AI/productivity discussions without defining the whole niche.
 
-
-A/B reply comparisons use follower/profile/bookmark/meaningful-reply outcomes per 1,000 impressions. Raw impressions alone cannot make A the strategic mainline.

@@ -6,11 +6,11 @@ reasoning_effort = "low"
 call_timeout_seconds = 90
 
 # Bounded editorial budget. This is ChatGPT/Codex subscription usage, not paid X API traffic.
-budget_revision = "ai-productivity-viewpoint-v4"
-notification_epoch = "2026-09-09T10:10:49Z"
-max_gate_calls_per_day = 40
-max_final_calls_per_day = 20
-max_tokens_per_day = 900000
+budget_revision = "ai-productivity-single-reply-v5"
+notification_epoch = "2026-09-11T14:43:04Z"
+max_gate_calls_per_day = 60
+max_final_calls_per_day = 30
+max_tokens_per_day = 1200000
 gate_token_reserve = 6000
 final_token_reserve = 30000
 
@@ -25,10 +25,8 @@ render_editorial_cards = true
 p0_min_confidence = 0.75
 p1_min_confidence = 0.88
 p1_post_min_score = 10
-p1_reply_min_score = 7
+p1_reply_min_score = 6
 max_post_packets_per_day = 1
-max_reply_packets_per_day = 4
-max_a_reply_packets_per_day = 2
-max_b_reply_packets_per_day = 2
+max_reply_packets_per_day = 6
 max_p1_post_packets_per_day = 1
-max_p1_reply_packets_per_day = 4
+max_p1_reply_packets_per_day = 6

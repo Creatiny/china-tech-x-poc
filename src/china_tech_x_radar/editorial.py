@@ -225,12 +225,6 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
         violations.append("em_dash_heavy")
     if re.search(r"(?im)^\s*(reply|post|analysis|takeaway|conclusion)\s*:", copy):
         violations.append("label_inside_copy")
-    if decision == "REPLY":
-        group = str(packet.get("content_group") or "").upper()
-        if group not in {"A_NEWS_FACT", "B_OPINION_VALUE"}:
-            violations.append("missing_content_group")
-        if group == "B_OPINION_VALUE" and not str(packet.get("core_position") or "").strip():
-            violations.append("b_group_missing_core_position")
     return violations
 
 def final_prompt(signal: dict[str, Any]) -> str:
@@ -266,9 +260,11 @@ Content buckets:
 - WHAT_I_LEARNED: a useful lesson from real research/testing/building/operations.
 - WHAT_CHANGES: a development that materially changes capability, cost, workflow, reliability, product design, business model, or competitive dynamics. Even here, a POST still needs a Kenny thesis; a news summary alone is not enough.
 
-Reply groups:
-- A_NEWS_FACT: acquisition/control. Must add a primary-source fact, key number/correction, or corresponding case.
-- B_OPINION_VALUE: strategic mainline. Must state a clear owner judgment or real-practice lesson. At similar quality, prefer B.
+Single Reply standard:
+- There are no A/B Reply groups.
+- A REPLY must add at least one of: a primary-source fact/correction that changes the discussion, a key metric, a corresponding case, a first-hand practice result, or a clear AI→productivity judgment.
+- A factual addition is not enough if it is generic or does not strengthen Kenny's identity/follow reason.
+- Prefer FIRSTHAND_PRACTICE, THESIS, PRODUCTIVITY_IMPACT, PRIMARY_SOURCE, KEY_NUMBER, or CORRESPONDING_CASE.
 
 OWNER OVERRIDE: Article topics, questions, and theses are selected by Kenny after deep research or validated shorter content. Do not propose, schedule, or derive Article topics from realtime news; article_seed must be null.
 
@@ -302,7 +298,7 @@ Visual decision:
 - POST: EDITORIAL_CARD only when 2-3 verified facts/data points materially improve comprehension.
 
 Return ONLY one-line JSON with exactly these keys:
-{{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","content_group":"A_NEWS_FACT|B_OPINION_VALUE","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
+{{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
 def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -> dict[str, Any]:

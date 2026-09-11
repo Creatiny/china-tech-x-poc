@@ -57,9 +57,9 @@ Review:
 Do not use “publish more” as a default corrective action.
 
 
-## 6. A/B Reply Handling
+## 6. Reply Qualification
 
-For each qualified reply target, classify `A_NEWS_FACT` (fact/correction/case acquisition reply) or `B_OPINION_VALUE` (owner viewpoint or real-practice reply). B is the strategic mainline. Existing daily A/B limits are notification ceilings, never output goals.
+There is one Reply standard. Do not classify A/B groups. A Reply must add a primary-source fact/correction, key metric, corresponding case, first-hand practice result, or a clear AI→productivity judgment. If it is merely a competent comment anyone could write, `SKIP`.
 
 ## 7. Human Voice Gate
 

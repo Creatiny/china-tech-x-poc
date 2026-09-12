@@ -226,6 +226,22 @@ Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}'''
 
 
+def load_spec_guardrails(root: Path) -> str:
+    """Freshly read mandatory editorial sections before every final draft."""
+    path = root / "PROJECT_SPEC.md"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception as exc:
+        raise RuntimeError(f"project_spec_unreadable:{exc}") from exc
+    parts: list[str] = []
+    for section in (19, 20, 23):
+        match = re.search(rf"(?ms)^## {section}\. .*?(?=^## \d+\.|\Z)", text)
+        if not match:
+            raise RuntimeError(f"project_spec_missing_section:{section}")
+        parts.append(match.group(0).strip())
+    return "\n\n".join(parts)
+
+
 def language_gate_violations(packet: dict[str, Any]) -> list[str]:
     decision = str(packet.get("decision") or "").upper()
     if decision not in {"REPLY", "POST"}:
@@ -237,8 +253,10 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
     lowered = copy.casefold()
     violations = [f"banned_phrase:{phrase}" for phrase in BANNED_AI_PHRASES if phrase in lowered]
     word_count = len(re.findall(r"\b[\w’'-]+\b", copy))
-    if decision == "REPLY" and word_count > 80:
-        violations.append(f"too_long:{word_count}>80")
+    if decision == "REPLY" and word_count > 60:
+        violations.append(f"too_long:{word_count}>60")
+    if decision == "REPLY" and re.search(r"[\u3400-\u9fff]", copy) and len(copy) > 140:
+        violations.append(f"too_long_zh:{len(copy)}>140")
     bucket = str(packet.get("content_bucket") or "").upper()
     if bucket not in {"WHAT_I_BELIEVE", "WHAT_I_LEARNED", "WHAT_CHANGES"}:
         violations.append("missing_content_bucket")
@@ -248,7 +266,7 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
         violations.append("label_inside_copy")
     return violations
 
-def final_prompt(signal: dict[str, Any]) -> str:
+def final_prompt(signal: dict[str, Any], spec_guardrails: str = "") -> str:
     direct_target = str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET"
     if direct_target:
         target_instruction = (
@@ -264,6 +282,11 @@ Audience: people who follow AI technology and care about turning AI into real pr
 Positioning: 不报道 AI，判断 AI 正在改变什么。 News is raw material; Kenny's viewpoint is the product.
 Original posts are ALWAYS Chinese. Replies MUST follow the verified parent-post language.
 China technology is a differentiation source, not a mandatory boundary.
+
+MANDATORY PRE-DRAFT SPEC CHECK:
+The following text was freshly read from the current PROJECT_SPEC.md for this draft. Obey it before writing final_copy. If there is any conflict with generic writing habits, the SPEC wins.
+
+{spec_guardrails}
 
 Candidate priority: {signal.get('priority') or 'unknown'}
 Candidate:
@@ -307,9 +330,12 @@ Voice gate:
 - one main point, only necessary supporting facts;
 - no headings, labels, generic praise, filler, forced hashtags, formal conclusion, forced cleverness, or repeated house templates;
 - avoid “The interesting part isn't...”, “The real shift isn't...”, “The biggest takeaway isn't...”, “真正重要的不是X，而是Y”, and repeated not-X-but-Y constructions;
-- do not overclaim.
+- do not overclaim;
+- use the fewest words that preserve the point;
+- no setup, recap, throat-clearing, generic praise, or formal conclusion;
+- if two drafts mean the same thing, choose the shorter one.
 
-REPLY should normally be 1-3 short sentences and <=80 English words when English. POST should normally be 2-5 short paragraphs in Chinese, but clarity matters more than a mechanical length quota.
+REPLY defaults to one short, conversational sentence. Use a second sentence only when the point would otherwise lose accuracy or useful evidence. Aim for <=35 English words or about <=60 Chinese characters; never add words for completeness. POST should also be as short as the idea allows.
 
 For POST, do NOT put the source URL in final_copy. Provide source_url separately.
 For REPLY, target_url must be a verified direct X status URL; if you cannot verify one, do not return REPLY.
@@ -330,7 +356,8 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
         gate = _run_codex(con, root, cfg, "GATE", gate_prompt(signal), search=False)
         if str(gate.get("decision") or "").upper() != "PASS":
             return {"decision": "SKIP", "confidence": gate.get("confidence"), "reason": gate.get("reason"), "gate": gate}
-    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal), search=True)
+    spec_guardrails = load_spec_guardrails(root)
+    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal, spec_guardrails), search=True)
     decision = str(packet.get("decision") or "SKIP").upper()
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"

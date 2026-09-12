@@ -68,3 +68,8 @@ Before any packet reaches the operator, apply `PROJECT_SPEC.md` Section 19. A fl
 ## 8. Article Authority
 
 Do not derive or schedule Article topics from realtime signals. Kenny selects Article topics/theses; the system supports them after assignment.
+
+
+## 9. Pre-Draft SPEC Check
+
+Before generating final Post/Reply copy, load the current `PROJECT_SPEC.md` and apply Sections 19, 20, and 23. If SPEC cannot be read, do not produce publish-ready copy. Reply copy defaults to one short, conversational sentence; shorter wins when meaning is unchanged.

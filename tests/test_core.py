@@ -12,7 +12,7 @@ from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score
-from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt
+from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails
 
 
 class CoreTests(unittest.TestCase):
@@ -347,6 +347,10 @@ class CoreTests(unittest.TestCase):
         self.assertTrue(any(v.startswith("banned_phrase:the bigger signal") for v in violations))
         self.assertTrue(any(v.startswith("banned_phrase:this suggests that") for v in violations))
 
+    def test_chinese_reply_hard_length_gate(self):
+        packet = {"decision":"REPLY","content_bucket":"WHAT_I_BELIEVE","final_copy":"这是一条很长的回复。" * 20}
+        self.assertTrue(any(v.startswith("too_long_zh:") for v in language_gate_violations(packet)))
+
     def test_language_gate_accepts_short_conversational_reply(self):
         packet = {
             "decision": "REPLY",
@@ -390,6 +394,15 @@ class CoreTests(unittest.TestCase):
         }
         out = classify(item, source, rules)
         self.assertEqual(out["priority"], "P2")
+
+    def test_spec_guardrails_are_loaded_fresh(self):
+        spec = load_spec_guardrails(Path(__file__).resolve().parents[1])
+        self.assertIn("Mandatory Human Voice Gate", spec)
+        self.assertIn("Single Reply Standard", spec)
+        self.assertIn("Pre-Draft SPEC Check and Brevity Gate", spec)
+        prompt = final_prompt({"priority":"P1","title":"AI agent","excerpt":"x","source_name":"S","canonical_url":"u","reason":"r","topic":"agent","target_mode":"VERIFIED_X_TARGET"}, spec)
+        self.assertIn("MANDATORY PRE-DRAFT SPEC CHECK", prompt)
+        self.assertIn("fewest words", prompt)
 
     def test_editorial_prompt_enforces_new_language_and_viewpoint_rules(self):
         prompt = final_prompt({"priority":"P1","title":"AI coding agent launch","excerpt":"workflow","source_name":"S","canonical_url":"source","reason":"r","topic":"agent","target_mode":"TARGET_SEARCH_REQUIRED"})

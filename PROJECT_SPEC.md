@@ -402,3 +402,24 @@ Such accounts can still appear through event-specific global search when a parti
 - `global_search_only`: not persistently monitored; eligible only when a specific post/event passes the editorial gate.
 
 For direct creator monitoring, technical quality outranks follower count and virality.
+
+
+## 23. Pre-Draft SPEC Check and Brevity Gate
+
+This is a hard publishing rule. Before generating any paste-ready X Post or Reply, the editorial runtime MUST read the current `PROJECT_SPEC.md` and apply at least Sections 19, 20, and 23. Do not rely on remembered or cached wording. If the current SPEC cannot be read, do not generate publish-ready copy.
+
+### Brevity is the default
+
+Write like a real person replying on X, not like someone trying to complete an essay. Use the fewest words that preserve the point.
+
+For Reply copy:
+- default to **one short sentence**; use two only when a fact/correction genuinely needs support;
+- lead directly with the point; no setup paragraph, recap, throat-clearing, generic praise, or formal conclusion;
+- use everyday words and natural spoken phrasing;
+- do not restate the parent post unless needed to correct it;
+- one clear point beats a complete explanation;
+- if two versions say the same thing, publish the shorter one.
+
+For original Posts, concise is also preferred. Do not add paragraphs merely to make a post look complete. Depth belongs in a Thread/Article only when the idea actually requires it.
+
+Internal target, not a quota: an English Reply should usually fit within about 35 words; a Chinese Reply should usually fit within about 60 Chinese characters. Exceed this only when the extra words materially improve accuracy or usefulness.

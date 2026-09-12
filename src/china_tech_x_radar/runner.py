@@ -5,7 +5,7 @@ import sqlite3
 import tomllib
 import difflib
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -50,15 +50,7 @@ def load_toml(path: Path) -> dict[str, Any]:
         return tomllib.load(f)
 
 
-def _sent_packet_counts_today(con: sqlite3.Connection, cfg: dict[str, Any] | None = None) -> dict[str, int]:
-    tz = ZoneInfo("Asia/Shanghai")
-    now_local = datetime.now(tz)
-    start_local = datetime.combine(now_local.date(), datetime.min.time(), tzinfo=tz)
-    start_utc = start_local.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-    if cfg and cfg.get("notification_epoch"):
-        epoch = str(cfg.get("notification_epoch"))
-        if epoch > start_utc:
-            start_utc = epoch
+def _sent_packet_counts_since(con: sqlite3.Connection, start_utc: str) -> dict[str, int]:
     rows = con.execute(
         """SELECT s.priority,a.editorial_packet_json FROM alert a JOIN signal s ON s.id=a.signal_id
            WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?""",
@@ -78,6 +70,28 @@ def _sent_packet_counts_today(con: sqlite3.Connection, cfg: dict[str, Any] | Non
     return counts
 
 
+def _sent_packet_counts_today(con: sqlite3.Connection, cfg: dict[str, Any] | None = None) -> dict[str, int]:
+    tz = ZoneInfo("Asia/Shanghai")
+    now_local = datetime.now(tz)
+    start_local = datetime.combine(now_local.date(), datetime.min.time(), tzinfo=tz)
+    start_utc = start_local.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    if cfg and cfg.get("notification_epoch"):
+        epoch = str(cfg.get("notification_epoch"))
+        if epoch > start_utc:
+            start_utc = epoch
+    return _sent_packet_counts_since(con, start_utc)
+
+
+def _sent_p1_replies_in_window(con: sqlite3.Connection, cfg: dict[str, Any]) -> int:
+    hours = float(cfg.get("p1_reply_window_hours", 4))
+    start = datetime.now(timezone.utc) - timedelta(hours=hours)
+    start_utc = start.isoformat().replace("+00:00", "Z")
+    epoch = str(cfg.get("notification_epoch") or "")
+    if epoch and epoch > start_utc:
+        start_utc = epoch
+    return _sent_packet_counts_since(con, start_utc)["p1_reply"]
+
+
 def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> tuple[bool, str]:
     priority = str(signal.get("priority") or "P1").upper()
     decision = str(packet.get("decision") or "SKIP").upper()
@@ -93,26 +107,25 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
             return False, f"p0_confidence_below_threshold:{confidence:.2f}"
         return True, "p0_immediate"
     counts = _sent_packet_counts_today(con, cfg)
-    posts_sent = counts["p0_post"] + counts["p1_post"]
-    replies_sent = counts["p0_reply"] + counts["p1_reply"]
-    max_posts = int(cfg.get("max_post_packets_per_day", cfg.get("max_p1_post_packets_per_day", 1)))
-    max_replies = int(cfg.get("max_reply_packets_per_day", cfg.get("max_p1_reply_packets_per_day", 4)))
-    if decision == "POST" and posts_sent >= max_posts:
-        return False, "post_daily_cap_reached"
-    if decision == "REPLY" and replies_sent >= max_replies:
-        return False, "reply_daily_cap_reached"
+    # P0 is exceptional and never consumes ordinary P1 notification capacity.
+    if decision == "POST" and counts["p1_post"] >= int(cfg.get("max_p1_post_packets_per_day", 1)):
+        return False, "p1_post_daily_slot_used"
+    if decision == "REPLY":
+        window_count = _sent_p1_replies_in_window(con, cfg)
+        window_max = int(cfg.get("max_p1_reply_packets_per_window", 3))
+        if window_count >= window_max:
+            return False, "p1_reply_window_cap_reached"
+        daily_safety_max = int(cfg.get("max_p1_reply_packets_per_day", 12))
+        if counts["p1_reply"] >= daily_safety_max:
+            return False, "p1_reply_daily_safety_cap_reached"
     if confidence < float(cfg.get("p1_min_confidence", 0.88)):
         return False, f"p1_confidence_below_threshold:{confidence:.2f}"
     if decision == "POST":
         if score < int(cfg.get("p1_post_min_score", 10)):
             return False, f"p1_post_score_below_threshold:{score}"
-        if counts["p1_post"] >= int(cfg.get("max_p1_post_packets_per_day", 1)):
-            return False, "p1_post_daily_slot_used"
         return True, "p1_post_curated"
     if score < int(cfg.get("p1_reply_min_score", 7)):
         return False, f"p1_reply_score_below_threshold:{score}"
-    if counts["p1_reply"] >= int(cfg.get("max_p1_reply_packets_per_day", 4)):
-        return False, "p1_reply_daily_cap_reached"
     return True, "p1_reply_curated"
 
 

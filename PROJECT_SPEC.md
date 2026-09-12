@@ -163,6 +163,8 @@ No Article quota exists.
 
 There is **no minimum daily post quota** and **no minimum daily reply quota**.
 
+Reply notifications use a **rolling attention window**, not a hard all-day cutoff: P0 never consumes P1 capacity; P1 can send up to 3 qualified Reply packets in any rolling 4-hour window, with a 12/day safety ceiling. Overnight activity must not exhaust the daytime opportunity budget.
+
 Explicitly removed as operating requirements:
 
 - “must publish one original every day”;

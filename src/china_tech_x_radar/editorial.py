@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import signal
 import sqlite3
 import subprocess
 import tempfile
@@ -150,16 +151,35 @@ def _run_codex(
                 "--sandbox", "read-only", "-m", model, "-c", f'model_reasoning_effort="{effort}"',
                 "-C", str(root), "-o", str(out_path), prompt,
             ]
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-            final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else proc.stdout
-            tokens = _parse_tokens(proc.stderr)
+            env = os.environ.copy()
+            env["NO_COLOR"] = "1"
+            proxy = str(env.get("CHINA_TECH_HTTP_PROXY") or "").strip()
+            if proxy:
+                env["HTTP_PROXY"] = proxy
+                env["HTTPS_PROXY"] = proxy
+                env["http_proxy"] = proxy
+                env["https_proxy"] = proxy
+            proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env, start_new_session=True
+            )
+            try:
+                stdout_text, stderr_text = proc.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired as exc:
+                try:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                stdout_text, stderr_text = proc.communicate()
+                raise TimeoutError(f"codex_timeout:{timeout}s") from exc
+            final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else stdout_text
+            tokens = _parse_tokens(stderr_text)
             con.execute(
                 "UPDATE model_usage SET tokens_used=?,success=?,error=? WHERE id=?",
-                (tokens if tokens is not None else 0, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else proc.stderr[-1200:], reservation_id),
+                (tokens if tokens is not None else 0, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else stderr_text[-1200:], reservation_id),
             )
             con.commit()
             if proc.returncode != 0:
-                raise RuntimeError(f"codex_{purpose.lower()}_failed:{proc.stderr[-500:]}")
+                raise RuntimeError(f"codex_{purpose.lower()}_failed:{stderr_text[-500:]}")
             return _extract_json(final)
     except Exception as exc:
         con.execute("UPDATE model_usage SET success=0,error=? WHERE id=?", (f"{type(exc).__name__}: {exc}"[:1200], reservation_id))

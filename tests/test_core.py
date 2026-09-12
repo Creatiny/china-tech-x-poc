@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from china_tech_x_radar.classify import classify
@@ -254,18 +254,26 @@ class CoreTests(unittest.TestCase):
             cfg={"p1_min_confidence":0.88,"p1_post_min_score":10,"max_p1_post_packets_per_day":1,"max_p1_reply_packets_per_day":4}
             allowed, reason = notification_policy(con,{"priority":"P1","score":12},{"decision":"POST","confidence":0.95},cfg)
             self.assertFalse(allowed)
-            self.assertEqual(reason,"post_daily_cap_reached")
+            self.assertEqual(reason,"p1_post_daily_slot_used")
 
-    def test_reply_daily_ceiling_has_no_ab_split(self):
+    def test_reply_rolling_window_blocks_burst_but_not_old_replies(self):
         with tempfile.TemporaryDirectory() as d:
-            con = connect(Path(d) / "groups.db")
-            now = iso()
-            for i in (1, 2):
-                cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (f'{i:064x}','s','S','x_profile',f'T{i}',now,'P1',9,'r',now))
-                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\"}'))
+            con = connect(Path(d) / "rolling.db")
+            now_dt = datetime.now(timezone.utc)
+            now = iso(now_dt)
+            old = iso(now_dt - timedelta(hours=6))
+            for i, sent_at in enumerate((now, now, now), start=1):
+                cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)", (f'{i:064x}','s','S','x_profile',f'T{i}',sent_at,'P1',9,'r',sent_at))
+                con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',sent_at,sent_at,'SENT','READY','{\"decision\":\"REPLY\"}'))
             con.commit()
-            cfg = {"p1_min_confidence":0.88,"p1_reply_min_score":7,"max_reply_packets_per_day":6,"max_p1_reply_packets_per_day":6}
-            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/3"},cfg)
+            cfg = {"p1_min_confidence":0.88,"p1_reply_min_score":6,"p1_reply_window_hours":4,"max_p1_reply_packets_per_window":3,"max_p1_reply_packets_per_day":12}
+            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/4"},cfg)
+            self.assertFalse(allowed)
+            self.assertEqual(reason,"p1_reply_window_cap_reached")
+
+            con.execute("UPDATE alert SET sent_at=? WHERE status='SENT'", (old,))
+            con.commit()
+            allowed, reason = notification_policy(con,{"priority":"P1","score":9},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/a/status/5"},cfg)
             self.assertTrue(allowed)
             self.assertEqual(reason,"p1_reply_curated")
 

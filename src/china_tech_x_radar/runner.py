@@ -9,6 +9,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .alerts import FeishuSender, format_publish_packet
 from .classify import classify
@@ -246,15 +247,39 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
     }
 
     try:
+        due: list[tuple[dict[str, Any], dict[str, Any] | None, bool]] = []
         for source in sources:
             source_id = source["id"]
             state = get_source_state(con, source_id)
             if not source_due(state, int(source.get("poll_minutes", 5)), now):
                 continue
-            counters["sources_due"] += 1
-            initialized_before = bool(state and state.get("last_success_at"))
+            due.append((source, state, bool(state and state.get("last_success_at"))))
+        counters["sources_due"] = len(due)
+
+        workers = max(1, min(int(rules.get("source_fetch_workers", 8)), len(due) or 1))
+        fetched: list[tuple[dict[str, Any], dict[str, Any] | None, bool, tuple[list[dict[str, Any]], dict[str, str], bool] | None, Exception | None]] = []
+        if due:
+            with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="china-tech-source") as pool:
+                future_map = {pool.submit(fetch_source, source, state): (source, state, initialized_before)
+                              for source, state, initialized_before in due}
+                for future in as_completed(future_map):
+                    source, state, initialized_before = future_map[future]
+                    try:
+                        fetched.append((source, state, initialized_before, future.result(), None))
+                    except Exception as exc:
+                        fetched.append((source, state, initialized_before, None, exc))
+
+        # Network I/O above is parallel; all SQLite writes remain serialized on this thread.
+        for source, state, initialized_before, fetched_result, fetch_error in fetched:
+            source_id = source["id"]
+            if fetch_error is not None:
+                msg = f"{type(fetch_error).__name__}: {fetch_error}"[:1000]
+                save_source_state(con, source_id, success=False, error=msg)
+                counters["source_errors"].append({"source_id": source_id, "error": msg})
+                continue
             try:
-                items, meta, not_modified = fetch_source(source, state)
+                assert fetched_result is not None
+                items, meta, not_modified = fetched_result
                 qualified_this_poll = 0
                 max_qualified_this_poll = int(source.get("max_qualified_per_poll", 1000000))
                 if not_modified:
@@ -293,7 +318,6 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     counters["new_signals"] += 1
                     if result["priority"] not in ("P0", "P1"):
                         continue
-                    # First-poll safety: only alert genuinely recent items with a source timestamp.
                     if not initialized_before:
                         if published is None or result["age_minutes"] > float(rules.get("bootstrap_alert_max_age_minutes", 120)):
                             continue
@@ -303,12 +327,8 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     qualified_this_poll += 1
                     counters["qualified_signals"] += 1
                 save_source_state(
-                    con,
-                    source_id,
-                    success=True,
-                    item_count=len(items),
-                    etag=meta.get("etag") or None,
-                    last_modified=meta.get("last_modified") or None,
+                    con, source_id, success=True, item_count=len(items),
+                    etag=meta.get("etag") or None, last_modified=meta.get("last_modified") or None,
                 )
                 counters["sources_success"] += 1
             except Exception as exc:
@@ -316,7 +336,6 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                 save_source_state(con, source_id, success=False, error=msg)
                 counters["source_errors"].append({"source_id": source_id, "error": msg})
 
-        reconcile_sent_replies(con)
         sender = FeishuSender()
         max_alerts = int(rules.get("max_alerts_per_cycle", 3))
         pending = con.execute(
@@ -391,6 +410,9 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     (iso(), f"{type(exc).__name__}: {exc}"[:1000], signal["alert_id"]),
                 )
                 con.commit()
+
+        # Post-publication tracking is secondary to discovery/alerts. Keep it cheap and run it last.
+        reconcile_sent_replies(con, max_items=1)
 
         record_cycle_finish(
             con,

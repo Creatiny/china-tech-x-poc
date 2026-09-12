@@ -1,3 +1,4 @@
+source_fetch_workers = 8
 max_candidate_age_minutes = 1440
 p0_max_age_minutes = 30
 p1_max_age_minutes = 360

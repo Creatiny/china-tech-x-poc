@@ -124,7 +124,7 @@ def parse_feed(body: bytes) -> list[dict[str, Any]]:
     return items
 
 
-def _request(url: str, state: dict[str, Any] | None, *, accept: str | None = None) -> tuple[int, bytes, dict[str, str]]:
+def _request(url: str, state: dict[str, Any] | None, *, accept: str | None = None, timeout: int = 12) -> tuple[int, bytes, dict[str, str]]:
     headers = {"User-Agent": USER_AGENT}
     if accept:
         headers["Accept"] = accept
@@ -135,7 +135,7 @@ def _request(url: str, state: dict[str, Any] | None, *, accept: str | None = Non
             headers["If-Modified-Since"] = state["last_modified"]
     req = urllib.request.Request(url, headers=headers)
     try:
-        with _urlopen(req, timeout=25) as r:
+        with _urlopen(req, timeout=timeout) as r:
             return r.status, r.read(1_500_000), {
                 "etag": r.headers.get("ETag") or "",
                 "last_modified": r.headers.get("Last-Modified") or "",
@@ -168,7 +168,7 @@ def fetch_github_releases(source: dict[str, Any], state: dict[str, Any] | None) 
             headers["If-Modified-Since"] = headers_state["last_modified"]
     req = urllib.request.Request(url, headers=headers)
     try:
-        with _urlopen(req, timeout=25) as r:
+        with _urlopen(req, timeout=timeout) as r:
             status = r.status
             body = r.read(1_500_000)
             meta = {"etag": r.headers.get("ETag") or "", "last_modified": r.headers.get("Last-Modified") or ""}
@@ -275,6 +275,7 @@ def fetch_account_posts_from_url(url: str, handle: str) -> list[dict[str, Any]]:
     status, body, _ = _request(
         url, None,
         accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        timeout=8,
     )
     if status == 304:
         return []
@@ -293,6 +294,7 @@ def fetch_x_profile(source: dict[str, Any], state: dict[str, Any] | None) -> tup
     status, body, meta = _request(
         f"https://x.com/{handle}", state,
         accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        timeout=int(source.get("request_timeout_seconds", 10)),
     )
     if status == 304:
         return [], meta, True

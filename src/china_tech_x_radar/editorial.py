@@ -68,6 +68,7 @@ def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = Non
         f"""SELECT COUNT(*) calls,
                   SUM(CASE WHEN purpose='GATE' THEN 1 ELSE 0 END) gate_calls,
                   SUM(CASE WHEN purpose='FINAL' THEN 1 ELSE 0 END) final_calls,
+                  SUM(CASE WHEN purpose='HUMANIZE' THEN 1 ELSE 0 END) humanize_calls,
                   COALESCE(SUM(tokens_used),0) tokens
            FROM model_usage WHERE {where}""",
         params,
@@ -76,6 +77,7 @@ def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = Non
         "calls": int(row["calls"] or 0),
         "gate_calls": int(row["gate_calls"] or 0),
         "final_calls": int(row["final_calls"] or 0),
+        "humanize_calls": int(row["humanize_calls"] or 0),
         "tokens": int(row["tokens"] or 0),
     }
 
@@ -83,9 +85,18 @@ def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = Non
 def _reserve_model_call(con: sqlite3.Connection, cfg: dict[str, Any], purpose: str, model: str) -> int:
     revision = str(cfg.get("budget_revision") or "legacy")
     max_tokens = int(cfg.get("max_tokens_per_day", 180000))
-    max_calls = int(cfg.get("max_gate_calls_per_day" if purpose == "GATE" else "max_final_calls_per_day", 8 if purpose == "GATE" else 5))
-    reserve = int(cfg.get("gate_token_reserve" if purpose == "GATE" else "final_token_reserve", 6000 if purpose == "GATE" else 30000))
-    call_key = "gate_calls" if purpose == "GATE" else "final_calls"
+    if purpose == "GATE":
+        max_calls = int(cfg.get("max_gate_calls_per_day", 8))
+        reserve = int(cfg.get("gate_token_reserve", 6000))
+        call_key = "gate_calls"
+    elif purpose == "HUMANIZE":
+        max_calls = int(cfg.get("max_humanize_calls_per_day", 50))
+        reserve = int(cfg.get("humanize_token_reserve", 5000))
+        call_key = "humanize_calls"
+    else:
+        max_calls = int(cfg.get("max_final_calls_per_day", 5))
+        reserve = int(cfg.get("final_token_reserve", 30000))
+        call_key = "final_calls"
 
     # BEGIN IMMEDIATE makes the check+reservation atomic even if two launchd/manual runs overlap.
     con.execute("BEGIN IMMEDIATE")
@@ -314,10 +325,12 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
             violations.append(f"canned_opener:{opener.strip()}")
             break
     word_count = len(re.findall(r"\b[\w’'-]+\b", copy))
-    if decision == "REPLY" and word_count > 60:
-        violations.append(f"too_long:{word_count}>60")
-    if decision == "REPLY" and re.search(r"[\u3400-\u9fff]", copy) and len(copy) > 140:
-        violations.append(f"too_long_zh:{len(copy)}>140")
+    if decision == "REPLY" and word_count > 45:
+        violations.append(f"too_long:{word_count}>45")
+    if decision == "REPLY" and re.search(r"[\u3400-\u9fff]", copy) and len(copy) > 100:
+        violations.append(f"too_long_zh:{len(copy)}>100")
+    if decision == "REPLY" and (";" in copy or "；" in copy):
+        violations.append("semicolon_in_reply")
     bucket = str(packet.get("content_bucket") or "").upper()
     if bucket not in {"WHAT_I_BELIEVE", "WHAT_I_LEARNED", "WHAT_CHANGES"}:
         violations.append("missing_content_bucket")
@@ -423,6 +436,36 @@ Return ONLY one-line JSON with exactly these keys:
 {{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
+def humanize_copy_prompt(signal: dict[str, Any], packet: dict[str, Any], humanizer_path: str, kenny_voice: str, recent_openers: list[str]) -> str:
+    opener_block = "\n".join(f"- {x}" for x in recent_openers) if recent_openers else "- none"
+    return f'''Rewrite only the publishable copy below so it sounds like Kenny, not an AI analyst.
+
+Read `{humanizer_path}` in full first. Then follow this Kenny voice profile:
+
+{kenny_voice}
+
+Parent/source text:
+{signal.get("excerpt") or signal.get("title") or ""}
+
+Current draft:
+{packet.get("final_copy") or ""}
+
+Recent opening shapes to avoid:
+{opener_block}
+
+Hard rules:
+- Preserve the original stance and factual meaning. Do not invent or strengthen facts, numbers, claims, or first-hand experience.
+- Keep the same language as the draft.
+- Default to one short sentence; two only if the second genuinely earns its place.
+- Plain spoken words. No analyst/report tone. No semicolon. Avoid em dash.
+- Do not recap the parent post. Do not add a conclusion.
+- Do not start with a stock framing such as The key, The hard part, This is the, A useful test, 这其实, 这章的价值在于.
+- If a specific fact is not needed for the point, cut it.
+- Ask internally: would Kenny actually type this in a chat? If not, rewrite again.
+
+Return ONLY JSON: {{"final_copy":"..."}}'''
+
+
 def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -> dict[str, Any]:
     cfg = load_editorial_config(root)
     if not bool(cfg.get("enabled", True)):
@@ -440,6 +483,16 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"
     packet["decision"] = decision
+    if decision in {"POST", "REPLY"} and str(packet.get("final_copy") or "").strip():
+        rewrite = _run_codex(
+            con, root, cfg, "HUMANIZE",
+            humanize_copy_prompt(signal, packet, humanizer_path, kenny_voice, openers),
+            search=False,
+        )
+        rewritten_copy = str(rewrite.get("final_copy") or "").strip()
+        if not rewritten_copy:
+            raise RuntimeError("humanizer_empty_copy")
+        packet["final_copy"] = rewritten_copy
     violations = language_gate_violations(packet)
     if violations:
         return {

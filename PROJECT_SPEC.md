@@ -423,3 +423,12 @@ For Reply copy:
 For original Posts, concise is also preferred. Do not add paragraphs merely to make a post look complete. Depth belongs in a Thread/Article only when the idea actually requires it.
 
 Internal target, not a quota: an English Reply should usually fit within about 35 words; a Chinese Reply should usually fit within about 60 Chinese characters. Exceed this only when the extra words materially improve accuracy or usefulness.
+
+
+## 24. Humanizer and Opening-Diversity Gate
+
+Before any paste-ready Post/Reply is drafted, the runtime MUST load the installed Humanizer skill at `~/.codex/skills/humanizer/SKILL.md` in addition to the current SPEC. If the skill cannot be read, do not produce publish-ready copy.
+
+For Replies, the runtime must also inspect recent sent Reply openings and avoid repeating the same opening shape, cadence, or stock framing. Do not solve this by rotating through a new set of templates. The wording should follow the actual thought.
+
+After drafting, run one Humanizer self-audit internally: ask what still sounds machine-written, cut it, and return only the revised copy. Prefer ordinary spoken language, uneven natural rhythm, and fewer words.

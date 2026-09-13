@@ -242,6 +242,43 @@ def load_spec_guardrails(root: Path) -> str:
     return "\n\n".join(parts)
 
 
+def require_humanizer_skill(cfg: dict[str, Any]) -> str:
+    raw = str(cfg.get("humanizer_skill_path") or "~/.codex/skills/humanizer/SKILL.md")
+    path = Path(raw).expanduser()
+    if not path.is_file():
+        raise RuntimeError(f"humanizer_skill_missing:{path}")
+    return str(path)
+
+
+def _reply_opener_shape(text: str | None) -> str:
+    value = re.sub(r"\s+", " ", str(text or "")).strip()
+    if not value:
+        return ""
+    value = re.sub(r"^(?:@[-_A-Za-z0-9]+\s*)+", "", value).strip()
+    if re.search(r"[\u3400-\u9fff]", value):
+        first = re.split(r"[。！？!?]", value, maxsplit=1)[0].strip()
+        return first[:24]
+    words = value.split()
+    return " ".join(words[:7])
+
+
+def recent_reply_openers(con: sqlite3.Connection, limit: int = 12) -> list[str]:
+    rows = con.execute(
+        """SELECT json_extract(editorial_packet_json,'$.final_copy') AS copy
+             FROM alert
+            WHERE status='SENT' AND json_extract(editorial_packet_json,'$.decision')='REPLY'
+              AND json_extract(editorial_packet_json,'$.final_copy') IS NOT NULL
+            ORDER BY sent_at DESC LIMIT ?""",
+        (max(1, int(limit)),),
+    ).fetchall()
+    out: list[str] = []
+    for row in rows:
+        shape = _reply_opener_shape(row["copy"])
+        if shape and shape.casefold() not in {x.casefold() for x in out}:
+            out.append(shape)
+    return out
+
+
 def language_gate_violations(packet: dict[str, Any]) -> list[str]:
     decision = str(packet.get("decision") or "").upper()
     if decision not in {"REPLY", "POST"}:
@@ -266,7 +303,7 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
         violations.append("label_inside_copy")
     return violations
 
-def final_prompt(signal: dict[str, Any], spec_guardrails: str = "") -> str:
+def final_prompt(signal: dict[str, Any], spec_guardrails: str = "", humanizer_path: str = "", recent_openers: list[str] | None = None) -> str:
     direct_target = str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET"
     if direct_target:
         target_instruction = (
@@ -276,6 +313,8 @@ def final_prompt(signal: dict[str, Any], spec_guardrails: str = "") -> str:
         )
     else:
         target_instruction = "Use web search only as needed to verify facts and find one strong current X target about this exact topic/event. Choose REPLY, POST, or SKIP."
+    recent_openers = recent_openers or []
+    opener_block = "\n".join(f"- {x}" for x in recent_openers) if recent_openers else "- none available"
     return f'''You are the final editorial operator for @KennyChinaTech.
 
 Audience: people who follow AI technology and care about turning AI into real productivity.
@@ -287,6 +326,13 @@ MANDATORY PRE-DRAFT SPEC CHECK:
 The following text was freshly read from the current PROJECT_SPEC.md for this draft. Obey it before writing final_copy. If there is any conflict with generic writing habits, the SPEC wins.
 
 {spec_guardrails}
+
+MANDATORY HUMANIZER PASS:
+Before drafting final_copy, read `{humanizer_path}` in full. Apply it, especially: trust the reader, cut over-explaining, avoid neat AI rhythms, use ordinary spoken language, and leave natural texture. Draft internally, then ask: "What still sounds machine-written here?" Fix that before returning JSON. Do not mention this process in final_copy.
+
+RECENT REPLY OPENINGS TO AVOID REUSING:
+{opener_block}
+Do not reuse their opening shape, cadence, or stock framing. Do not replace them with another fixed template; let the actual thought determine the opening.
 
 Candidate priority: {signal.get('priority') or 'unknown'}
 Candidate:
@@ -357,7 +403,9 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
         if str(gate.get("decision") or "").upper() != "PASS":
             return {"decision": "SKIP", "confidence": gate.get("confidence"), "reason": gate.get("reason"), "gate": gate}
     spec_guardrails = load_spec_guardrails(root)
-    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal, spec_guardrails), search=True)
+    humanizer_path = require_humanizer_skill(cfg)
+    openers = recent_reply_openers(con, int(cfg.get("recent_reply_opener_limit", 12)))
+    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal, spec_guardrails, humanizer_path, openers), search=True)
     decision = str(packet.get("decision") or "SKIP").upper()
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"

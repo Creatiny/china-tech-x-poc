@@ -12,7 +12,7 @@ from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score
-from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails
+from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape
 
 
 class CoreTests(unittest.TestCase):
@@ -394,6 +394,23 @@ class CoreTests(unittest.TestCase):
         }
         out = classify(item, source, rules)
         self.assertEqual(out["priority"], "P2")
+
+    def test_humanizer_skill_is_required_and_prompted(self):
+        cfg = {"humanizer_skill_path": str(Path.home() / ".codex/skills/humanizer/SKILL.md")}
+        path = require_humanizer_skill(cfg)
+        self.assertTrue(path.endswith("humanizer/SKILL.md"))
+        prompt = final_prompt(
+            {"priority":"P1","title":"AI agent","excerpt":"x","source_name":"S","canonical_url":"u","reason":"r","topic":"agent","target_mode":"VERIFIED_X_TARGET"},
+            "SPEC", path, ["The key product detail is", "This is the benchmark direction"]
+        )
+        self.assertIn("MANDATORY HUMANIZER PASS", prompt)
+        self.assertIn(path, prompt)
+        self.assertIn("RECENT REPLY OPENINGS TO AVOID REUSING", prompt)
+        self.assertIn("The key product detail is", prompt)
+
+    def test_reply_opener_shape_is_compact(self):
+        self.assertEqual(_reply_opener_shape("The hard part is making this reliable in production."), "The hard part is making this reliable")
+        self.assertEqual(_reply_opener_shape("@foo @bar 这其实把 Agent 的成本瓶颈说得很清楚：后面还有很多。"), "这其实把 Agent 的成本瓶颈说得很清楚：")
 
     def test_spec_guardrails_are_loaded_fresh(self):
         spec = load_spec_guardrails(Path(__file__).resolve().parents[1])

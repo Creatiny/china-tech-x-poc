@@ -16,6 +16,12 @@ from zoneinfo import ZoneInfo
 
 GENERIC_ENTITIES = {"china", "chinese"}
 
+CANNED_REPLY_OPENERS = (
+    "the key ", "the hard part ", "this is the ", "a useful test ", "the most important ",
+    "the speed is ", "the ai piece matters", "the displacement story",
+    "这其实", "这章的价值在于", "真正重要的是", "重点不是",
+)
+
 BANNED_AI_PHRASES = (
     "one caveat",
     "one data caveat",
@@ -250,13 +256,26 @@ def require_humanizer_skill(cfg: dict[str, Any]) -> str:
     return str(path)
 
 
+def load_kenny_voice_profile(root: Path, cfg: dict[str, Any]) -> str:
+    raw = str(cfg.get("kenny_voice_path") or "00_Governance/KENNY_VOICE_FINGERPRINT.md")
+    path = Path(raw).expanduser()
+    if not path.is_absolute():
+        path = root / path
+    if not path.is_file():
+        raise RuntimeError(f"kenny_voice_profile_missing:{path}")
+    text = path.read_text(encoding="utf-8").strip()
+    if not text:
+        raise RuntimeError(f"kenny_voice_profile_empty:{path}")
+    return text
+
+
 def _reply_opener_shape(text: str | None) -> str:
     value = re.sub(r"\s+", " ", str(text or "")).strip()
     if not value:
         return ""
     value = re.sub(r"^(?:@[-_A-Za-z0-9]+\s*)+", "", value).strip()
     if re.search(r"[\u3400-\u9fff]", value):
-        first = re.split(r"[。！？!?]", value, maxsplit=1)[0].strip()
+        first = re.split(r"[。！？!?：:]", value, maxsplit=1)[0].strip()
         return first[:24]
     words = value.split()
     return " ".join(words[:7])
@@ -289,6 +308,11 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
 
     lowered = copy.casefold()
     violations = [f"banned_phrase:{phrase}" for phrase in BANNED_AI_PHRASES if phrase in lowered]
+    normalized_open = re.sub(r"^(?:@[-_a-z0-9]+\s*)+", "", lowered).lstrip()
+    for opener in CANNED_REPLY_OPENERS:
+        if decision == "REPLY" and normalized_open.startswith(opener.casefold()):
+            violations.append(f"canned_opener:{opener.strip()}")
+            break
     word_count = len(re.findall(r"\b[\w’'-]+\b", copy))
     if decision == "REPLY" and word_count > 60:
         violations.append(f"too_long:{word_count}>60")
@@ -303,7 +327,7 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
         violations.append("label_inside_copy")
     return violations
 
-def final_prompt(signal: dict[str, Any], spec_guardrails: str = "", humanizer_path: str = "", recent_openers: list[str] | None = None) -> str:
+def final_prompt(signal: dict[str, Any], spec_guardrails: str = "", humanizer_path: str = "", kenny_voice: str = "", recent_openers: list[str] | None = None) -> str:
     direct_target = str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET"
     if direct_target:
         target_instruction = (
@@ -329,6 +353,11 @@ The following text was freshly read from the current PROJECT_SPEC.md for this dr
 
 MANDATORY HUMANIZER PASS:
 Before drafting final_copy, read `{humanizer_path}` in full. Apply it, especially: trust the reader, cut over-explaining, avoid neat AI rhythms, use ordinary spoken language, and leave natural texture. Draft internally, then ask: "What still sounds machine-written here?" Fix that before returning JSON. Do not mention this process in final_copy.
+
+MANDATORY KENNY VOICE FINGERPRINT:
+Match this voice profile. Use the negative examples only as things to avoid.
+
+{kenny_voice}
 
 RECENT REPLY OPENINGS TO AVOID REUSING:
 {opener_block}
@@ -404,8 +433,9 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
             return {"decision": "SKIP", "confidence": gate.get("confidence"), "reason": gate.get("reason"), "gate": gate}
     spec_guardrails = load_spec_guardrails(root)
     humanizer_path = require_humanizer_skill(cfg)
+    kenny_voice = load_kenny_voice_profile(root, cfg)
     openers = recent_reply_openers(con, int(cfg.get("recent_reply_opener_limit", 12)))
-    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal, spec_guardrails, humanizer_path, openers), search=True)
+    packet = _run_codex(con, root, cfg, "FINAL", final_prompt(signal, spec_guardrails, humanizer_path, kenny_voice, openers), search=True)
     decision = str(packet.get("decision") or "SKIP").upper()
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"

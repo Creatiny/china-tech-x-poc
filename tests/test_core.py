@@ -12,7 +12,7 @@ from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score
-from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape
+from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
 class CoreTests(unittest.TestCase):
@@ -395,13 +395,28 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertEqual(out["priority"], "P2")
 
+    def test_kenny_voice_profile_is_loaded(self):
+        root = Path(__file__).resolve().parents[1]
+        voice = load_kenny_voice_profile(root, {"kenny_voice_path":"00_Governance/KENNY_VOICE_FINGERPRINT.md"})
+        self.assertIn("像一个真正做过这件事的人", voice)
+        prompt = final_prompt(
+            {"priority":"P1","title":"x","excerpt":"x","source_name":"S","canonical_url":"u","reason":"r","topic":"agent","target_mode":"VERIFIED_X_TARGET"},
+            "SPEC", str(Path.home()/".codex/skills/humanizer/SKILL.md"), voice, []
+        )
+        self.assertIn("MANDATORY KENNY VOICE FINGERPRINT", prompt)
+
+    def test_canned_ai_reply_openers_are_rejected(self):
+        for text in ("The key product detail is the shared session.", "The hard part is reliability.", "这其实把问题说清楚了。", "这章的价值在于拆开 Harness。"):
+            packet={"decision":"REPLY","content_bucket":"WHAT_CHANGES","final_copy":text}
+            self.assertTrue(any(v.startswith("canned_opener:") for v in language_gate_violations(packet)), text)
+
     def test_humanizer_skill_is_required_and_prompted(self):
         cfg = {"humanizer_skill_path": str(Path.home() / ".codex/skills/humanizer/SKILL.md")}
         path = require_humanizer_skill(cfg)
         self.assertTrue(path.endswith("humanizer/SKILL.md"))
         prompt = final_prompt(
             {"priority":"P1","title":"AI agent","excerpt":"x","source_name":"S","canonical_url":"u","reason":"r","topic":"agent","target_mode":"VERIFIED_X_TARGET"},
-            "SPEC", path, ["The key product detail is", "This is the benchmark direction"]
+            "SPEC", path, "KENNY VOICE", ["The key product detail is", "This is the benchmark direction"]
         )
         self.assertIn("MANDATORY HUMANIZER PASS", prompt)
         self.assertIn(path, prompt)
@@ -410,7 +425,7 @@ class CoreTests(unittest.TestCase):
 
     def test_reply_opener_shape_is_compact(self):
         self.assertEqual(_reply_opener_shape("The hard part is making this reliable in production."), "The hard part is making this reliable")
-        self.assertEqual(_reply_opener_shape("@foo @bar 这其实把 Agent 的成本瓶颈说得很清楚：后面还有很多。"), "这其实把 Agent 的成本瓶颈说得很清楚：")
+        self.assertEqual(_reply_opener_shape("@foo @bar 这其实把 Agent 的成本瓶颈说得很清楚：后面还有很多。"), "这其实把 Agent 的成本瓶颈说得很清楚")
 
     def test_spec_guardrails_are_loaded_fresh(self):
         spec = load_spec_guardrails(Path(__file__).resolve().parents[1])

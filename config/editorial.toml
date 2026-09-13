@@ -5,6 +5,7 @@ model = "gpt-5.6-luna"
 reasoning_effort = "low"
 call_timeout_seconds = 90
 humanizer_skill_path = "/Users/jh/.codex/skills/humanizer/SKILL.md"
+kenny_voice_path = "00_Governance/KENNY_VOICE_FINGERPRINT.md"
 recent_reply_opener_limit = 12
 
 # Bounded editorial budget. This is ChatGPT/Codex subscription usage, not paid X API traffic.

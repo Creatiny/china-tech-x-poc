@@ -432,3 +432,10 @@ Before any paste-ready Post/Reply is drafted, the runtime MUST load the installe
 For Replies, the runtime must also inspect recent sent Reply openings and avoid repeating the same opening shape, cadence, or stock framing. Do not solve this by rotating through a new set of templates. The wording should follow the actual thought.
 
 After drafting, run one Humanizer self-audit internally: ask what still sounds machine-written, cut it, and return only the revised copy. Prefer ordinary spoken language, uneven natural rhythm, and fewer words.
+
+
+## 25. Kenny Voice Fingerprint
+
+`00_Governance/KENNY_VOICE_FINGERPRINT.md` is the canonical personal-voice profile for X copy. Before drafting paste-ready content, the runtime MUST freshly read this file together with the current SPEC and Humanizer skill. If it cannot be read, do not produce publish-ready copy.
+
+The profile is based primarily on Kenny's natural working/conversation language. Existing AI-generated Replies are negative examples, not positive training data. Humanizer makes the copy human; the Kenny profile makes it sound like Kenny.

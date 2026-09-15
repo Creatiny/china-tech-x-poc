@@ -406,7 +406,7 @@ def _limit_due_x_profiles(
 
     def oldest_key(entry: tuple[dict[str, Any], dict[str, Any] | None, bool]) -> str:
         state = entry[1] or {}
-        return str(state.get("last_success_at") or state.get("last_polled_at") or "")
+        return str(state.get("last_polled_at") or state.get("last_success_at") or "")
 
     x_due.sort(key=oldest_key)
     cap = max(1, int(max_x_profiles))

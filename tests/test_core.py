@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from china_tech_x_radar.classify import classify, distribution_opportunity
-from china_tech_x_radar.db import connect, insert_signal, iso
+from china_tech_x_radar.db import connect, insert_signal, update_signal_observation, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map, creator_acquisition_report
@@ -95,6 +95,54 @@ class CoreTests(unittest.TestCase):
         self.assertGreaterEqual(fast["distribution_score"], 10)
         self.assertGreater(fast["view_velocity_per_min"], slow["view_velocity_per_min"])
         self.assertGreater(fast["distribution_score"], slow["distribution_score"])
+
+    def test_named_ai_products_are_recognized_as_topics(self):
+        now = datetime.now(timezone.utc)
+        item = {
+            "title": "OpenAI ships AgentKit and Codex integration for developers",
+            "excerpt": "Codex automates developer workflows",
+            "canonical_url": "https://x.com/example/status/20",
+            "published_at": now - timedelta(minutes=8),
+            "metrics": {"views": 5000},
+        }
+        source = {"kind":"x_profile","audience_focused":True,"source_weight":5,"p1_max_age_minutes":120}
+        rules = {
+            "china_entities": [],
+            "topic_terms": ["ai","agent","openai","codex","agentkit"],
+            "productivity_terms": ["developer","workflow","workflows","codex","agentkit"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes":30,
+            "p1_max_age_minutes":360,"max_candidate_age_minutes":1440,
+            "x_distribution_min_score":6,"x_early_grace_minutes":5,"x_early_grace_base_score":7,
+            "x_breakout_p0_distribution_score":10,
+        }
+        out = classify(item, source, rules, now=now)
+        self.assertIn(out["priority"], {"P0","P1"})
+        self.assertIn("topic=openai", out["reason"])
+
+    def test_curated_creator_can_add_source_specific_ai_vocabulary(self):
+        now = datetime.now(timezone.utc)
+        item = {
+            "title": "/retro turns fuzzy rules into deterministic lint and pre-commit checks",
+            "excerpt": "It proposes CI workflows after coding mistakes",
+            "canonical_url": "https://x.com/example/status/21",
+            "published_at": now - timedelta(minutes=5),
+            "metrics": {"views": 30000},
+        }
+        source = {
+            "kind":"x_profile","audience_focused":True,"source_weight":5,"p1_max_age_minutes":180,
+            "extra_topic_terms":["/retro","lint","pre-commit","ci workflows"],
+            "extra_productivity_terms":["lint","pre-commit","ci workflows"],
+        }
+        rules = {
+            "china_entities": [], "topic_terms": ["ai","agent"], "productivity_terms": ["workflow"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes":30,
+            "p1_max_age_minutes":360,"max_candidate_age_minutes":1440,
+            "x_distribution_min_score":6,"x_early_grace_minutes":5,"x_early_grace_base_score":7,
+            "x_breakout_p0_distribution_score":10,
+        }
+        out = classify(item, source, rules, now=now)
+        self.assertIn(out["priority"], {"P0","P1"})
+        self.assertGreaterEqual(out["score"], 7)
 
     def test_x_distribution_gate_downgrades_flat_post_after_early_grace(self):
         now = datetime.now(timezone.utc)
@@ -454,6 +502,33 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(model_usage_today(con,"test-v2")["gate_calls"],1)
             with self.assertRaises(RuntimeError):
                 _reserve_model_call(con,cfg,"GATE","test-model")
+
+    def test_existing_x_signal_observation_can_refresh_without_losing_first_discovery(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "refresh.db")
+            first = "2026-09-16T00:00:00Z"
+            rec = {
+                "fingerprint":"a"*64,"source_id":"x_test","source_name":"T","source_kind":"x_profile",
+                "source_item_id":"1","canonical_url":"https://x.com/a/status/1","title":"Agent test",
+                "excerpt":"Agent test","author":"@a","published_at":first,"discovered_at":first,
+                "priority":"P2","score":6,"distribution_score":2,"observed_views":20,
+                "view_velocity_per_min":1.0,"engagement_rate":0.0,"reason":"quiet","topic":"agent",
+                "x_search_url":"https://x.com/a/status/1","target_mode":"VERIFIED_X_TARGET",
+                "suggested_angle":"a","raw_json":"{}","created_at":first,
+            }
+            sid, created = insert_signal(con, rec)
+            self.assertTrue(created)
+            rec2 = dict(rec)
+            rec2.update({"priority":"P0","distribution_score":11,"observed_views":9000,
+                         "view_velocity_per_min":500.0,"reason":"breakout","discovered_at":"2026-09-16T00:10:00Z"})
+            previous = update_signal_observation(con, sid, rec2)
+            row = con.execute("select priority,distribution_score,observed_views,discovered_at,created_at from signal where id=?", (sid,)).fetchone()
+            self.assertEqual(previous,"P2")
+            self.assertEqual(row["priority"],"P0")
+            self.assertEqual(row["distribution_score"],11)
+            self.assertEqual(row["observed_views"],9000)
+            self.assertEqual(row["discovered_at"],first)
+            self.assertEqual(row["created_at"],first)
 
     def test_exact_dedupe(self):
         with tempfile.TemporaryDirectory() as d:

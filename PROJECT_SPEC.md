@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.3
+# China Tech X POC — Canonical Project Spec v3.4
 
 ## 0. Authority
 
@@ -475,6 +475,8 @@ For verified direct X targets, capture observable public metrics at discovery ti
 - `engagement_rate`.
 
 The deterministic distribution score combines freshness, view velocity, current view scale, engagement rate, and reply/quote conversation activity. Configuration thresholds live in `config/rules.toml` and may be calibrated from outcome evidence without changing the editorial identity.
+
+Exact post deduplication must **not** freeze distribution evidence. Every subsequent observation of the same direct-X status refreshes public metrics and re-runs classification while preserving the original discovery timestamp. A post may graduate from `DROP/P2` to `P1/P0` when it begins to break out; if no alert existed before, that graduation creates the normal editorial opportunity. Conversely, a still-pending alert is expired if the live target no longer qualifies by the time it is re-observed. Existing `SENT/SKIP/HOLD` editorial decisions are not automatically reopened merely because views later increase.
 
 A normal direct-X P1 candidate must pass the relevance score and either show sufficient distribution momentum or fall inside a short early-discovery grace window with strong relevance. This prevents waiting until a post is already saturated while still suppressing flat posts that never begin to move.
 

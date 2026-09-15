@@ -327,6 +327,34 @@ def insert_signal(con: sqlite3.Connection, record: dict[str, Any]) -> tuple[int,
     return int(row["id"]), False
 
 
+
+def update_signal_observation(con: sqlite3.Connection, signal_id: int, record: dict[str, Any]) -> str | None:
+    """Refresh mutable X observation/classification fields while preserving first discovery time."""
+    row = con.execute("SELECT priority FROM signal WHERE id=?", (signal_id,)).fetchone()
+    if not row:
+        return None
+    previous_priority = str(row["priority"] or "")
+    fields = [
+        "canonical_url","title","excerpt","author","published_at","priority","score",
+        "distribution_score","observed_views","view_velocity_per_min","engagement_rate",
+        "feedback_score","feedback_samples","feedback_median_impressions","feedback_growth_days",
+        "feedback_follower_gain","reason","topic","x_search_url","target_mode","suggested_angle","raw_json",
+    ]
+    defaults = {
+        "score": 0, "distribution_score": 0, "observed_views": 0,
+        "view_velocity_per_min": 0.0, "engagement_rate": 0.0,
+        "feedback_score": 0, "feedback_samples": 0,
+        "feedback_growth_days": 0, "feedback_follower_gain": 0,
+        "target_mode": "TARGET_SEARCH_REQUIRED",
+    }
+    values = [record.get(k) if record.get(k) is not None else defaults.get(k) for k in fields]
+    con.execute(
+        "UPDATE signal SET " + ",".join(f"{k}=?" for k in fields) + " WHERE id=?",
+        [*values, signal_id],
+    )
+    con.commit()
+    return previous_priority
+
 def ensure_alert(con: sqlite3.Connection, signal_id: int, priority: str) -> int:
     now = iso()
     con.execute(

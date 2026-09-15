@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.3
+- `PROJECT_SPEC.md` v3.4
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -89,3 +89,10 @@ Recent account analysis showed replies can obtain materially more impressions th
 - High-priority new observation slots include Zephyr, SemiAnalysis, Max For AI, Matt Pocock, Matt Shumer, 歸藏, Damnang, Tencent AI, 花叔, AK, AI Engineer, Georgios Konstantopoulos, Ilir Aliu, Tanay Jaipuria, Pietro Schirano, The Humanoid Hub, swyx, Jeffrey Emanuel, and 刘小排.
 - New creators are observation targets only; the live post still has to pass all relevance/distribution/editorial gates.
 - Formula reports now include a `creator_acquisition` leaderboard combining parent reach and Kenny's real Reply outcomes.
+
+## Live Distribution Refresh — 2026-09-16
+
+- Existing direct-X signals now refresh views, velocity, engagement, distribution score and classification on every observation instead of freezing the first sample.
+- Quiet posts can graduate into P1/P0 when they begin to break out; only signals without a prior editorial decision create a new alert.
+- Pending live opportunities expire automatically when the target ages/drops below qualification.
+- AI-product vocabulary now explicitly covers OpenAI, Anthropic, Claude, Codex, AgentKit, Cursor, Devin, Hermes, harnesses and subagents; highly curated creators may add narrow source-specific vocabulary such as Matt Pocock's `/retro`/lint/CI workflow terms and Matt Shumer's Astra/Fable terms.

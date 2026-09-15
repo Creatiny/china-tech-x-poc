@@ -18,6 +18,7 @@ from .db import (
     ensure_alert,
     get_source_state,
     insert_signal,
+    update_signal_observation,
     iso,
     json_text,
     record_cycle_finish,
@@ -522,14 +523,35 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         "created_at": discovered,
                     }
                     signal_id, created = insert_signal(con, record)
-                    if not created:
+                    if created:
+                        counters["new_signals"] += 1
+                    elif source.get("kind") == "x_profile":
+                        # Exact content is deduped, but public distribution changes over time. Refresh
+                        # metrics/classification so a post can graduate from quiet -> breakout.
+                        update_signal_observation(con, signal_id, record)
+                    else:
                         continue
-                    counters["new_signals"] += 1
+
                     if result["priority"] not in ("P0", "P1"):
+                        # A once-qualified live target can age out before editorial processing. Do not
+                        # let stale pending work survive merely because it was queued earlier.
+                        con.execute(
+                            "UPDATE alert SET status='EXPIRED',error=? WHERE signal_id=? AND status='PENDING'",
+                            (f"signal_no_longer_qualified:{result['priority']}", signal_id),
+                        )
+                        con.commit()
                         continue
-                    if not initialized_before:
+                    if created and not initialized_before:
                         if published is None or result["age_minutes"] > float(rules.get("bootstrap_alert_max_age_minutes", 120)):
                             continue
+                    # Existing SENT/SKIP/HOLD alerts are not re-opened. The graduation path is for
+                    # signals that had no alert because their first observation was too quiet.
+                    existing_alert = con.execute("SELECT status FROM alert WHERE signal_id=?", (signal_id,)).fetchone()
+                    if existing_alert:
+                        if str(existing_alert["status"] or "") == "PENDING":
+                            con.execute("UPDATE alert SET priority=? WHERE signal_id=?", (result["priority"], signal_id))
+                            con.commit()
+                        continue
                     if qualified_this_poll >= max_qualified_this_poll:
                         continue
                     ensure_alert(con, signal_id, result["priority"])

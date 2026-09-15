@@ -209,6 +209,11 @@ def migrate(con: sqlite3.Connection) -> None:
         "observed_views": "INTEGER NOT NULL DEFAULT 0",
         "view_velocity_per_min": "REAL NOT NULL DEFAULT 0",
         "engagement_rate": "REAL NOT NULL DEFAULT 0",
+        "feedback_score": "INTEGER NOT NULL DEFAULT 0",
+        "feedback_samples": "INTEGER NOT NULL DEFAULT 0",
+        "feedback_median_impressions": "REAL",
+        "feedback_growth_days": "INTEGER NOT NULL DEFAULT 0",
+        "feedback_follower_gain": "INTEGER NOT NULL DEFAULT 0",
     }
     for name, decl in signal_migrations.items():
         if name not in cols:
@@ -296,7 +301,8 @@ def insert_signal(con: sqlite3.Connection, record: dict[str, Any]) -> tuple[int,
     cols = [
         "fingerprint","source_id","source_name","source_kind","source_item_id","canonical_url",
         "title","excerpt","author","published_at","discovered_at","priority","score","distribution_score",
-        "observed_views","view_velocity_per_min","engagement_rate","reason","topic",
+        "observed_views","view_velocity_per_min","engagement_rate","feedback_score","feedback_samples",
+        "feedback_median_impressions","feedback_growth_days","feedback_follower_gain","reason","topic",
         "x_search_url","target_mode","suggested_angle","raw_json","created_at",
     ]
     defaults = {
@@ -304,6 +310,10 @@ def insert_signal(con: sqlite3.Connection, record: dict[str, Any]) -> tuple[int,
         "observed_views": 0,
         "view_velocity_per_min": 0.0,
         "engagement_rate": 0.0,
+        "feedback_score": 0,
+        "feedback_samples": 0,
+        "feedback_growth_days": 0,
+        "feedback_follower_gain": 0,
     }
     vals = [record.get(c) if record.get(c) is not None else defaults.get(c) for c in cols]
     cur = con.execute(

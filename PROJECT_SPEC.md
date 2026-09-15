@@ -1,9 +1,9 @@
-# China Tech X POC — Canonical Project Spec v3.1
+# China Tech X POC — Canonical Project Spec v3.2
 
 ## 0. Authority
 
 **Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
-**Effective:** `2026-09-15`
+**Effective:** `2026-09-16`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
 If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.
@@ -492,3 +492,37 @@ The editorial model must see the distribution evidence but treat it only as **ti
 
 Creator diversity rules in Section 26 remain active. Distribution opportunity is a reason to join the right conversation early, not a reason to repeatedly farm one large account.
 
+
+## 28. Closed-Loop Outcome Feedback
+
+The signal engine must learn from Kenny's actual published outcomes, not only from parent-post virality. Public X data is used at $0 cost to close the loop.
+
+### Automatic post outcome capture
+
+For published X posts/replies with a known URL, automatically capture public metrics when available: views, likes, replies, reposts, quotes, and bookmarks. Sampling frequency tapers with age: relatively frequent shortly after publishing, then hourly/daily as the post matures. Profile visits are **not** publicly exposed and must remain `null` unless supplied from first-party analytics; never infer or fabricate them.
+
+### Automatic account snapshots
+
+Read the public `@KennyChinaTech` profile periodically and persist follower count. Follower deltas are evaluated at cohort/day level. A gap of more than one calendar day between snapshots is not eligible for causal attribution to that day's content.
+
+### Creator feedback prior
+
+Actual Reply outcomes may influence future creator ranking only conservatively:
+
+- at least 3 Reply outcome samples are required before impression-based feedback activates;
+- median Reply impressions are used instead of one breakout maximum;
+- the creator feedback score is a small ranking prior and never bypasses relevance, distribution, editorial-value, voice, or creator-diversity gates;
+- follower growth may add at most a weak positive prior only on clean evidence days where consecutive daily follower snapshots exist and exactly one published action occurred; multi-action days are not attributed to one creator;
+- insufficient evidence remains neutral rather than being treated as failure.
+
+The ranking sequence for comparable direct-X candidates is therefore:
+
+```text
+relevance/value gate
+ -> live distribution opportunity
+ -> conservative historical outcome feedback
+ -> current view velocity
+ -> base relevance/recency
+```
+
+This feedback loop optimizes for durable relevant-audience growth, not raw impressions alone.

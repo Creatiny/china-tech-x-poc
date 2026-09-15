@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.1 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.2 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -75,3 +75,7 @@ Do not derive or schedule Article topics from realtime signals. Kenny selects Ar
 ## 9. Pre-Draft SPEC Check
 
 Before generating final Post/Reply copy, load the current `PROJECT_SPEC.md` and apply Sections 19, 20, and 23. If SPEC cannot be read, do not produce publish-ready copy. Reply copy defaults to one short, conversational sentence; shorter wins when meaning is unchanged.
+
+## 10. Outcome Feedback
+
+Do not stop at publication. Automatically collect public post outcomes and follower snapshots. Use creator-level historical feedback only after the minimum sample gate; keep missing profile visits null.

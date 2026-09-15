@@ -112,10 +112,108 @@ def combo_report(rows: list[dict[str, Any]], min_samples: int = 2) -> list[dict[
 
 
 
+
+def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3) -> dict[str, dict[str, Any]]:
+    """Build conservative creator-level priors from our own reply outcomes and clean follower days.
+
+    Impression feedback activates after `min_samples`. Follower growth is allowed to contribute only
+    when snapshots are on consecutive days and exactly one published action occurred on that day;
+    even then it is a +1 maximum weak prior, never a negative penalty.
+    """
+    rows = con.execute(
+        """
+        SELECT lower(ltrim(coalesce(p.target_account,s.author,''),'@')) AS creator,
+               o.impressions, o.engagements
+          FROM published_action p
+          JOIN signal s ON s.id=p.signal_id
+          JOIN outcome_snapshot o ON o.id=(
+              SELECT oo.id FROM outcome_snapshot oo WHERE oo.action_id=p.id ORDER BY oo.captured_at DESC LIMIT 1
+          )
+         WHERE upper(p.action_type)='REPLY' AND o.impressions IS NOT NULL
+        """
+    ).fetchall()
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        creator = str(row["creator"] or "").strip()
+        if creator:
+            grouped[creator].append(dict(row))
+
+    # Build conservative follower-growth evidence. Do not attribute multi-action days.
+    tz = ZoneInfo("Asia/Shanghai")
+    snapshots = con.execute(
+        "SELECT snapshot_date,followers FROM account_snapshot WHERE followers IS NOT NULL ORDER BY snapshot_date"
+    ).fetchall()
+    clean_delta_by_day: dict[str, int] = {}
+    previous_day: str | None = None
+    previous_followers: int | None = None
+    for snap in snapshots:
+        day = str(snap["snapshot_date"])
+        followers = int(snap["followers"])
+        if previous_day is not None and previous_followers is not None:
+            try:
+                gap = (datetime.fromisoformat(day).date() - datetime.fromisoformat(previous_day).date()).days
+            except Exception:
+                gap = 0
+            if gap == 1:
+                clean_delta_by_day[day] = followers - previous_followers
+        previous_day, previous_followers = day, followers
+
+    actions_by_day: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    action_rows = con.execute(
+        """SELECT p.action_type,p.target_account,p.posted_at,s.author
+               FROM published_action p JOIN signal s ON s.id=p.signal_id
+               WHERE p.posted_at IS NOT NULL"""
+    ).fetchall()
+    for row in action_rows:
+        dt = _dt(row["posted_at"])
+        if dt is None:
+            continue
+        day = dt.astimezone(tz).date().isoformat()
+        actions_by_day[day].append(dict(row))
+    growth_by_creator: dict[str, list[int]] = defaultdict(list)
+    for day, delta in clean_delta_by_day.items():
+        actions = actions_by_day.get(day, [])
+        if len(actions) != 1:
+            continue
+        action = actions[0]
+        if str(action.get("action_type") or "").upper() != "REPLY":
+            continue
+        creator = str(action.get("target_account") or action.get("author") or "").strip().casefold().lstrip("@")
+        if creator:
+            growth_by_creator[creator].append(int(delta))
+
+    out: dict[str, dict[str, Any]] = {}
+    for creator in sorted(set(grouped) | set(growth_by_creator)):
+        items = grouped.get(creator, [])
+        imps = [int(x["impressions"]) for x in items if x.get("impressions") is not None]
+        med = float(statistics.median(imps)) if imps else None
+        samples = len(imps)
+        impression_score = 0
+        if samples >= min_samples and med is not None:
+            if med >= 300:
+                impression_score = 2
+            elif med >= 100:
+                impression_score = 1
+            elif med < 30:
+                impression_score = -1
+        growth = growth_by_creator.get(creator, [])
+        growth_score = 1 if len(growth) >= 2 and float(statistics.median(growth)) > 0 else 0
+        score = max(-1, min(3, impression_score + growth_score))
+        out[creator] = {
+            "score": score,
+            "samples": samples,
+            "median_impressions": round(med, 1) if med is not None else None,
+            "growth_days": len(growth),
+            "follower_gain_on_clean_days": sum(growth),
+        }
+    return out
+
+
 def follower_cohorts(con: sqlite3.Connection, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     tz=ZoneInfo("Asia/Shanghai")
     exp=con.execute("SELECT baseline_followers FROM experiment_state WHERE id=1").fetchone()
     previous=int(exp[0]) if exp and exp[0] is not None else None
+    previous_day: str | None = None
     snapshots=con.execute("SELECT snapshot_date,followers,profile_visits FROM account_snapshot WHERE followers IS NOT NULL ORDER BY snapshot_date").fetchall()
     actions_by_day: dict[str,list[dict[str,Any]]]=defaultdict(list)
     for r in rows:
@@ -126,13 +224,25 @@ def follower_cohorts(con: sqlite3.Connection, rows: list[dict[str, Any]]) -> lis
     for snap in snapshots:
         day=str(snap["snapshot_date"])
         followers=int(snap["followers"])
-        delta=followers-previous if previous is not None else None
+        raw_delta=followers-previous if previous is not None else None
+        gap_days = None
+        if previous_day is not None:
+            try:
+                gap_days = (datetime.fromisoformat(day).date() - datetime.fromisoformat(previous_day).date()).days
+            except Exception:
+                gap_days = None
+        attribution_eligible = previous_day is not None and gap_days == 1
+        delta = raw_delta if attribution_eligible else None
         previous=followers
+        previous_day=day
         acts=actions_by_day.get(day,[])
         out.append({
             "date": day,
             "followers": followers,
             "follower_delta": delta,
+            "raw_follower_delta_since_previous_snapshot": raw_delta,
+            "snapshot_gap_days": gap_days,
+            "follower_attribution_eligible": attribution_eligible,
             "profile_visits": snap["profile_visits"],
             "actions": len(acts),
             "reply_actions": sum(1 for a in acts if str(a.get("action_type") or "").upper()=="REPLY"),

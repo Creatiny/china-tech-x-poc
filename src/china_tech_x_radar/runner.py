@@ -24,8 +24,9 @@ from .db import (
     record_cycle_start,
     save_source_state,
 )
-from .sources import fetch_source, fingerprint, fetch_account_posts_from_url
+from .sources import fetch_source, fingerprint, fetch_account_posts_from_url, fetch_x_profile_stats
 from .visuals import render_editorial_card
+from .formula import build_creator_feedback_map
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -199,6 +200,124 @@ def _reply_copy_score(expected: str | None, actual: str | None) -> float:
     return max(seq, jaccard)
 
 
+
+def _tweet_id(url: str | None) -> str:
+    match = re.search(r"/status/(\d+)", str(url or ""))
+    return match.group(1) if match else ""
+
+
+def _outcome_due(posted_at: datetime | None, last_captured_at: datetime | None, now: datetime) -> bool:
+    if posted_at is None:
+        return False
+    age_hours = max(0.0, (now - posted_at).total_seconds() / 3600.0)
+    if age_hours > 14 * 24:
+        return False
+    if last_captured_at is None:
+        return True
+    since_hours = max(0.0, (now - last_captured_at).total_seconds() / 3600.0)
+    if age_hours <= 2:
+        return since_hours >= 0.25
+    if age_hours <= 24:
+        return since_hours >= 1
+    if age_hours <= 7 * 24:
+        return since_hours >= 6
+    return since_hours >= 24
+
+
+def capture_published_outcomes(con: sqlite3.Connection, *, handle: str = "KennyChinaTech", max_items: int = 2) -> dict[str, int]:
+    """Capture public X outcome metrics for our published replies/posts without paid API access."""
+    now = datetime.now(timezone.utc)
+    rows = con.execute(
+        """
+        SELECT p.*, MAX(o.captured_at) AS last_captured_at
+          FROM published_action p
+          LEFT JOIN outcome_snapshot o ON o.action_id=p.id
+         WHERE p.published_url IS NOT NULL AND p.posted_at>=?
+         GROUP BY p.id
+         ORDER BY CASE WHEN MAX(o.captured_at) IS NULL THEN 0 ELSE 1 END,
+                  COALESCE(MAX(o.captured_at),p.posted_at) ASC
+        """,
+        ((now - timedelta(days=14)).isoformat().replace("+00:00", "Z"),),
+    ).fetchall()
+    checked = captured = errors = 0
+    for row in rows:
+        if checked >= max_items:
+            break
+        posted_at = _parse_iso(row["posted_at"])
+        last_at = _parse_iso(row["last_captured_at"])
+        if not _outcome_due(posted_at, last_at, now):
+            continue
+        checked += 1
+        try:
+            items = fetch_account_posts_from_url(str(row["published_url"]), handle)
+            wanted = _tweet_id(row["published_url"])
+            item = next((x for x in items if _tweet_id(x.get("canonical_url")) == wanted), None)
+            if not item:
+                continue
+            metrics = item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+            impressions = metrics.get("views")
+            if impressions is None:
+                continue
+            component_keys = ("likes", "replies", "reposts", "quotes", "bookmarks")
+            known_components = [int(metrics[k]) for k in component_keys if k in metrics and metrics[k] is not None]
+            engagements = sum(known_components) if known_components else None
+            latest = con.execute(
+                "SELECT * FROM outcome_snapshot WHERE action_id=? ORDER BY captured_at DESC LIMIT 1",
+                (row["id"],),
+            ).fetchone()
+            changed = latest is None or any(
+                latest[k] != v for k, v in {
+                    "impressions": int(impressions),
+                    "engagements": engagements,
+                    "likes": metrics.get("likes"),
+                    "replies": metrics.get("replies"),
+                    "reposts": metrics.get("reposts"),
+                    "quotes": metrics.get("quotes"),
+                    "bookmarks": metrics.get("bookmarks"),
+                }.items()
+            )
+            if not changed:
+                continue
+            con.execute(
+                """INSERT INTO outcome_snapshot(
+                       action_id,captured_at,impressions,engagements,likes,replies,reposts,quotes,bookmarks,profile_visits,notes
+                   ) VALUES(?,?,?,?,?,?,?,?,?,NULL,?)""",
+                (row["id"], iso(), int(impressions), engagements, metrics.get("likes"), metrics.get("replies"),
+                 metrics.get("reposts"), metrics.get("quotes"), metrics.get("bookmarks"),
+                 "Auto-captured from public X SSR; profile visits are not publicly exposed."),
+            )
+            con.commit()
+            captured += 1
+        except Exception:
+            errors += 1
+    return {"checked": checked, "captured": captured, "errors": errors}
+
+
+def capture_account_snapshot(con: sqlite3.Connection, rules: dict[str, Any]) -> dict[str, Any]:
+    handle = str(rules.get("account_handle") or "KennyChinaTech").lstrip("@")
+    poll_minutes = int(rules.get("account_snapshot_poll_minutes", 30))
+    source_id = f"__account_profile__:{handle.casefold()}"
+    now = datetime.now(timezone.utc)
+    state = get_source_state(con, source_id)
+    if not source_due(state, poll_minutes, now):
+        return {"polled": False}
+    try:
+        stats = fetch_x_profile_stats(handle)
+        day = datetime.now(ZoneInfo("Asia/Shanghai")).date().isoformat()
+        note = f"Auto public X profile snapshot; following={stats.get('following')}; posts={stats.get('tweets')}. Profile visits unavailable."
+        con.execute(
+            """INSERT INTO account_snapshot(snapshot_date,followers,profile_visits,monetization_signals,notes,captured_at)
+               VALUES(?,?,NULL,0,?,?)
+               ON CONFLICT(snapshot_date) DO UPDATE SET followers=excluded.followers,notes=excluded.notes,captured_at=excluded.captured_at""",
+            (day, int(stats["followers"]), note, iso()),
+        )
+        con.commit()
+        save_source_state(con, source_id, success=True, item_count=1)
+        return {"polled": True, **stats}
+    except Exception as exc:
+        save_source_state(con, source_id, success=False, error=f"{type(exc).__name__}: {exc}"[:1000])
+        return {"polled": True, "error": f"{type(exc).__name__}: {exc}"}
+
 def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChinaTech", max_items: int = 3) -> dict[str, int]:
     """Find the user's published replies from the already-known target post URLs.
 
@@ -316,6 +435,11 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     except Exception as exc:
                         fetched.append((source, state, initialized_before, None, exc))
 
+        # Outcome feedback is a small, conservative prior; it never bypasses topical/editorial relevance.
+        creator_feedback = build_creator_feedback_map(
+            con, min_samples=int(rules.get("creator_feedback_min_samples", 3))
+        )
+
         # Network I/O above is parallel; all SQLite writes remain serialized on this thread.
         for source, state, initialized_before, fetched_result, fetch_error in fetched:
             source_id = source["id"]
@@ -333,8 +457,18 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                     save_source_state(con, source_id, success=True, item_count=0)
                     counters["sources_success"] += 1
                     continue
+                source_for_classify = source
+                if source.get("kind") == "x_profile":
+                    creator = _normalize_target_creator(source.get("handle"))
+                    fb = creator_feedback.get(creator, {})
+                    source_for_classify = dict(source)
+                    source_for_classify["outcome_feedback_score"] = int(fb.get("score", 0))
+                    source_for_classify["outcome_feedback_samples"] = int(fb.get("samples", 0))
+                    source_for_classify["outcome_feedback_median_impressions"] = fb.get("median_impressions")
+                    source_for_classify["outcome_feedback_growth_days"] = int(fb.get("growth_days", 0))
+                    source_for_classify["outcome_feedback_follower_gain"] = int(fb.get("follower_gain_on_clean_days", 0))
                 for item in items:
-                    result = classify(item, source, rules, now)
+                    result = classify(item, source_for_classify, rules, now)
                     published = item.get("published_at")
                     discovered = iso(now)
                     record = {
@@ -355,6 +489,11 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         "observed_views": int(result.get("observed_views", 0)),
                         "view_velocity_per_min": float(result.get("view_velocity_per_min", 0.0)),
                         "engagement_rate": float(result.get("engagement_rate", 0.0)),
+                        "feedback_score": int(result.get("feedback_score", 0)),
+                        "feedback_samples": int(result.get("feedback_samples", 0)),
+                        "feedback_median_impressions": result.get("feedback_median_impressions"),
+                        "feedback_growth_days": int(result.get("feedback_growth_days", 0)),
+                        "feedback_follower_gain": int(result.get("feedback_follower_gain", 0)),
                         "reason": result["reason"],
                         "topic": result.get("topic"),
                         "x_search_url": result.get("x_search_url"),
@@ -396,7 +535,7 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             WHERE a.status='PENDING'
             ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
                      CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
-                     s.distribution_score DESC, s.view_velocity_per_min DESC,
+                     s.distribution_score DESC, s.feedback_score DESC, s.view_velocity_per_min DESC,
                      s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
             LIMIT ?
             """,
@@ -465,6 +604,12 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
 
         # Post-publication tracking is secondary to discovery/alerts. Keep it cheap and run it last.
         reconcile_sent_replies(con, max_items=1)
+        capture_published_outcomes(
+            con,
+            handle=str(rules.get("account_handle") or "KennyChinaTech"),
+            max_items=int(rules.get("outcome_capture_max_items_per_cycle", 2)),
+        )
+        capture_account_snapshot(con, rules)
 
         record_cycle_finish(
             con,

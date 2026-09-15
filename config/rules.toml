@@ -12,6 +12,13 @@ x_early_grace_minutes = 5
 x_early_grace_base_score = 7
 x_breakout_p0_distribution_score = 10
 
+# Closed-loop measurement. Public X SSR gives post metrics + follower count at $0.
+# Profile visits are not public and must remain null unless manually supplied.
+account_handle = "KennyChinaTech"
+account_snapshot_poll_minutes = 30
+outcome_capture_max_items_per_cycle = 2
+creator_feedback_min_samples = 3
+
 china_entities = [
   "china", "chinese", "alibaba", "qwen", "tencent", "hunyuan", "baidu", "ernie",
   "huawei", "harmonyos", "xiaomi", "bytedance", "tiktok", "byd", "catl", "smic",

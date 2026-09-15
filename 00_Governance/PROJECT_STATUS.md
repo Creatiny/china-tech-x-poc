@@ -2,11 +2,11 @@
 
 ## Status Timestamp
 
-2026-09-15
+2026-09-16
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.1
+- `PROJECT_SPEC.md` v3.2
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -71,3 +71,10 @@ Recent account analysis showed replies can obtain materially more impressions th
 - A short early-discovery grace window preserves the ability to reply before a strong post fully breaks out.
 - Breakout distribution can promote a qualifying direct-X target to P0; editorial value and human voice gates still apply.
 - Creator diversity/cooldown remains active for ordinary P1 replies.
+
+## Closed-Loop Outcome Feedback — 2026-09-16
+
+- Published Reply/Post public metrics are now automatically captured from X.
+- Public follower count is automatically snapshotted; profile visits remain null unless first-party data is provided.
+- Creator outcome feedback activates only after sufficient samples and is a small ranking prior.
+- Multi-day snapshot gaps and multi-action days are explicitly blocked from false follower attribution.

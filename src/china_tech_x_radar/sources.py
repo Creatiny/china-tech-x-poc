@@ -291,6 +291,54 @@ def fetch_account_posts_from_url(url: str, handle: str) -> list[dict[str, Any]]:
         raise
 
 
+
+def parse_x_profile_stats_html(body: bytes, handle: str) -> dict[str, int]:
+    """Extract exact public account counters from X SSR HTML.
+
+    Profile visits are intentionally not inferred: X does not expose them on the public profile.
+    """
+    text = body.decode("utf-8", errors="replace")
+    handle = handle.lstrip("@").strip()
+    if not handle:
+        raise ValueError("x_profile_stats_missing_handle")
+    pattern = re.compile(
+        rf'followers:(\d+),following:(\d+).{{0,1800}}?screenName:.{{0,5}}?{re.escape(handle)}.{{0,5}}?tweets:(\d+)',
+        re.IGNORECASE | re.DOTALL,
+    )
+    match = pattern.search(text)
+    if not match:
+        # X also renders human-readable counters in the server-side profile header.
+        followers = re.search(
+            rf'href="/{re.escape(handle)}/verified_followers".{{0,500}}?font-bold">([0-9,]+)</div>.{{0,300}}?>Followers<',
+            text, re.IGNORECASE | re.DOTALL,
+        )
+        following = re.search(
+            rf'href="/{re.escape(handle)}/following".{{0,500}}?font-bold">([0-9,]+)</div>.{{0,300}}?>Following<',
+            text, re.IGNORECASE | re.DOTALL,
+        )
+        if not followers:
+            raise ValueError(f"x_profile_stats_parse_empty:{handle}")
+        return {
+            "followers": int(followers.group(1).replace(",", "")),
+            "following": int(following.group(1).replace(",", "")) if following else 0,
+            "tweets": 0,
+        }
+    return {"followers": int(match.group(1)), "following": int(match.group(2)), "tweets": int(match.group(3))}
+
+
+def fetch_x_profile_stats(handle: str) -> dict[str, int]:
+    handle = str(handle or "").lstrip("@").strip()
+    if not handle:
+        raise ValueError("x_profile_stats_missing_handle")
+    status, body, _ = _request(
+        f"https://x.com/{handle}", None,
+        accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        timeout=12,
+    )
+    if status != 200:
+        raise RuntimeError(f"x_profile_stats_http:{status}")
+    return parse_x_profile_stats_html(body, handle)
+
 def fetch_x_profile(source: dict[str, Any], state: dict[str, Any] | None) -> tuple[list[dict[str, Any]], dict[str, str], bool]:
     handle = str(source.get("handle") or "").lstrip("@").strip()
     if not handle:

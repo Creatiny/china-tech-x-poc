@@ -63,7 +63,9 @@ def cmd_list(args: argparse.Namespace) -> int:
     rows = con.execute(
         """
         SELECT s.id,s.priority,s.title,s.source_name,s.published_at,s.discovered_at,s.score,s.distribution_score,
-               s.observed_views,s.view_velocity_per_min,s.engagement_rate,s.reason,s.canonical_url,s.x_search_url,
+               s.observed_views,s.view_velocity_per_min,s.engagement_rate,s.feedback_score,s.feedback_samples,
+               s.feedback_median_impressions,s.feedback_growth_days,s.feedback_follower_gain,
+               s.reason,s.canonical_url,s.x_search_url,
                a.status AS alert_status,a.sent_at
         FROM signal s LEFT JOIN alert a ON a.signal_id=s.id
         WHERE s.priority IN ('P0','P1','P2')

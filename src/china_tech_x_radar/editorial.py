@@ -241,7 +241,7 @@ Source: {signal.get('source_name','')}
 Published: {signal.get('published_at') or 'unknown'}
 Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
-Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)}'''
+Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)} | creator feedback: {signal.get('feedback_score',0)} from {signal.get('feedback_samples',0)} reply samples (median impressions {signal.get('feedback_median_impressions')}); clean follower-growth days: {signal.get('feedback_growth_days',0)} / net {signal.get('feedback_follower_gain',0)}'''
 
 
 def load_spec_guardrails(root: Path) -> str:
@@ -387,7 +387,7 @@ Source URL: {signal.get('canonical_url') or 'unknown'}
 Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
 Target mode: {signal.get('target_mode') or 'unknown'}
-Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)}
+Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)} | creator feedback: {signal.get('feedback_score',0)} from {signal.get('feedback_samples',0)} reply samples (median impressions {signal.get('feedback_median_impressions')}); clean follower-growth days: {signal.get('feedback_growth_days',0)} / net {signal.get('feedback_follower_gain',0)}
 
 Content buckets:
 - WHAT_I_BELIEVE: a clear Kenny judgment/thesis.

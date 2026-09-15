@@ -122,6 +122,11 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     published = item.get("published_at")
     age = _age_minutes(published, now)
     direct_x_source = source.get("kind") == "x_profile"
+    feedback_score = int(source.get("outcome_feedback_score", 0)) if direct_x_source else 0
+    feedback_samples = int(source.get("outcome_feedback_samples", 0)) if direct_x_source else 0
+    feedback_median = source.get("outcome_feedback_median_impressions") if direct_x_source else None
+    feedback_growth_days = int(source.get("outcome_feedback_growth_days", 0)) if direct_x_source else 0
+    feedback_follower_gain = int(source.get("outcome_feedback_follower_gain", 0)) if direct_x_source else 0
     dist = distribution_opportunity(item, age) if direct_x_source else {
         "distribution_score": 0, "views": 0, "view_velocity_per_min": 0.0, "engagement_rate": 0.0, "interactions": 0
     }
@@ -177,6 +182,8 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
                 f"dist={int(dist['distribution_score'])}",
                 f"views={int(dist['views'])}",
                 f"vel={float(dist['view_velocity_per_min']):.1f}/m",
+                f"feedback={feedback_score}/{feedback_samples}",
+                f"growthdays={feedback_growth_days}",
             ])
         if entities:
             bits.append("entity=" + entities[0])
@@ -212,4 +219,9 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         "observed_views": int(dist["views"]),
         "view_velocity_per_min": float(dist["view_velocity_per_min"]),
         "engagement_rate": float(dist["engagement_rate"]),
+        "feedback_score": feedback_score,
+        "feedback_samples": feedback_samples,
+        "feedback_median_impressions": feedback_median,
+        "feedback_growth_days": feedback_growth_days,
+        "feedback_follower_gain": feedback_follower_gain,
     }

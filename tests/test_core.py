@@ -7,11 +7,11 @@ from pathlib import Path
 
 from china_tech_x_radar.classify import classify, distribution_opportunity
 from china_tech_x_radar.db import connect, insert_signal, iso
-from china_tech_x_radar.sources import parse_feed, parse_x_profile_html
+from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
-from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report
+from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map
 from china_tech_x_radar.alerts import format_publish_packet
-from china_tech_x_radar.runner import notification_policy, _reply_copy_score
+from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
@@ -28,6 +28,22 @@ class CoreTests(unittest.TestCase):
         items = parse_feed(body)
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["source_item_id"], "r1")
+
+    def test_parse_x_profile_stats_public_ssr(self):
+        body = b'<a href="/KennyChinaTech/following"><div class="font-bold">118</div><div>Following</div></a><a href="/KennyChinaTech/verified_followers"><div class="font-bold">26</div><div>Followers</div></a>'
+        stats = parse_x_profile_stats_html(body, "KennyChinaTech")
+        self.assertEqual(stats["followers"], 26)
+        self.assertEqual(stats["following"], 118)
+        raw = b'followers:26,following:118,foo:1,screenName:"KennyChinaTech",tweets:174'
+        exact = parse_x_profile_stats_html(raw, "KennyChinaTech")
+        self.assertEqual(exact["tweets"], 174)
+
+    def test_outcome_capture_schedule_tapers_with_age(self):
+        now = datetime.now(timezone.utc)
+        self.assertTrue(_outcome_due(now - timedelta(minutes=30), None, now))
+        self.assertFalse(_outcome_due(now - timedelta(minutes=30), now - timedelta(minutes=5), now))
+        self.assertTrue(_outcome_due(now - timedelta(hours=10), now - timedelta(hours=2), now))
+        self.assertFalse(_outcome_due(now - timedelta(days=20), None, now))
 
     def test_parse_x_profile_public_ssr(self):
         import base64
@@ -174,6 +190,36 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(gate["status"], "GREEN_GROWTH_CONTINUE")
 
 
+    def test_creator_feedback_requires_three_samples(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "feedback.db")
+            now = iso()
+            for i, imp in enumerate((120, 180, 220), start=1):
+                cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ((str(i)*64)[:64],'x_a','A','x_profile',f'T{i}','@creator',now,'P1',8,'r',now))
+                sid=cur.lastrowid
+                cur=con.execute("INSERT INTO published_action(signal_id,action_type,target_account,published_url,published_text,posted_at) VALUES(?,'REPLY','@creator',?,?,?)", (sid,f'https://x.com/me/{i}','text',now))
+                aid=cur.lastrowid
+                con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions) VALUES(?,?,?)", (aid,now,imp))
+            con.commit()
+            fb=build_creator_feedback_map(con,min_samples=3)['creator']
+            self.assertEqual(fb['samples'],3)
+            self.assertEqual(fb['median_impressions'],180.0)
+            self.assertEqual(fb['score'],1)
+
+    def test_follower_gap_is_not_falsely_attributed(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "followers.db")
+            now = iso()
+            con.execute("INSERT INTO experiment_state(id,started_at,baseline_followers,baseline_tracked_posts,baseline_total_views,created_at,updated_at) VALUES(1,?,?,?,?,?,?)", (now,4,0,0,now,now))
+            con.execute("INSERT INTO account_snapshot(snapshot_date,followers,profile_visits,monetization_signals,notes,captured_at) VALUES('2026-09-01',4,NULL,0,NULL,?)", (now,))
+            con.execute("INSERT INTO account_snapshot(snapshot_date,followers,profile_visits,monetization_signals,notes,captured_at) VALUES('2026-09-16',26,NULL,0,NULL,?)", (now,))
+            con.commit()
+            report=build_formula_report(con)
+            latest=report['daily_follower_cohorts'][-1]
+            self.assertEqual(latest['raw_follower_delta_since_previous_snapshot'],22)
+            self.assertIsNone(latest['follower_delta'])
+            self.assertFalse(latest['follower_attribution_eligible'])
+
     def test_growth_formula_buckets_and_repeated_combo(self):
         self.assertEqual(age_bucket(8), "0_10M")
         self.assertEqual(age_bucket(45), "30_60M")
@@ -197,7 +243,8 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(combo['target_tier'],'100K_1M')
             self.assertEqual(combo['target_age_bucket'],'10_30M')
             self.assertEqual(combo['samples'],2)
-            self.assertEqual(report['daily_follower_cohorts'][0]['follower_delta'],2)
+            self.assertEqual(report['daily_follower_cohorts'][0]['raw_follower_delta_since_previous_snapshot'],2)
+            self.assertIsNone(report['daily_follower_cohorts'][0]['follower_delta'])
 
 
     def test_curated_source_can_promote_known_entity_without_generic_topic_word(self):

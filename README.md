@@ -6,7 +6,7 @@ This repository is the canonical product, experiment, and operating definition f
 
 ## Single Source of Truth
 
-`PROJECT_SPEC.md` v2.2 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
+`PROJECT_SPEC.md` v3.1 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
 
 ## North Star
 
@@ -72,10 +72,10 @@ See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
 
 ## Active Canonical
 
-- Single source of truth: `PROJECT_SPEC.md` v2.2
-- Execution plan: `EXECUTION_PLAN.md` v1.2
+- Single source of truth: `PROJECT_SPEC.md` v3.1
+- Execution plan: `EXECUTION_PLAN.md` v2.0
 - Canonical precedence: `00_Governance/CANONICAL_INDEX.md`
-- KPI: `00_Governance/OPERATING_KPI.md` v3.0
+- KPI: `00_Governance/OPERATING_KPI.md` v4.0
 - Growth formula: `00_Governance/GROWTH_FORMULA.md` v1.0
 - Constitution: `00_Governance/POC_CONSTITUTION.md`
 - Current status: `00_Governance/PROJECT_STATUS.md`

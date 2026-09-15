@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.0 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.1 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -18,6 +18,8 @@ Continuously scan:
 - useful lessons from Kenny's own AI building/research work.
 
 ## 2. Classify
+
+For direct X targets, evaluate live distribution opportunity after topical relevance: freshness, observed views, views/minute, engagement, and conversation activity. A fast-rising target gets attention before a flat one, but virality never substitutes for a real Kenny contribution.
 
 Assign:
 

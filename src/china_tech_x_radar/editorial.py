@@ -240,7 +240,8 @@ Excerpt: {signal.get('excerpt','')}
 Source: {signal.get('source_name','')}
 Published: {signal.get('published_at') or 'unknown'}
 Classifier: {signal.get('reason','')}
-Topic: {signal.get('topic') or 'unknown'}'''
+Topic: {signal.get('topic') or 'unknown'}
+Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)}'''
 
 
 def load_spec_guardrails(root: Path) -> str:
@@ -386,6 +387,7 @@ Source URL: {signal.get('canonical_url') or 'unknown'}
 Classifier: {signal.get('reason','')}
 Topic: {signal.get('topic') or 'unknown'}
 Target mode: {signal.get('target_mode') or 'unknown'}
+Distribution opportunity: {signal.get('distribution_score',0)} | observed views: {signal.get('observed_views',0)} | view velocity/min: {signal.get('view_velocity_per_min',0)} | engagement rate: {signal.get('engagement_rate',0)}
 
 Content buckets:
 - WHAT_I_BELIEVE: a clear Kenny judgment/thesis.
@@ -402,6 +404,7 @@ OWNER OVERRIDE: Article topics, questions, and theses are selected by Kenny afte
 
 {target_instruction}
 Optimize for audience fit, useful reaction, profile interest, and follow reason—not news coverage, output quota, or raw impressions.
+For a direct X target, treat distribution opportunity as timing evidence only: a fast-rising post is valuable because it already has audience movement, but virality NEVER compensates for a weak Kenny contribution. Prefer a high-distribution target when Kenny can add a correction, key number, corresponding case, first-hand practice, or sharp AI→productivity judgment.
 
 Decision rules:
 - REPLY only when a strong current target exists, timing is useful, and the reply adds one of: primary-source fact, key number/factual correction, corresponding case/comparison, or real practice result.

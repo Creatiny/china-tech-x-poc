@@ -1,9 +1,9 @@
-# China Tech X POC — Canonical Project Spec v3.0
+# China Tech X POC — Canonical Project Spec v3.1
 
 ## 0. Authority
 
 **Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
-**Effective:** `2026-09-09`
+**Effective:** `2026-09-15`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
 If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.
@@ -450,3 +450,45 @@ Expansion priorities: agent/harness/evals, AI coding and developer tools, infere
 For growth, creator diversity is an operating constraint: ordinary P1 Replies should not repeatedly target the same creator. Default cooldown is one P1 Reply per creator per 24 hours and at most three P1 Replies per creator in seven days. P0 may bypass this when the opportunity is genuinely exceptional. At similar quality, prefer a creator Kenny has not engaged with recently.
 
 Creator discovery is ongoing maintenance, not a one-time list build. Add qualified creators regularly; do not wait for the existing pool to become stale.
+
+## 27. Distribution Opportunity Signal Engine
+
+Direct X reply discovery must optimize for **distribution opportunity after relevance**, not for news importance alone. The engine exists to identify conversations that are both worth joining and already showing audience movement.
+
+Hard ordering of concerns:
+
+```text
+audience/topic relevance
+ -> Kenny can add real value
+ -> live distribution opportunity
+ -> creator diversity
+ -> operator attention
+```
+
+Virality never rescues an off-audience or low-value candidate. A high-view post that fails the topic/value gate remains `DROP/SKIP`.
+
+For verified direct X targets, capture observable public metrics at discovery time when available: views, likes, replies, reposts, quotes, and bookmarks. Derive and persist at least:
+
+- `distribution_score`;
+- `observed_views`;
+- `view_velocity_per_min`;
+- `engagement_rate`.
+
+The deterministic distribution score combines freshness, view velocity, current view scale, engagement rate, and reply/quote conversation activity. Configuration thresholds live in `config/rules.toml` and may be calibrated from outcome evidence without changing the editorial identity.
+
+A normal direct-X P1 candidate must pass the relevance score and either show sufficient distribution momentum or fall inside a short early-discovery grace window with strong relevance. This prevents waiting until a post is already saturated while still suppressing flat posts that never begin to move.
+
+A clearly breakout direct-X target may be promoted to P0 by distribution evidence even without a keyword-based “high impact” marker. P0 remains exceptional; editorial quality still controls whether anything is sent.
+
+Pending editorial work is ordered by:
+
+1. P0 before P1;
+2. verified direct X targets before search-required candidates at the same priority;
+3. higher `distribution_score`;
+4. higher `view_velocity_per_min`;
+5. relevance score and recency.
+
+The editorial model must see the distribution evidence but treat it only as **timing/distribution evidence**. REPLY is still allowed only when Kenny adds an approved value type from Section 20. Do not send generic commentary merely because a parent post is viral.
+
+Creator diversity rules in Section 26 remain active. Distribution opportunity is a reason to join the right conversation early, not a reason to repeatedly farm one large account.
+

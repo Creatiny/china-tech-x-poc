@@ -9,8 +9,8 @@ kenny_voice_path = "00_Governance/KENNY_VOICE_FINGERPRINT.md"
 recent_reply_opener_limit = 12
 
 # Bounded editorial budget. This is ChatGPT/Codex subscription usage, not paid X API traffic.
-budget_revision = "ai-productivity-kenny-voice-v7"
-notification_epoch = "2026-09-12T11:46:47Z"
+budget_revision = "distribution-opportunity-v8"
+notification_epoch = "2026-09-15T10:12:50Z"
 max_gate_calls_per_day = 80
 max_final_calls_per_day = 50
 max_humanize_calls_per_day = 50

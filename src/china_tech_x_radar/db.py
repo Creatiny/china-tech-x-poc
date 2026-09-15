@@ -204,6 +204,15 @@ def migrate(con: sqlite3.Connection) -> None:
     cols = {r[1] for r in con.execute("PRAGMA table_info(signal)")}
     if "score" not in cols:
         con.execute("ALTER TABLE signal ADD COLUMN score INTEGER NOT NULL DEFAULT 0")
+    signal_migrations = {
+        "distribution_score": "INTEGER NOT NULL DEFAULT 0",
+        "observed_views": "INTEGER NOT NULL DEFAULT 0",
+        "view_velocity_per_min": "REAL NOT NULL DEFAULT 0",
+        "engagement_rate": "REAL NOT NULL DEFAULT 0",
+    }
+    for name, decl in signal_migrations.items():
+        if name not in cols:
+            con.execute(f"ALTER TABLE signal ADD COLUMN {name} {decl}")
     action_cols = {r[1] for r in con.execute("PRAGMA table_info(published_action)")}
     action_migrations = {
         "action_type": "TEXT NOT NULL DEFAULT 'REPLY'",
@@ -286,10 +295,17 @@ def save_source_state(
 def insert_signal(con: sqlite3.Connection, record: dict[str, Any]) -> tuple[int, bool]:
     cols = [
         "fingerprint","source_id","source_name","source_kind","source_item_id","canonical_url",
-        "title","excerpt","author","published_at","discovered_at","priority","score","reason","topic",
+        "title","excerpt","author","published_at","discovered_at","priority","score","distribution_score",
+        "observed_views","view_velocity_per_min","engagement_rate","reason","topic",
         "x_search_url","target_mode","suggested_angle","raw_json","created_at",
     ]
-    vals = [record.get(c) for c in cols]
+    defaults = {
+        "distribution_score": 0,
+        "observed_views": 0,
+        "view_velocity_per_min": 0.0,
+        "engagement_rate": 0.0,
+    }
+    vals = [record.get(c) if record.get(c) is not None else defaults.get(c) for c in cols]
     cur = con.execute(
         f"INSERT OR IGNORE INTO signal({','.join(cols)}) VALUES({','.join('?' for _ in cols)})",
         vals,

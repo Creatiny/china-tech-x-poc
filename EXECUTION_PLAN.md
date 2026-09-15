@@ -1,7 +1,7 @@
 # China Tech X POC — Execution Plan v2.0
 
 **Status:** `APPROVED / ACTIVE`  
-**Authority:** `PROJECT_SPEC.md` v3.0  
+**Authority:** `PROJECT_SPEC.md` v3.1  
 **Effective:** `2026-09-09`
 
 ## 1. Current Mode
@@ -22,7 +22,7 @@ Discovery must cover:
 2. China-side AI and technology evidence that gives the account differentiated insight;
 3. the user's own real AI-building/research work as a source of `WHAT_I_LEARNED` ideas.
 
-A signal is not publishable merely because it is recent.
+A signal is not publishable merely because it is recent. For verified X targets, live distribution opportunity is a second-stage ranking signal after relevance: prefer conversations that are demonstrably moving, while preserving a short early-grace window so strong new posts can be joined before they fully break out.
 
 ## 3. Candidate Classification
 

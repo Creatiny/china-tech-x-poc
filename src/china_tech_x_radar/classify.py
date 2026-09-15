@@ -29,6 +29,60 @@ def _age_minutes(published_at: datetime | None, now: datetime) -> float:
     return max(0.0, (now - published_at).total_seconds() / 60.0)
 
 
+def _safe_metric(metrics: dict[str, Any], key: str) -> int:
+    try:
+        return max(0, int(metrics.get(key) or 0))
+    except Exception:
+        return 0
+
+
+def distribution_opportunity(item: dict[str, Any], age_minutes: float) -> dict[str, float | int]:
+    """Deterministic pre-editorial distribution signal for direct X posts.
+
+    This is deliberately not a content-quality score. It measures whether a relevant post is
+    fresh and already showing signs of entering a larger distribution graph, so a small account
+    can spend scarce reply attention where there is actual audience movement.
+    """
+    metrics = item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+    views = _safe_metric(metrics, "views")
+    likes = _safe_metric(metrics, "likes")
+    replies = _safe_metric(metrics, "replies")
+    reposts = _safe_metric(metrics, "reposts")
+    quotes = _safe_metric(metrics, "quotes")
+    bookmarks = _safe_metric(metrics, "bookmarks")
+    interactions = likes + replies + reposts + quotes + bookmarks
+    velocity = float(views) / max(1.0, float(age_minutes))
+    engagement_rate = (float(interactions) / float(views)) if views > 0 else 0.0
+
+    freshness = 3 if age_minutes <= 10 else 2 if age_minutes <= 30 else 1 if age_minutes <= 60 else 0
+    if velocity >= 500:
+        velocity_pts = 6
+    elif velocity >= 150:
+        velocity_pts = 5
+    elif velocity >= 50:
+        velocity_pts = 4
+    elif velocity >= 15:
+        velocity_pts = 3
+    elif velocity >= 5:
+        velocity_pts = 2
+    elif velocity >= 1:
+        velocity_pts = 1
+    else:
+        velocity_pts = 0
+    scale_pts = 3 if views >= 10_000 else 2 if views >= 1_000 else 1 if views >= 300 else 0
+    engagement_pts = 3 if engagement_rate >= 0.10 else 2 if engagement_rate >= 0.05 else 1 if engagement_rate >= 0.02 else 0
+    conversation = replies + quotes
+    conversation_pts = 2 if conversation >= 20 else 1 if conversation >= 3 else 0
+    score = freshness + velocity_pts + scale_pts + engagement_pts + conversation_pts
+    return {
+        "distribution_score": int(score),
+        "views": views,
+        "view_velocity_per_min": round(velocity, 2),
+        "engagement_rate": round(engagement_rate, 4),
+        "interactions": interactions,
+    }
+
+
 def make_x_search_url(title: str, entity: str | None, topic: str | None) -> str:
     if entity and topic:
         q = f'"{entity}" {topic}'
@@ -67,6 +121,10 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     noise = _match_terms(text, list(rules.get("noise_terms", [])))
     published = item.get("published_at")
     age = _age_minutes(published, now)
+    direct_x_source = source.get("kind") == "x_profile"
+    dist = distribution_opportunity(item, age) if direct_x_source else {
+        "distribution_score": 0, "views": 0, "view_velocity_per_min": 0.0, "engagement_rate": 0.0, "interactions": 0
+    }
 
     generic_entities = {"china", "chinese"}
     specific_entities = [e for e in entities if e.casefold() not in generic_entities]
@@ -98,13 +156,28 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(productivity), 2) * 2 + min(len(high), 2) * 2
         p0_min_score = int(source.get("p0_min_score", 7))
         p1_min_score = int(source.get("p1_min_score", 5))
-        if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and high and score >= p0_min_score:
+        x_distribution_min = int(source.get("x_distribution_min_score", rules.get("x_distribution_min_score", 6)))
+        x_early_grace_minutes = float(source.get("x_early_grace_minutes", rules.get("x_early_grace_minutes", 5)))
+        x_early_grace_base_score = int(source.get("x_early_grace_base_score", rules.get("x_early_grace_base_score", 7)))
+        distribution_ok = (
+            not direct_x_source
+            or int(dist["distribution_score"]) >= x_distribution_min
+            or (age <= x_early_grace_minutes and score >= x_early_grace_base_score)
+        )
+        x_breakout_p0 = direct_x_source and int(dist["distribution_score"]) >= int(rules.get("x_breakout_p0_distribution_score", 10))
+        if age <= float(source.get("p0_max_age_minutes", rules.get("p0_max_age_minutes", 30))) and score >= p0_min_score and (bool(high) or x_breakout_p0):
             priority = "P0"
-        elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= p1_min_score:
+        elif age <= float(source.get("p1_max_age_minutes", rules.get("p1_max_age_minutes", 360))) and score >= p1_min_score and distribution_ok:
             priority = "P1"
         else:
             priority = "P2"
         bits = [f"score={score}", f"age={age:.0f}m"]
+        if direct_x_source:
+            bits.extend([
+                f"dist={int(dist['distribution_score'])}",
+                f"views={int(dist['views'])}",
+                f"vel={float(dist['view_velocity_per_min']):.1f}/m",
+            ])
         if entities:
             bits.append("entity=" + entities[0])
         if topics:
@@ -125,7 +198,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     topic = next((t for t in topic_pool if t.casefold() not in generic_topics), topic_pool[0] if topic_pool else None)
     if topic is None and entity_only_ok:
         topic = str(source.get("default_topic") or "china_tech")
-    direct_x_target = source.get("kind") == "x_profile" and bool(item.get("canonical_url"))
+    direct_x_target = direct_x_source and bool(item.get("canonical_url"))
     return {
         "priority": priority,
         "score": locals().get("score", 0),
@@ -135,4 +208,8 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         "target_mode": "VERIFIED_X_TARGET" if direct_x_target else "TARGET_SEARCH_REQUIRED",
         "suggested_angle": angle_for(topic, item.get("title", "")),
         "age_minutes": age,
+        "distribution_score": int(dist["distribution_score"]),
+        "observed_views": int(dist["views"]),
+        "view_velocity_per_min": float(dist["view_velocity_per_min"]),
+        "engagement_rate": float(dist["engagement_rate"]),
     }

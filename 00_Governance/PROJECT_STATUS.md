@@ -2,11 +2,11 @@
 
 ## Status Timestamp
 
-2026-09-09
+2026-09-15
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.0
+- `PROJECT_SPEC.md` v3.1
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -62,3 +62,12 @@ Recent account analysis showed replies can obtain materially more impressions th
 3. continue finding live reply targets under the new value gate;
 4. build owned Chinese viewpoint/practice content;
 5. measure conversion, not output count.
+
+## Distribution Opportunity Engine — 2026-09-15
+
+- Direct X candidates now persist distribution score, observed views, views/minute, and engagement rate.
+- Relevance remains the first gate; virality cannot rescue off-positioning content.
+- Fast-rising verified X targets are processed before flat candidates at the same editorial priority.
+- A short early-discovery grace window preserves the ability to reply before a strong post fully breaks out.
+- Breakout distribution can promote a qualifying direct-X target to P0; editorial value and human voice gates still apply.
+- Creator diversity/cooldown remains active for ordinary P1 replies.

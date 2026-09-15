@@ -351,6 +351,10 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         "discovered_at": discovered,
                         "priority": result["priority"],
                         "score": int(result.get("score", 0)),
+                        "distribution_score": int(result.get("distribution_score", 0)),
+                        "observed_views": int(result.get("observed_views", 0)),
+                        "view_velocity_per_min": float(result.get("view_velocity_per_min", 0.0)),
+                        "engagement_rate": float(result.get("engagement_rate", 0.0)),
                         "reason": result["reason"],
                         "topic": result.get("topic"),
                         "x_search_url": result.get("x_search_url"),
@@ -390,8 +394,9 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             SELECT a.id AS alert_id, s.*
             FROM alert a JOIN signal s ON s.id=a.signal_id
             WHERE a.status='PENDING'
-            ORDER BY CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
-                     CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
+            ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
+                     CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
+                     s.distribution_score DESC, s.view_velocity_per_min DESC,
                      s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
             LIMIT ?
             """,

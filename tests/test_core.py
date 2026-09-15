@@ -5,7 +5,7 @@ import unittest
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-from china_tech_x_radar.classify import classify
+from china_tech_x_radar.classify import classify, distribution_opportunity
 from china_tech_x_radar.db import connect, insert_signal, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
@@ -61,6 +61,54 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertIn(out["priority"], ("P0", "P1"))
         self.assertIn("x.com/search", out["x_search_url"])
+
+    def test_distribution_opportunity_rewards_fast_rising_x_post(self):
+        fast = distribution_opportunity({"metrics": {"views": 1200, "likes": 30, "replies": 8, "reposts": 10, "quotes": 4}}, 2)
+        slow = distribution_opportunity({"metrics": {"views": 30, "likes": 1}}, 30)
+        self.assertGreaterEqual(fast["distribution_score"], 10)
+        self.assertGreater(fast["view_velocity_per_min"], slow["view_velocity_per_min"])
+        self.assertGreater(fast["distribution_score"], slow["distribution_score"])
+
+    def test_x_distribution_gate_downgrades_flat_post_after_early_grace(self):
+        now = datetime.now(timezone.utc)
+        item = {
+            "title": "AI agent reliability benchmark", "excerpt": "agent eval reliability",
+            "canonical_url": "https://x.com/example/status/2",
+            "published_at": now - timedelta(minutes=40),
+            "metrics": {"views": 20},
+        }
+        source = {"kind": "x_profile", "audience_focused": True, "source_weight": 5, "p1_max_age_minutes": 120}
+        rules = {
+            "china_entities": [], "topic_terms": ["ai", "agent", "benchmark"],
+            "productivity_terms": ["agent", "reliability", "eval"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes": 30,
+            "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+            "x_distribution_min_score": 6, "x_early_grace_minutes": 5, "x_early_grace_base_score": 7,
+        }
+        out = classify(item, source, rules, now=now)
+        self.assertEqual(out["priority"], "P2")
+        self.assertLess(out["distribution_score"], 6)
+
+    def test_x_breakout_can_be_p0_without_keyword_impact_marker(self):
+        now = datetime.now(timezone.utc)
+        item = {
+            "title": "AI agent reliability benchmark", "excerpt": "agent eval reliability",
+            "canonical_url": "https://x.com/example/status/3",
+            "published_at": now - timedelta(minutes=2),
+            "metrics": {"views": 5000, "likes": 200, "replies": 30, "reposts": 80, "quotes": 20},
+        }
+        source = {"kind": "x_profile", "audience_focused": True, "source_weight": 5, "p1_max_age_minutes": 120}
+        rules = {
+            "china_entities": [], "topic_terms": ["ai", "agent", "benchmark"],
+            "productivity_terms": ["agent", "reliability", "eval"],
+            "high_impact_terms": [], "noise_terms": [], "p0_max_age_minutes": 30,
+            "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
+            "x_distribution_min_score": 6, "x_early_grace_minutes": 5, "x_early_grace_base_score": 7,
+            "x_breakout_p0_distribution_score": 10,
+        }
+        out = classify(item, source, rules, now=now)
+        self.assertEqual(out["priority"], "P0")
+        self.assertGreaterEqual(out["distribution_score"], 10)
 
     def test_x_profile_signal_is_verified_reply_target(self):
         item = {"title": "China DeepSeek AI model update", "excerpt": "DeepSeek AI model", "canonical_url": "https://x.com/example/status/1", "published_at": datetime.now(timezone.utc)}

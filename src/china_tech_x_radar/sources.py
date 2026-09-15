@@ -168,7 +168,7 @@ def fetch_github_releases(source: dict[str, Any], state: dict[str, Any] | None) 
             headers["If-Modified-Since"] = headers_state["last_modified"]
     req = urllib.request.Request(url, headers=headers)
     try:
-        with _urlopen(req, timeout=timeout) as r:
+        with _urlopen(req, timeout=int(source.get("request_timeout_seconds", 12))) as r:
             status = r.status
             body = r.read(1_500_000)
             meta = {"etag": r.headers.get("ETag") or "", "last_modified": r.headers.get("Last-Modified") or ""}
@@ -245,19 +245,23 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
         }
 
         counts_key = re.escape(f"client:{encoded}:counts")
-        counts = re.search(
-            counts_key + r'.{0,1200}?bookmark_count:(\d+),favorite_count:(\d+),reply_count:(\d+),retweet_count:(\d+),quote_count:(\d+)',
-            text,
-            re.DOTALL,
-        )
+        counts = re.search(counts_key + r'.{0,1800}', text, re.DOTALL)
         if counts:
-            item["metrics"] = {
-                "bookmarks": int(counts.group(1)),
-                "likes": int(counts.group(2)),
-                "replies": int(counts.group(3)),
-                "reposts": int(counts.group(4)),
-                "quotes": int(counts.group(5)),
+            block = counts.group(0)
+            metric_fields = {
+                "bookmarks": "bookmark_count",
+                "likes": "favorite_count",
+                "replies": "reply_count",
+                "reposts": "retweet_count",
+                "quotes": "quote_count",
             }
+            parsed_metrics: dict[str, int] = {}
+            for out_key, raw_key in metric_fields.items():
+                match = re.search(rf"{raw_key}:(\d+)", block)
+                if match:
+                    parsed_metrics[out_key] = int(match.group(1))
+            if parsed_metrics:
+                item["metrics"] = parsed_metrics
         views_key = re.escape(f"client:{encoded}:views")
         views = re.search(views_key + r'.{0,500}?count:"?(\d+)"?', text, re.DOTALL)
         if views:

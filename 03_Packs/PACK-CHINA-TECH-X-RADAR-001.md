@@ -180,7 +180,7 @@ Then authorize only the smallest next investment that addresses that bottleneck.
 
 ## 6. Success Evidence
 
-Active success evidence is defined by `PROJECT_SPEC.md` and `OPERATING_KPI.md` v3.0.
+Active success evidence is defined by `PROJECT_SPEC.md` and `OPERATING_KPI.md` v4.0.
 
 Minimum Day-30 POC success requires:
 

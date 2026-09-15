@@ -57,7 +57,7 @@ Recent account analysis showed replies can obtain materially more impressions th
 
 ## Current Execution Priority
 
-1. align radar/editorial prompts with v3.0;
+1. align radar/editorial prompts with v3.1;
 2. broaden signal discovery beyond China-only gating;
 3. continue finding live reply targets under the new value gate;
 4. build owned Chinese viewpoint/practice content;

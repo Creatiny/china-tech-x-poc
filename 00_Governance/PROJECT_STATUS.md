@@ -80,3 +80,4 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Multi-day snapshot gaps and multi-action days are explicitly blocked from false follower attribution.
 
 - X public-source fetch concurrency is capped at 4 after production evidence showed proxy TLS/read timeouts under an 8-worker burst; stability outranks nominal poll speed.
+- To prevent synchronized proxy bursts, at most 6 direct-X profiles are fetched per cycle; overdue profiles roll into subsequent 15-second cycles, oldest-success first.

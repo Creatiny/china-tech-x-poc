@@ -11,7 +11,7 @@ from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map
 from china_tech_x_radar.alerts import format_publish_packet
-from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due
+from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
@@ -37,6 +37,17 @@ class CoreTests(unittest.TestCase):
         raw = b'followers:26,following:118,foo:1,screenName:"KennyChinaTech",tweets:174'
         exact = parse_x_profile_stats_html(raw, "KennyChinaTech")
         self.assertEqual(exact["tweets"], 174)
+
+    def test_x_profile_due_work_is_bounded_and_oldest_first(self):
+        due = [
+            ({"id":"rss","kind":"rss"}, {"last_success_at":"2026-09-16T00:00:00Z"}, True),
+            ({"id":"x_new","kind":"x_profile"}, {"last_success_at":"2026-09-16T00:03:00Z"}, True),
+            ({"id":"x_old","kind":"x_profile"}, {"last_success_at":"2026-09-16T00:01:00Z"}, True),
+            ({"id":"x_mid","kind":"x_profile"}, {"last_success_at":"2026-09-16T00:02:00Z"}, True),
+        ]
+        selected, deferred = _limit_due_x_profiles(due, 2)
+        self.assertEqual(deferred, 1)
+        self.assertEqual([x[0]["id"] for x in selected], ["rss", "x_old", "x_mid"])
 
     def test_outcome_capture_schedule_tapers_with_age(self):
         now = datetime.now(timezone.utc)

@@ -396,6 +396,23 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
     return {"checked": checked, "matched": matched}
 
 
+
+def _limit_due_x_profiles(
+    due: list[tuple[dict[str, Any], dict[str, Any] | None, bool]], max_x_profiles: int
+) -> tuple[list[tuple[dict[str, Any], dict[str, Any] | None, bool]], int]:
+    """Bound X-profile work per cycle to avoid synchronized proxy bursts."""
+    non_x = [x for x in due if x[0].get("kind") != "x_profile"]
+    x_due = [x for x in due if x[0].get("kind") == "x_profile"]
+
+    def oldest_key(entry: tuple[dict[str, Any], dict[str, Any] | None, bool]) -> str:
+        state = entry[1] or {}
+        return str(state.get("last_success_at") or state.get("last_polled_at") or "")
+
+    x_due.sort(key=oldest_key)
+    cap = max(1, int(max_x_profiles))
+    selected_x = x_due[:cap]
+    return non_x + selected_x, max(0, len(x_due) - len(selected_x))
+
 def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) -> dict[str, Any]:
     now = datetime.now(timezone.utc)
     source_cfg = load_toml(root / "config" / "sources.toml")
@@ -420,7 +437,9 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
             if not source_due(state, int(source.get("poll_minutes", 5)), now):
                 continue
             due.append((source, state, bool(state and state.get("last_success_at"))))
+        due, x_deferred = _limit_due_x_profiles(due, int(rules.get("max_x_profiles_per_cycle", 6)))
         counters["sources_due"] = len(due)
+        counters["x_profiles_deferred"] = x_deferred
 
         workers = max(1, min(int(rules.get("source_fetch_workers", 8)), len(due) or 1))
         fetched: list[tuple[dict[str, Any], dict[str, Any] | None, bool, tuple[list[dict[str, Any]], dict[str, str], bool] | None, Exception | None]] = []

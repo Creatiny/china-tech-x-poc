@@ -986,3 +986,325 @@ p1_min_score = 6
 max_candidate_age_minutes = 180
 p1_max_age_minutes = 180
 enabled = true
+
+# Reply-acquisition expansion batch — 2026-09-16
+# Added from adjacent-creator discovery + live X view sampling. These are observation slots,
+# not endorsement or automatic publish targets. Every post still passes relevance, distribution,
+# creator-diversity, editorial-value and voice gates.
+
+[[source]]
+id = "x_zephyr_z9"
+kind = "x_profile"
+name = "X @zephyr_z9 — Zephyr"
+handle = "zephyr_z9"
+creator_role = "ai_chips_semiconductor"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_semianalysis"
+kind = "x_profile"
+name = "X @SemiAnalysis_ — SemiAnalysis"
+handle = "semianalysis_"
+creator_role = "ai_compute_semiconductor"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 120
+p1_max_age_minutes = 120
+enabled = true
+
+[[source]]
+id = "x_maxforai"
+kind = "x_profile"
+name = "X @maxforai — Max For AI"
+handle = "maxforai"
+creator_role = "china_ai_technical_synthesis"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_mattpocockuk"
+kind = "x_profile"
+name = "X @mattpocockuk — Matt Pocock"
+handle = "mattpocockuk"
+creator_role = "ai_coding_developer_workflows"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_mattshumer"
+kind = "x_profile"
+name = "X @mattshumer_ — Matt Shumer"
+handle = "mattshumer_"
+creator_role = "agent_workflows_ai_products"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_op7418"
+kind = "x_profile"
+name = "X @op7418 — 歸藏"
+handle = "op7418"
+creator_role = "china_ai_tools_builders"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_damnang2"
+kind = "x_profile"
+name = "X @damnang2 — Damnang"
+handle = "damnang2"
+creator_role = "semiconductor_industry_engineering"
+creator_quality = "technical_fact"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_tencentai_news"
+kind = "x_profile"
+name = "X @tencentai_news — Tencent AI"
+handle = "tencentai_news"
+creator_role = "china_ai_primary_source"
+creator_quality = "technical_fact"
+poll_minutes = 3
+china_focused = true
+audience_focused = true
+source_weight = 5
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_alchainhust"
+kind = "x_profile"
+name = "X @alchainhust — 花叔"
+handle = "alchainhust"
+creator_role = "china_ai_native_coding"
+creator_quality = "expansion_technical"
+poll_minutes = 2
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 5
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_akhaliq"
+kind = "x_profile"
+name = "X @_akhaliq — AK"
+handle = "_akhaliq"
+creator_role = "ai_research_primary_papers"
+creator_quality = "technical_fact"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_aidotengineer"
+kind = "x_profile"
+name = "X @aidotengineer — AI Engineer"
+handle = "aidotengineer"
+creator_role = "ai_engineering_builders"
+creator_quality = "technical_fact"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_gakonst"
+kind = "x_profile"
+name = "X @gakonst — Georgios Konstantopoulos"
+handle = "gakonst"
+creator_role = "agent_harness_engineering"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_iliraliu"
+kind = "x_profile"
+name = "X @iliraliu_ — Ilir Aliu"
+handle = "iliraliu_"
+creator_role = "physical_ai_robotics"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_tanayj"
+kind = "x_profile"
+name = "X @tanayj — Tanay Jaipuria"
+handle = "tanayj"
+creator_role = "ai_infra_business_technical"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_skirano"
+kind = "x_profile"
+name = "X @skirano — Pietro Schirano"
+handle = "skirano"
+creator_role = "ai_product_builder"
+creator_quality = "expansion_technical"
+poll_minutes = 5
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_thehumanoidhub"
+kind = "x_profile"
+name = "X @thehumanoidhub — The Humanoid Hub"
+handle = "thehumanoidhub"
+creator_role = "physical_ai_robotics_fact"
+creator_quality = "technical_fact"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_swyx"
+kind = "x_profile"
+name = "X @swyx — swyx"
+handle = "swyx"
+creator_role = "ai_engineering_agents"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_doodlestein"
+kind = "x_profile"
+name = "X @doodlestein — Jeffrey Emanuel"
+handle = "doodlestein"
+creator_role = "agent_coding_workflows"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_bourneliu66"
+kind = "x_profile"
+name = "X @bourneliu66 — 刘小排"
+handle = "bourneliu66"
+creator_role = "china_ai_product_builder"
+creator_quality = "expansion_technical"
+poll_minutes = 5
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true

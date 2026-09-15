@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.2
+- `PROJECT_SPEC.md` v3.3
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -81,3 +81,11 @@ Recent account analysis showed replies can obtain materially more impressions th
 
 - X public-source fetch concurrency is capped at 4 after production evidence showed proxy TLS/read timeouts under an 8-worker burst; stability outranks nominal poll speed.
 - To prevent synchronized proxy bursts, at most 6 direct-X profiles are fetched per cycle; overdue profiles roll into subsequent 15-second cycles, oldest-success first.
+
+## Reply-Acquisition Expansion — 2026-09-16
+
+- Direct-X monitored pool expanded from 58 to 77 creators; enabled pool from 49 to 68.
+- New admission is evidence-led: actual Reply outcomes first, then current parent-post distribution, audience adjacency, and technical fit.
+- High-priority new observation slots include Zephyr, SemiAnalysis, Max For AI, Matt Pocock, Matt Shumer, 歸藏, Damnang, Tencent AI, 花叔, AK, AI Engineer, Georgios Konstantopoulos, Ilir Aliu, Tanay Jaipuria, Pietro Schirano, The Humanoid Hub, swyx, Jeffrey Emanuel, and 刘小排.
+- New creators are observation targets only; the live post still has to pass all relevance/distribution/editorial gates.
+- Formula reports now include a `creator_acquisition` leaderboard combining parent reach and Kenny's real Reply outcomes.

@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.2
+# China Tech X POC — Canonical Project Spec v3.3
 
 ## 0. Authority
 
@@ -526,3 +526,37 @@ relevance/value gate
 ```
 
 This feedback loop optimizes for durable relevant-audience growth, not raw impressions alone.
+
+## 29. Reply-Acquisition Creator Expansion
+
+Creator monitoring is an acquisition system, not a static celebrity list. The objective is to find more technical conversations where a small account can earn meaningful Reply distribution and convert that attention into relevant followers.
+
+Expansion evidence is evaluated in this order:
+
+1. Kenny's actual mature Reply impressions on that creator, when at least three samples exist;
+2. the creator's observed parent-post distribution on X (recent median/maximum views, live view velocity, distribution score);
+3. audience overlap with proven acquisition creators;
+4. technical/content quality and ability for Kenny to add a differentiated fact, correction, China/global comparison, or first-hand practice result.
+
+Follower count by itself is not an admission rule. A 20K-follower creator whose current posts reliably reach 10K-30K relevant readers can be more useful than a 500K-follower account whose current posts do not move or whose audience does not overlap.
+
+New creators normally enter `expansion_technical` or `technical_fact`. They do not receive automatic Reply recommendations. Every post still passes topical relevance, the Distribution Opportunity engine, Creator Feedback, creator cooldown/diversity, the editorial value gate, and the human-voice gate.
+
+The runtime must expose a `creator_acquisition` report combining:
+
+- observed parent-post count and P0/P1 opportunities;
+- median/max observed parent views;
+- distribution score / view velocity evidence;
+- Kenny's Reply sample count and median Reply impressions;
+- conservative historical feedback score;
+- clean follower-growth evidence when available.
+
+Creator expansion should continuously explore adjacent communities around proven creators, especially:
+
+- AI coding / harness / evals / developer workflows;
+- China AI builders and Chinese-language AI technical creators;
+- AI compute / HBM / semiconductors where it materially affects AI;
+- world models / robotics / physical AI;
+- primary technical accounts and high-signal technical synthesis accounts.
+
+Avoid engagement farms, generic AI-tool spam, side-hustle accounts, finance/ticker accounts, and broad viral accounts with weak target-audience overlap even when their raw views are high.

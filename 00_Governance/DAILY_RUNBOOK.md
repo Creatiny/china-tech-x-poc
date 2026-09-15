@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.2 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.3 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -79,3 +79,7 @@ Before generating final Post/Reply copy, load the current `PROJECT_SPEC.md` and 
 ## 10. Outcome Feedback
 
 Do not stop at publication. Automatically collect public post outcomes and follower snapshots. Use creator-level historical feedback only after the minimum sample gate; keep missing profile visits null.
+
+## 11. Creator Acquisition Review
+
+Use the `creator_acquisition` report to expand and prune the monitored pool. Prefer creators where Kenny's Replies repeatedly earn distribution; before three Reply samples exist, use recent parent-post reach and technical audience fit only as provisional evidence. Never optimize the pool on follower count alone.

@@ -9,7 +9,7 @@ from china_tech_x_radar.classify import classify, distribution_opportunity
 from china_tech_x_radar.db import connect, insert_signal, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
-from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map
+from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map, creator_acquisition_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
@@ -216,6 +216,10 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(fb['samples'],3)
             self.assertEqual(fb['median_impressions'],180.0)
             self.assertEqual(fb['score'],1)
+            acq=creator_acquisition_report(con,min_feedback_samples=3)
+            creator=next(x for x in acq if x['creator']=='creator')
+            self.assertEqual(creator['reply_samples'],3)
+            self.assertEqual(creator['median_reply_impressions'],180.0)
 
     def test_follower_gap_is_not_falsely_attributed(self):
         with tempfile.TemporaryDirectory() as d:

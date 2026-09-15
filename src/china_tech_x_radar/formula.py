@@ -277,6 +277,61 @@ def follower_positive_patterns(cohorts: list[dict[str, Any]]) -> dict[str, list[
         result[field]=sorted(rows,key=lambda x:(x["positive_days"],x["follower_gain_on_days"],x["observed_days"]),reverse=True)
     return result
 
+
+def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_feedback_samples: int = 3) -> list[dict[str, Any]]:
+    """Rank monitored X creators by our own reply outcomes + observed parent-post reach.
+
+    This is a reporting surface, not a bypass around editorial gates. It makes expansion/retention
+    decisions evidence-based: actual Reply outcomes first, then the creator's observed distribution.
+    """
+    cutoff = datetime.now(timezone.utc).timestamp() - max(1, int(days)) * 86400
+    cutoff_iso = datetime.fromtimestamp(cutoff, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+    rows = con.execute(
+        """SELECT source_id,author,priority,observed_views,distribution_score,view_velocity_per_min,discovered_at
+               FROM signal
+              WHERE source_kind='x_profile' AND discovered_at>=?
+              ORDER BY discovered_at DESC""",
+        (cutoff_iso,),
+    ).fetchall()
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        creator = str(row["author"] or "").strip().casefold().lstrip("@")
+        if creator:
+            grouped[creator].append(dict(row))
+    feedback = build_creator_feedback_map(con, min_samples=min_feedback_samples)
+    out: list[dict[str, Any]] = []
+    for creator in sorted(set(grouped) | set(feedback)):
+        items = grouped.get(creator, [])
+        views = [int(x.get("observed_views") or 0) for x in items if int(x.get("observed_views") or 0) > 0]
+        dist = [int(x.get("distribution_score") or 0) for x in items]
+        velocities = [float(x.get("view_velocity_per_min") or 0) for x in items if float(x.get("view_velocity_per_min") or 0) > 0]
+        fb = feedback.get(creator, {})
+        out.append({
+            "creator": creator,
+            "observed_posts": len(items),
+            "qualified_p0_p1": sum(1 for x in items if str(x.get("priority") or "").upper() in {"P0","P1"}),
+            "median_parent_views": round(float(statistics.median(views)), 1) if views else None,
+            "max_parent_views": max(views) if views else None,
+            "median_distribution_score": round(float(statistics.median(dist)), 1) if dist else None,
+            "median_view_velocity_per_min": round(float(statistics.median(velocities)), 2) if velocities else None,
+            "reply_samples": int(fb.get("samples", 0)),
+            "median_reply_impressions": fb.get("median_impressions"),
+            "feedback_score": int(fb.get("score", 0)),
+            "growth_days": int(fb.get("growth_days", 0)),
+            "follower_gain_on_clean_days": int(fb.get("follower_gain_on_clean_days", 0)),
+            "last_observed_at": max((str(x.get("discovered_at") or "") for x in items), default=None),
+        })
+    return sorted(
+        out,
+        key=lambda x: (
+            x["feedback_score"],
+            x["median_reply_impressions"] if x["median_reply_impressions"] is not None else -1,
+            x["median_parent_views"] if x["median_parent_views"] is not None else -1,
+            x["qualified_p0_p1"],
+        ),
+        reverse=True,
+    )
+
 def build_formula_report(con: sqlite3.Connection, min_samples: int = 2) -> dict[str, Any]:
     rows=latest_action_rows(con)
     dimensions={}
@@ -286,6 +341,7 @@ def build_formula_report(con: sqlite3.Connection, min_samples: int = 2) -> dict[
     total=_summary(rows)
     cohorts=follower_cohorts(con,rows)
     positive_patterns=follower_positive_patterns(cohorts)
+    creator_acquisition=creator_acquisition_report(con)
     return {
         "status": "INSUFFICIENT_SAMPLES" if len(rows)<5 else "FORMULA_SEARCH_ACTIVE",
         "total": total,
@@ -293,5 +349,6 @@ def build_formula_report(con: sqlite3.Connection, min_samples: int = 2) -> dict[
         "repeated_combinations": combos[:20],
         "daily_follower_cohorts": cohorts[-30:],
         "follower_positive_patterns": positive_patterns,
+        "creator_acquisition": creator_acquisition[:50],
         "rule": "Do not declare a growth formula from one breakout post. Prefer combinations with >=3 samples; >=5 is stronger evidence. Follower causality is evaluated at day/cohort level using account snapshots, not falsely attributed to one overlapping action.",
     }

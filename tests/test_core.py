@@ -290,6 +290,30 @@ class CoreTests(unittest.TestCase):
             self.assertTrue(allowed)
             self.assertEqual(reason,"p1_reply_curated")
 
+    def test_p1_creator_cooldown_blocks_repeat(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "creator-cooldown.db")
+            now = iso()
+            cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ('c'*64,'x_a','A','x_profile','T','@alice',now,'P1',9,'r',now))
+            con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\",\"target_account\":\"@alice\"}'))
+            con.commit()
+            cfg={"p1_min_confidence":0.88,"p1_reply_min_score":6,"max_p1_replies_per_creator_7d":3,"max_p1_reply_packets_per_window":3,"max_p1_reply_packets_per_day":12}
+            allowed,reason=notification_policy(con,{"priority":"P1","score":9,"author":"@alice"},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/alice/status/2","target_account":"alice"},cfg)
+            self.assertFalse(allowed)
+            self.assertTrue(reason.startswith("creator_24h_cooldown:"))
+
+    def test_p1_creator_cooldown_does_not_block_new_creator(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "creator-new.db")
+            now = iso()
+            cur = con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ('d'*64,'x_a','A','x_profile','T','@alice',now,'P1',9,'r',now))
+            con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)", (cur.lastrowid,'P1',now,now,'SENT','READY','{\"decision\":\"REPLY\",\"target_account\":\"@alice\"}'))
+            con.commit()
+            cfg={"p1_min_confidence":0.88,"p1_reply_min_score":6,"max_p1_replies_per_creator_7d":3,"max_p1_reply_packets_per_window":3,"max_p1_reply_packets_per_day":12}
+            allowed,reason=notification_policy(con,{"priority":"P1","score":9,"author":"@bob"},{"decision":"REPLY","confidence":0.95,"target_url":"https://x.com/bob/status/2","target_account":"@bob"},cfg)
+            self.assertTrue(allowed)
+            self.assertEqual(reason,"p1_reply_curated")
+
     def test_p0_bypasses_daily_reply_cap(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "p0.db")

@@ -36,3 +36,7 @@ max_p1_post_packets_per_day = 1
 p1_reply_window_hours = 4
 max_p1_reply_packets_per_window = 3
 max_p1_reply_packets_per_day = 12
+
+# Creator diversity: broaden audience reach instead of repeatedly replying to the same accounts.
+p1_creator_cooldown_hours = 24
+max_p1_replies_per_creator_7d = 3

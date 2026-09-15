@@ -93,6 +93,46 @@ def _sent_p1_replies_in_window(con: sqlite3.Connection, cfg: dict[str, Any]) -> 
     return _sent_packet_counts_since(con, start_utc)["p1_reply"]
 
 
+def _normalize_target_creator(value: str | None) -> str:
+    v = str(value or "").strip().casefold()
+    if v.startswith("@"):
+        v = v[1:]
+    return v
+
+
+def _sent_replies_to_creator_since(con: sqlite3.Connection, creator: str, start_utc: str) -> int:
+    creator = _normalize_target_creator(creator)
+    if not creator:
+        return 0
+    rows = con.execute(
+        """SELECT a.editorial_packet_json,s.author
+             FROM alert a JOIN signal s ON s.id=a.signal_id
+            WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?
+              AND json_extract(a.editorial_packet_json,'$.decision')='REPLY'""",
+        (start_utc,),
+    ).fetchall()
+    count = 0
+    for row in rows:
+        try:
+            packet = json.loads(row["editorial_packet_json"] or "{}")
+        except Exception:
+            packet = {}
+        target = _normalize_target_creator(packet.get("target_account") or row["author"])
+        if target == creator:
+            count += 1
+    return count
+
+
+def _creator_reply_counts(con: sqlite3.Connection, creator: str) -> tuple[int, int]:
+    now = datetime.now(timezone.utc)
+    day_start = (now - timedelta(hours=24)).isoformat().replace("+00:00", "Z")
+    week_start = (now - timedelta(days=7)).isoformat().replace("+00:00", "Z")
+    return (
+        _sent_replies_to_creator_since(con, creator, day_start),
+        _sent_replies_to_creator_since(con, creator, week_start),
+    )
+
+
 def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> tuple[bool, str]:
     priority = str(signal.get("priority") or "P1").upper()
     decision = str(packet.get("decision") or "SKIP").upper()
@@ -112,6 +152,13 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
     if decision == "POST" and counts["p1_post"] >= int(cfg.get("max_p1_post_packets_per_day", 1)):
         return False, "p1_post_daily_slot_used"
     if decision == "REPLY":
+        target_creator = _normalize_target_creator(packet.get("target_account") or signal.get("author"))
+        if target_creator:
+            creator_24h, creator_7d = _creator_reply_counts(con, target_creator)
+            if creator_24h >= 1:
+                return False, f"creator_24h_cooldown:{target_creator}"
+            if creator_7d >= int(cfg.get("max_p1_replies_per_creator_7d", 3)):
+                return False, f"creator_7d_cap:{target_creator}"
         window_count = _sent_p1_replies_in_window(con, cfg)
         window_max = int(cfg.get("max_p1_reply_packets_per_window", 3))
         if window_count >= window_max:

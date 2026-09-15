@@ -439,3 +439,14 @@ After drafting, run one Humanizer self-audit internally: ask what still sounds m
 `00_Governance/KENNY_VOICE_FINGERPRINT.md` is the canonical personal-voice profile for X copy. Before drafting paste-ready content, the runtime MUST freshly read this file together with the current SPEC and Humanizer skill. If it cannot be read, do not produce publish-ready copy.
 
 The profile is based primarily on Kenny's natural working/conversation language. Existing AI-generated Replies are negative examples, not positive training data. Humanizer makes the copy human; the Kenny profile makes it sound like Kenny.
+
+
+## 26. Creator Expansion and Reply Diversity
+
+The monitored creator pool must keep expanding. Do not optimize Reply volume around a small familiar cluster. Maintain two layers: a stable `core_technical` pool and a growing `expansion_technical` pool discovered from adjacent technical communities.
+
+Expansion priorities: agent/harness/evals, AI coding and developer tools, inference/AI systems, world models/robotics/physical AI, and China/global builders with first-hand technical evidence. Prefer practitioners and researchers over news aggregators, hype accounts, finance/ticker accounts, and generic AI-tool curators.
+
+For growth, creator diversity is an operating constraint: ordinary P1 Replies should not repeatedly target the same creator. Default cooldown is one P1 Reply per creator per 24 hours and at most three P1 Replies per creator in seven days. P0 may bypass this when the opportunity is genuinely exceptional. At similar quality, prefer a creator Kenny has not engaged with recently.
+
+Creator discovery is ongoing maintenance, not a one-time list build. Add qualified creators regularly; do not wait for the existing pool to become stale.

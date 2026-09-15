@@ -698,3 +698,291 @@ source_weight = 5
 max_candidate_age_minutes = 120
 p1_max_age_minutes = 120
 enabled = true
+
+
+[[source]]
+id = "x_kskrygan"
+kind = "x_profile"
+name = "X @kskrygan — Kirill Skrygan"
+handle = "kskrygan"
+creator_role = "agent_coding_ide"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_omarsar0"
+kind = "x_profile"
+name = "X @omarsar0 — Elvis / DAIR.AI"
+handle = "omarsar0"
+creator_role = "agent_harness_research"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_nummanali"
+kind = "x_profile"
+name = "X @nummanali — Numman Ali"
+handle = "nummanali"
+creator_role = "agentic_engineering"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_voxyz_ai"
+kind = "x_profile"
+name = "X @voxyz_ai — Vox"
+handle = "voxyz_ai"
+creator_role = "ai_native_operations"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_pham_blnh"
+kind = "x_profile"
+name = "X @pham_blnh — Binh Pham"
+handle = "pham_blnh"
+creator_role = "robotics_world_models"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_bilawalsidhu"
+kind = "x_profile"
+name = "X @bilawalsidhu — Bilawal Sidhu"
+handle = "bilawalsidhu"
+creator_role = "world_models_spatial_ai"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_abdelstark"
+kind = "x_profile"
+name = "X @abdelstark — Abdel"
+handle = "abdelstark"
+creator_role = "physical_ai_world_models"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_leothecurious"
+kind = "x_profile"
+name = "X @leothecurious — Davinci"
+handle = "leothecurious"
+creator_role = "robotics_world_models"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_fofrai"
+kind = "x_profile"
+name = "X @fofrai — Fofr"
+handle = "fofrai"
+creator_role = "interactive_world_models"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_roberthaisfield"
+kind = "x_profile"
+name = "X @roberthaisfield — Rob Haisfield"
+handle = "roberthaisfield"
+creator_role = "agent_product_hci"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_gm8xx8"
+kind = "x_profile"
+name = "X @gm8xx8 — gm8xx8"
+handle = "gm8xx8"
+creator_role = "llm_inference_systems"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_bingxu"
+kind = "x_profile"
+name = "X @bingxu_ — Bing Xu"
+handle = "bingxu_"
+creator_role = "ai_systems_kernels"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_hxiao"
+kind = "x_profile"
+name = "X @hxiao — Han Xiao"
+handle = "hxiao"
+creator_role = "ai_retrieval_verification"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_samhogan"
+kind = "x_profile"
+name = "X @samhogan — Sam Hogan"
+handle = "samhogan"
+creator_role = "inference_infrastructure"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_himanshustwts"
+kind = "x_profile"
+name = "X @himanshustwts — Himanshu"
+handle = "himanshustwts"
+creator_role = "ai_systems_physical_ai"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+
+[[source]]
+id = "x_thom_wolf"
+kind = "x_profile"
+name = "X @thom_wolf — Thomas Wolf"
+handle = "thom_wolf"
+creator_role = "open_ai_robotics"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true

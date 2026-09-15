@@ -78,3 +78,5 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Public follower count is automatically snapshotted; profile visits remain null unless first-party data is provided.
 - Creator outcome feedback activates only after sufficient samples and is a small ranking prior.
 - Multi-day snapshot gaps and multi-action days are explicitly blocked from false follower attribution.
+
+- X public-source fetch concurrency is capped at 4 after production evidence showed proxy TLS/read timeouts under an 8-worker burst; stability outranks nominal poll speed.

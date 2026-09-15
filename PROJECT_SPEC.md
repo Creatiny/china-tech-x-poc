@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.5
+# China Tech X POC — Canonical Project Spec v3.6
 
 ## 0. Authority
 
@@ -594,3 +594,25 @@ Hard rules:
 - Before notification, Editorial Worker re-reads the current signal. If Collector has downgraded it below P0/P1, it expires rather than sending stale advice.
 - SQLite WAL and busy timeout remain the shared-state coordination mechanism.
 - Manual integrated `run` may remain available for diagnostics, but production launchd uses the isolated collector and editorial commands.
+
+## 31. Adaptive Creator Observation Budget
+
+A larger creator pool must not degrade discovery latency. Monitoring cadence is a scarce acquisition budget and is allocated by evidence.
+
+Static observation tiers provide the cold-start prior:
+
+- `1–2 min`: proven or very high-reach acquisition creators and high-value primary AI/coding accounts;
+- `4 min`: core technical creators with strong audience fit;
+- `6 min`: technical-fact / ecosystem sources;
+- `8 min`: broad exploration layer.
+
+The aggregate configured X polling demand must remain below the staggered collector capacity (`max_x_profiles_per_cycle` / collector interval), with material headroom for network variance. Expansion that would overload the collector must first rebalance lower-value cadence.
+
+Actual Kenny Reply outcomes override the cold-start cadence conservatively:
+
+- Creator Feedback `>= +2` -> effective interval no slower than 2 minutes;
+- Creator Feedback `+1` -> effective interval no slower than 3 minutes;
+- Creator Feedback `< 0` -> effective interval at least 8 minutes;
+- neutral/insufficient evidence -> configured tier remains unchanged.
+
+This cadence adjustment changes observation frequency only. It never bypasses content relevance, live Distribution Opportunity, creator diversity/cooldown, editorial value, or human-voice gates.

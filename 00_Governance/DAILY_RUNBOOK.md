@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.5 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.6 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -87,3 +87,7 @@ Use the `creator_acquisition` report to expand and prune the monitored pool. Pre
 ## 12. Runtime Isolation
 
 Treat Collector health and Editorial Worker health separately. A slow/erroring editorial call is not allowed to stop source polling. Collector creates and refreshes opportunities; Editorial consumes them asynchronously from SQLite.
+
+## 13. Observation Budget
+
+Keep total creator polling demand below collector capacity. High-reach/proven creators get faster observation; the long-tail exploration pool is slower. Let mature Reply outcome feedback promote/demote effective cadence automatically rather than manually over-polling the entire list.

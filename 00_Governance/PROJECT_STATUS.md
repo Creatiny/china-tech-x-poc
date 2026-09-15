@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.5
+- `PROJECT_SPEC.md` v3.6
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -103,3 +103,11 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Collector runs every 15 seconds and never waits for model/editorial work.
 - Editorial Worker consumes the SQLite PENDING queue independently, atomically claims items, recovers stale claims, and revalidates the live signal before Feishu send.
 - This removes model/search latency as a blocker for high-velocity Reply opportunity discovery.
+
+## Acquisition Pool Batch 2 / Adaptive Cadence — 2026-09-16
+
+- Direct-X creator configuration expanded to 90 total profiles / 81 enabled profiles.
+- Batch 2 adds Boris Cherny, Charlie Hills, Ado, 老鬼, 泊舟, Claude, OpenAI, Anthropic, Cognition, Cursor, Google DeepMind, Hugging Face, and Vercel.
+- Cadence was rebalanced from an overloaded 26.9 requested polls/min before Batch 2 to 18.83 requested polls/min after expansion, below the 24 polls/min theoretical stagger cap.
+- Configured cadence distribution: 1min×1, 2min×15, 4min×14, 6min×11, 8min×40.
+- Actual Reply outcome feedback now adapts effective cadence: +2 -> <=2min, +1 -> <=3min, negative mature evidence -> >=8min.

@@ -11,7 +11,7 @@ from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map, creator_acquisition_report
 from china_tech_x_radar.alerts import format_publish_packet
-from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, process_pending_alerts
+from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, _effective_poll_minutes, process_pending_alerts
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
@@ -61,6 +61,16 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(result["processed"],0)
             self.assertEqual(row["status"],"PENDING")
             self.assertEqual(row["error"],"channel_not_configured")
+
+    def test_creator_feedback_adapts_poll_cadence_conservatively(self):
+        source={"kind":"x_profile","handle":"candidate","poll_minutes":8}
+        self.assertEqual(_effective_poll_minutes(source,{}),8)
+        self.assertEqual(_effective_poll_minutes(source,{"candidate":{"score":1}}),3)
+        self.assertEqual(_effective_poll_minutes(source,{"candidate":{"score":2}}),2)
+        fast={"kind":"x_profile","handle":"candidate","poll_minutes":2}
+        self.assertEqual(_effective_poll_minutes(fast,{"candidate":{"score":-1}}),8)
+        rss={"kind":"rss","poll_minutes":5}
+        self.assertEqual(_effective_poll_minutes(rss,{"candidate":{"score":2}}),5)
 
     def test_x_profile_due_work_is_bounded_and_oldest_first(self):
         due = [

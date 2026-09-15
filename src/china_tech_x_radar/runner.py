@@ -546,6 +546,22 @@ def process_pending_alerts(
             result["errors"] += 1
     return result
 
+
+def _effective_poll_minutes(source: dict[str, Any], creator_feedback: dict[str, dict[str, Any]]) -> int:
+    base = max(1, int(source.get("poll_minutes", 5)))
+    if source.get("kind") != "x_profile":
+        return base
+    creator = _normalize_target_creator(source.get("handle"))
+    fb = creator_feedback.get(creator, {})
+    score = int(fb.get("score", 0))
+    if score >= 2:
+        return min(base, 2)
+    if score >= 1:
+        return min(base, 3)
+    if score < 0:
+        return max(base, 8)
+    return base
+
 def _limit_due_x_profiles(
     due: list[tuple[dict[str, Any], dict[str, Any] | None, bool]], max_x_profiles: int
 ) -> tuple[list[tuple[dict[str, Any], dict[str, Any] | None, bool]], int]:
@@ -579,11 +595,15 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
     }
 
     try:
+        creator_feedback = build_creator_feedback_map(
+            con, min_samples=int(rules.get("creator_feedback_min_samples", 3))
+        )
         due: list[tuple[dict[str, Any], dict[str, Any] | None, bool]] = []
         for source in sources:
             source_id = source["id"]
             state = get_source_state(con, source_id)
-            if not source_due(state, int(source.get("poll_minutes", 5)), now):
+            poll_minutes = _effective_poll_minutes(source, creator_feedback)
+            if not source_due(state, poll_minutes, now):
                 continue
             due.append((source, state, bool(state and state.get("last_success_at"))))
         due, x_deferred = _limit_due_x_profiles(due, int(rules.get("max_x_profiles_per_cycle", 6)))
@@ -602,11 +622,6 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         fetched.append((source, state, initialized_before, future.result(), None))
                     except Exception as exc:
                         fetched.append((source, state, initialized_before, None, exc))
-
-        # Outcome feedback is a small, conservative prior; it never bypasses topical/editorial relevance.
-        creator_feedback = build_creator_feedback_map(
-            con, min_samples=int(rules.get("creator_feedback_min_samples", 3))
-        )
 
         # Network I/O above is parallel; all SQLite writes remain serialized on this thread.
         for source, state, initialized_before, fetched_result, fetch_error in fetched:

@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.4 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.5 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -83,3 +83,7 @@ Do not stop at publication. Automatically collect public post outcomes and follo
 ## 11. Creator Acquisition Review
 
 Use the `creator_acquisition` report to expand and prune the monitored pool. Prefer creators where Kenny's Replies repeatedly earn distribution; before three Reply samples exist, use recent parent-post reach and technical audience fit only as provisional evidence. Never optimize the pool on follower count alone.
+
+## 12. Runtime Isolation
+
+Treat Collector health and Editorial Worker health separately. A slow/erroring editorial call is not allowed to stop source polling. Collector creates and refreshes opportunities; Editorial consumes them asynchronously from SQLite.

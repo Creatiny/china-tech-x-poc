@@ -398,6 +398,154 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
 
 
 
+
+def process_pending_alerts(
+    con: sqlite3.Connection,
+    root: Path,
+    *,
+    max_alerts: int | None = None,
+) -> dict[str, Any]:
+    """Consume the editorial queue without performing any source discovery.
+
+    This is deliberately separated from the collector so slow model/search work can never delay
+    the 15-second signal polling loop.
+    """
+    rules = load_toml(root / "config" / "rules.toml")
+    limit = int(max_alerts if max_alerts is not None else rules.get("max_alerts_per_cycle", 3))
+    result: dict[str, Any] = {
+        "processed": 0, "sent": 0, "skipped": 0, "held": 0, "errors": 0,
+        "recovered_stale_processing": 0,
+    }
+
+    # Crash recovery for a worker that died after claiming an item. Normal model calls are bounded
+    # below this window, so ten minutes is safely beyond expected processing time.
+    stale_before = iso(datetime.now(timezone.utc) - timedelta(minutes=10))
+    cur = con.execute(
+        """UPDATE alert SET status='PENDING',editorial_status=NULL,error='recovered_stale_editorial_processing'
+             WHERE status='EDITORIAL_PROCESSING' AND editorial_at IS NOT NULL AND editorial_at<?""",
+        (stale_before,),
+    )
+    result["recovered_stale_processing"] = int(cur.rowcount or 0)
+    con.commit()
+
+    pending = con.execute(
+        """
+        SELECT a.id AS alert_id, s.*
+        FROM alert a JOIN signal s ON s.id=a.signal_id
+        WHERE a.status='PENDING'
+        ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
+                 CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
+                 s.distribution_score DESC, s.feedback_score DESC, s.view_velocity_per_min DESC,
+                 s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
+        LIMIT ?
+        """,
+        (max(1, limit),),
+    ).fetchall()
+    if not pending:
+        return result
+
+    sender = FeishuSender()
+    if not sender.available():
+        for row in pending:
+            con.execute("UPDATE alert SET error=? WHERE id=? AND status='PENDING'", ("channel_not_configured", row["alert_id"]))
+        con.commit()
+        result["channel_available"] = False
+        return result
+    result["channel_available"] = True
+    editorial_cfg = load_editorial_config(root)
+
+    for row in pending:
+        claim_at = iso()
+        claimed = con.execute(
+            """UPDATE alert SET status='EDITORIAL_PROCESSING',editorial_status='PROCESSING',editorial_at=?,error=NULL
+                 WHERE id=? AND status='PENDING'""",
+            (claim_at, row["alert_id"]),
+        )
+        con.commit()
+        if not claimed.rowcount:
+            continue
+        result["processed"] += 1
+        signal = dict(row)
+        try:
+            packet = enrich_signal(con, root, signal)
+
+            # Collector may have refreshed the live target while the model was working. Re-read the
+            # signal before any send so a target that has aged out cannot leak through the queue.
+            live = con.execute(
+                """SELECT a.id AS alert_id,a.status AS current_alert_status,s.*
+                     FROM alert a JOIN signal s ON s.id=a.signal_id WHERE a.id=?""",
+                (signal["alert_id"],),
+            ).fetchone()
+            if not live or str(live["current_alert_status"] or "") != "EDITORIAL_PROCESSING":
+                continue
+            live_signal = dict(live)
+            if str(live_signal.get("priority") or "").upper() not in {"P0", "P1"}:
+                con.execute(
+                    """UPDATE alert SET status='EXPIRED',editorial_status='HOLD',error=?
+                         WHERE id=? AND status='EDITORIAL_PROCESSING'""",
+                    (f"signal_no_longer_qualified:{live_signal.get('priority')}", signal["alert_id"]),
+                )
+                con.commit()
+                result["held"] += 1
+                continue
+
+            decision = str(packet.get("decision") or "SKIP").upper()
+            editorial_now = iso()
+            if decision == "SKIP":
+                con.execute(
+                    """UPDATE alert SET status='EDITORIAL_SKIP', editorial_status='SKIP', editorial_packet_json=?,
+                       editorial_at=?, editorial_model=?, error=NULL
+                       WHERE id=? AND status='EDITORIAL_PROCESSING'""",
+                    (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), signal["alert_id"]),
+                )
+                con.commit()
+                result["skipped"] += 1
+                continue
+
+            allowed, policy_reason = notification_policy(con, live_signal, packet, editorial_cfg)
+            packet["notification_policy"] = policy_reason
+            if not allowed:
+                con.execute(
+                    """UPDATE alert SET status='EDITORIAL_HOLD', editorial_status='HOLD', editorial_packet_json=?,
+                       editorial_at=?, editorial_model=?, error=?
+                       WHERE id=? AND status='EDITORIAL_PROCESSING'""",
+                    (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), policy_reason, signal["alert_id"]),
+                )
+                con.commit()
+                result["held"] += 1
+                continue
+
+            asset = None
+            if bool(editorial_cfg.get("render_editorial_cards", True)):
+                try:
+                    asset = render_editorial_card(root, live_signal, packet)
+                except Exception as asset_exc:
+                    packet["asset_error"] = f"{type(asset_exc).__name__}: {asset_exc}"[:500]
+                    asset = None
+
+            text = format_publish_packet(live_signal, packet, has_asset=bool(asset))
+            receipt = sender.send_text(text)
+            if asset:
+                sender.send_image(asset)
+            con.execute(
+                """UPDATE alert SET status='SENT',sent_at=?,channel='feishu',receipt_id=?,error=NULL,
+                   editorial_status='READY', editorial_packet_json=?, editorial_at=?, editorial_model=?, asset_path=?
+                   WHERE id=? AND status='EDITORIAL_PROCESSING'""",
+                (iso(), receipt, json.dumps(packet, ensure_ascii=False), editorial_now,
+                 str(editorial_cfg.get("model") or "codex"), str(asset) if asset else None, signal["alert_id"]),
+            )
+            con.commit()
+            result["sent"] += 1
+        except Exception as exc:
+            con.execute(
+                """UPDATE alert SET status='EDITORIAL_ERROR', editorial_status='ERROR', editorial_at=?, error=?
+                     WHERE id=? AND status='EDITORIAL_PROCESSING'""",
+                (iso(), f"{type(exc).__name__}: {exc}"[:1000], signal["alert_id"]),
+            )
+            con.commit()
+            result["errors"] += 1
+    return result
+
 def _limit_due_x_profiles(
     due: list[tuple[dict[str, Any], dict[str, Any] | None, bool]], max_x_profiles: int
 ) -> tuple[list[tuple[dict[str, Any], dict[str, Any] | None, bool]], int]:
@@ -567,81 +715,11 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                 save_source_state(con, source_id, success=False, error=msg)
                 counters["source_errors"].append({"source_id": source_id, "error": msg})
 
-        sender = FeishuSender()
-        max_alerts = int(rules.get("max_alerts_per_cycle", 3))
-        pending = con.execute(
-            """
-            SELECT a.id AS alert_id, s.*
-            FROM alert a JOIN signal s ON s.id=a.signal_id
-            WHERE a.status='PENDING'
-            ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
-                     CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
-                     s.distribution_score DESC, s.feedback_score DESC, s.view_velocity_per_min DESC,
-                     s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
-            LIMIT ?
-            """,
-            (max_alerts,),
-        ).fetchall()
-        editorial_cfg = load_editorial_config(root)
-        for row in pending:
-            signal = dict(row)
-            if not send_alerts:
-                continue
-            if not sender.available():
-                con.execute("UPDATE alert SET error=? WHERE id=?", ("channel_not_configured", signal["alert_id"]))
-                con.commit()
-                continue
-            try:
-                packet = enrich_signal(con, root, signal)
-                decision = str(packet.get("decision") or "SKIP").upper()
-                editorial_now = iso()
-                if decision == "SKIP":
-                    con.execute(
-                        """UPDATE alert SET status='EDITORIAL_SKIP', editorial_status='SKIP', editorial_packet_json=?,
-                           editorial_at=?, editorial_model=?, error=NULL WHERE id=?""",
-                        (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), signal["alert_id"]),
-                    )
-                    con.commit()
-                    continue
-
-                allowed, policy_reason = notification_policy(con, signal, packet, editorial_cfg)
-                packet["notification_policy"] = policy_reason
-                if not allowed:
-                    con.execute(
-                        """UPDATE alert SET status='EDITORIAL_HOLD', editorial_status='HOLD', editorial_packet_json=?,
-                           editorial_at=?, editorial_model=?, error=? WHERE id=?""",
-                        (json.dumps(packet, ensure_ascii=False), editorial_now, str(editorial_cfg.get("model") or "codex"), policy_reason, signal["alert_id"]),
-                    )
-                    con.commit()
-                    continue
-
-                asset = None
-                if bool(editorial_cfg.get("render_editorial_cards", True)):
-                    try:
-                        asset = render_editorial_card(root, signal, packet)
-                    except Exception as asset_exc:
-                        packet["asset_error"] = f"{type(asset_exc).__name__}: {asset_exc}"[:500]
-                        asset = None
-
-                text = format_publish_packet(signal, packet, has_asset=bool(asset))
-                receipt = sender.send_text(text)
-                if asset:
-                    sender.send_image(asset)
-                con.execute(
-                    """UPDATE alert SET status='SENT',sent_at=?,channel='feishu',receipt_id=?,error=NULL,
-                       editorial_status='READY', editorial_packet_json=?, editorial_at=?, editorial_model=?, asset_path=?
-                       WHERE id=?""",
-                    (iso(), receipt, json.dumps(packet, ensure_ascii=False), editorial_now,
-                     str(editorial_cfg.get("model") or "codex"), str(asset) if asset else None, signal["alert_id"]),
-                )
-                con.commit()
-                counters["alerts_sent"] += 1
-            except Exception as exc:
-                con.execute(
-                    "UPDATE alert SET status='EDITORIAL_ERROR', editorial_status='ERROR', editorial_at=?, error=? WHERE id=?",
-                    (iso(), f"{type(exc).__name__}: {exc}"[:1000], signal["alert_id"]),
-                )
-                con.commit()
+        if send_alerts:
+            editorial_result = process_pending_alerts(
+                con, root, max_alerts=int(rules.get("max_alerts_per_cycle", 3))
+            )
+            counters["alerts_sent"] += int(editorial_result.get("sent", 0))
 
         # Post-publication tracking is secondary to discovery/alerts. Keep it cheap and run it last.
         reconcile_sent_replies(con, max_items=1)

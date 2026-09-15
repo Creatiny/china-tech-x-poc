@@ -11,7 +11,7 @@ from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map, creator_acquisition_report
 from china_tech_x_radar.alerts import format_publish_packet
-from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles
+from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, process_pending_alerts
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
@@ -37,6 +37,30 @@ class CoreTests(unittest.TestCase):
         raw = b'followers:26,following:118,foo:1,screenName:"KennyChinaTech",tweets:174'
         exact = parse_x_profile_stats_html(raw, "KennyChinaTech")
         self.assertEqual(exact["tweets"], 174)
+
+    def test_editorial_worker_recovers_stale_claim_without_source_polling(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "editorial.db")
+            old = "2026-09-15T00:00:00Z"
+            cur = con.execute(
+                "INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                ("e"*64,"x_test","T","x_profile","Agent test","@a",old,"P1",8,"r",old),
+            )
+            sid=cur.lastrowid
+            con.execute(
+                "INSERT INTO alert(signal_id,priority,created_at,status,editorial_status,editorial_at) VALUES(?,?,?,?,?,?)",
+                (sid,"P1",old,"EDITORIAL_PROCESSING","PROCESSING",old),
+            )
+            con.commit()
+            root=Path(__file__).resolve().parents[1]
+            with patch("china_tech_x_radar.runner.FeishuSender.available", return_value=False):
+                result=process_pending_alerts(con,root,max_alerts=1)
+            row=con.execute("select status,error from alert where signal_id=?",(sid,)).fetchone()
+            self.assertEqual(result["recovered_stale_processing"],1)
+            self.assertEqual(result["processed"],0)
+            self.assertEqual(row["status"],"PENDING")
+            self.assertEqual(row["error"],"channel_not_configured")
 
     def test_x_profile_due_work_is_bounded_and_oldest_first(self):
         due = [

@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.4
+- `PROJECT_SPEC.md` v3.5
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -96,3 +96,10 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Quiet posts can graduate into P1/P0 when they begin to break out; only signals without a prior editorial decision create a new alert.
 - Pending live opportunities expire automatically when the target ages/drops below qualification.
 - AI-product vocabulary now explicitly covers OpenAI, Anthropic, Claude, Codex, AgentKit, Cursor, Devin, Hermes, harnesses and subagents; highly curated creators may add narrow source-specific vocabulary such as Matt Pocock's `/retro`/lint/CI workflow terms and Matt Shumer's Astra/Fable terms.
+
+## Realtime Worker Isolation — 2026-09-16
+
+- Realtime Collector and Editorial Worker are now independent launchd loops.
+- Collector runs every 15 seconds and never waits for model/editorial work.
+- Editorial Worker consumes the SQLite PENDING queue independently, atomically claims items, recovers stale claims, and revalidates the live signal before Feishu send.
+- This removes model/search latency as a blocker for high-velocity Reply opportunity discovery.

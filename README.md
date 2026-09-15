@@ -6,7 +6,7 @@ This repository is the canonical product, experiment, and operating definition f
 
 ## Single Source of Truth
 
-`PROJECT_SPEC.md` v3.4 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
+`PROJECT_SPEC.md` v3.5 is the top-level product and operating authority. `00_Governance/CANONICAL_INDEX.md` defines document precedence.
 
 ## North Star
 
@@ -32,20 +32,24 @@ The approved pre-validation architecture is:
 Free RSS/Atom + GitHub + verified free sources
                     |
                     v
-         Python polling cycle (5 min)
+       Collector launchd (15 sec)
                     |
                     v
-            SQLite + exact dedupe
+ SQLite + exact dedupe + live metric refresh
                     |
                     v
-       deterministic relevance rules
+ relevance + Distribution Opportunity
                     |
                     v
-   ChatGPT OAuth/Codex editorial gate
-       POST / REPLY / silent SKIP
+          PENDING editorial queue
                     |
-                    v
-      personal Feishu publish packet
+                    +--------------------+
+                                         v
+                           Editorial Worker launchd
+                           ChatGPT/Codex gate + humanizer
+                                         |
+                                         v
+                            personal Feishu publish packet
                     |
                     v
       human X search / reply / publish
@@ -72,7 +76,7 @@ See `artifacts/fact-audit/MAC_MINI_FACT_AUDIT.md` for evidence.
 
 ## Active Canonical
 
-- Single source of truth: `PROJECT_SPEC.md` v3.4
+- Single source of truth: `PROJECT_SPEC.md` v3.5
 - Execution plan: `EXECUTION_PLAN.md` v2.0
 - Canonical precedence: `00_Governance/CANONICAL_INDEX.md`
 - KPI: `00_Governance/OPERATING_KPI.md` v4.0

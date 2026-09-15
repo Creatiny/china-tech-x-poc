@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.4
+# China Tech X POC — Canonical Project Spec v3.5
 
 ## 0. Authority
 
@@ -562,3 +562,35 @@ Creator expansion should continuously explore adjacent communities around proven
 - primary technical accounts and high-signal technical synthesis accounts.
 
 Avoid engagement farms, generic AI-tool spam, side-hustle accounts, finance/ticker accounts, and broad viral accounts with weak target-audience overlap even when their raw views are high.
+
+## 30. Collector / Editorial Worker Isolation
+
+Realtime discovery and slow editorial reasoning are separate production loops. A model search, capacity delay, humanizer pass, or Feishu delivery attempt must never block direct-X polling.
+
+Production topology:
+
+```text
+Collector (15s launchd)
+  -> fetch / refresh live sources
+  -> classify + Distribution Opportunity
+  -> create/expire PENDING alerts
+  -> outcome/account snapshots
+  -> SQLite WAL
+
+Editorial Worker (15s launchd, non-overlapping per worker)
+  -> atomically claim PENDING alert
+  -> editorial gate / verification / humanizer
+  -> re-read live signal before send
+  -> SENT / SKIP / HOLD / ERROR
+  -> Feishu
+```
+
+Hard rules:
+
+- Collector runs with no publishing/notification work and must remain independent of model latency.
+- Editorial Worker performs no source discovery.
+- Claim state is `EDITORIAL_PROCESSING`; two workers must not process the same alert.
+- A processing claim older than ten minutes is recoverable back to `PENDING`.
+- Before notification, Editorial Worker re-reads the current signal. If Collector has downgraded it below P0/P1, it expires rather than sending stale advice.
+- SQLite WAL and busy timeout remain the shared-state coordination mechanism.
+- Manual integrated `run` may remain available for diagnostics, but production launchd uses the isolated collector and editorial commands.

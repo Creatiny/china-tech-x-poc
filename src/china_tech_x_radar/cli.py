@@ -11,7 +11,7 @@ from .db import connect, iso
 from .kpi import build_review
 from .formula import build_formula_report
 from .editorial import model_usage_today
-from .runner import run_cycle
+from .runner import run_cycle, process_pending_alerts
 
 
 def project_root() -> Path:
@@ -37,6 +37,14 @@ def cmd_run(args: argparse.Namespace) -> int:
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
+
+
+def cmd_editorial(args: argparse.Namespace) -> int:
+    root = project_root()
+    con = connect(db_path(root))
+    result = process_pending_alerts(con, root, max_alerts=args.max_alerts)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
 
 def cmd_status(args: argparse.Namespace) -> int:
     root = project_root()
@@ -292,6 +300,10 @@ def build_parser() -> argparse.ArgumentParser:
     x = sub.add_parser("run")
     x.add_argument("--no-send", action="store_true")
     x.set_defaults(func=cmd_run)
+
+    x = sub.add_parser("editorial")
+    x.add_argument("--max-alerts", type=int)
+    x.set_defaults(func=cmd_editorial)
 
     x = sub.add_parser("status")
     x.set_defaults(func=cmd_status)

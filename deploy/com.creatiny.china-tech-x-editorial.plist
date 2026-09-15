@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.creatiny.china-tech-x-editorial</string>
+  <key>ProgramArguments</key><array><string>/Users/jh/services/china-tech-x-radar/scripts/run_editorial.sh</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>15</integer>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/Users/jh/services/china-tech-x-radar/runtime/editorial.stdout.log</string>
+  <key>StandardErrorPath</key><string>/Users/jh/services/china-tech-x-radar/runtime/editorial.stderr.log</string>
+  <key>WorkingDirectory</key><string>/Users/jh/services/china-tech-x-radar</string>
+</dict></plist>

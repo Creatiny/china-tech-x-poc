@@ -72,6 +72,12 @@ class CoreTests(unittest.TestCase):
         rss={"kind":"rss","poll_minutes":5}
         self.assertEqual(_effective_poll_minutes(rss,{"candidate":{"score":2}}),5)
 
+    def test_collector_bootstrap_has_project_proxy_fallback(self):
+        root=Path(__file__).resolve().parents[1]
+        for rel in ("scripts/run_collector.sh", "scripts/run_cycle.sh"):
+            text=(root/rel).read_text(encoding="utf-8")
+            self.assertIn('CHINA_TECH_HTTP_PROXY="${CHINA_TECH_HTTP_PROXY:-http://127.0.0.1:7890}"', text)
+
     def test_x_profile_due_work_is_bounded_and_oldest_first(self):
         due = [
             ({"id":"rss","kind":"rss"}, {"last_success_at":"2026-09-16T00:00:00Z"}, True),

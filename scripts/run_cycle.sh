@@ -10,6 +10,8 @@ if [[ -f "$HOME/.china-tech-x-radar.env" ]]; then
 fi
 export CHINA_TECH_RADAR_ROOT="$ROOT"
 export CHINA_TECH_RADAR_DB="${CHINA_TECH_RADAR_DB:-$ROOT/runtime/china-tech-x.db}"
+# X and other external discovery are not directly reachable from this host; keep the project proxy explicit.
+export CHINA_TECH_HTTP_PROXY="${CHINA_TECH_HTTP_PROXY:-http://127.0.0.1:7890}"
 if [[ "${CHINA_TECH_FORCE_NO_SEND:-0}" == "1" ]]; then
   exec "$ROOT/.venv/bin/china-tech-x-radar" run --no-send
 elif [[ "${CHINA_TECH_ALERTS_ENABLED:-0}" == "1" ]]; then

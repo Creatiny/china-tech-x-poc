@@ -111,3 +111,4 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Cadence was rebalanced from an overloaded 26.9 requested polls/min before Batch 2 to 18.83 requested polls/min after expansion, below the 24 polls/min theoretical stagger cap.
 - Configured cadence distribution: 1min×1, 2min×15, 4min×14, 6min×11, 8min×40.
 - Actual Reply outcome feedback now adapts effective cadence: +2 -> <=2min, +1 -> <=3min, negative mature evidence -> >=8min.
+- Collector bootstrap now defaults `CHINA_TECH_HTTP_PROXY=http://127.0.0.1:7890` when not explicitly supplied, preventing LaunchAgent replacement from silently falling back to unreachable direct X access.

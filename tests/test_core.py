@@ -325,6 +325,27 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(gate["status"], "GREEN_GROWTH_CONTINUE")
 
 
+    def test_creator_acquisition_report_includes_surface_metrics(self):
+        with tempfile.TemporaryDirectory() as d:
+            con=connect(Path(d)/"acq.db")
+            now=iso()
+            rec={
+                "fingerprint":"s"*64,"source_id":"x_surface","source_name":"S","source_kind":"x_profile",
+                "canonical_url":"https://x.com/surface/status/1","title":"AI agent","excerpt":"agent",
+                "author":"@surface","published_at":now,"discovered_at":now,"priority":"P1","score":8,
+                "distribution_score":7,"observed_views":12000,"view_velocity_per_min":100.0,"engagement_rate":0.02,
+                "reply_surface_score":6,"reply_competition_known":1,"observed_replies":3,"observed_quotes":1,
+                "views_per_reply":3000.0,"reply_acquisition_score":13,"feedback_score":0,"feedback_samples":0,
+                "feedback_growth_days":0,"feedback_follower_gain":0,"reason":"r","topic":"agent",
+                "x_search_url":"https://x.com/surface/status/1","target_mode":"VERIFIED_X_TARGET",
+                "suggested_angle":"a","raw_json":"{}","created_at":now,
+            }
+            insert_signal(con,rec)
+            row=next(x for x in creator_acquisition_report(con) if x["creator"]=="surface")
+            self.assertEqual(row["median_reply_surface_score"],6.0)
+            self.assertEqual(row["median_reply_acquisition_score"],13.0)
+            self.assertEqual(row["median_views_per_reply"],3000.0)
+
     def test_creator_feedback_requires_three_samples(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "feedback.db")

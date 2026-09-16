@@ -302,7 +302,8 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
     cutoff = datetime.now(timezone.utc).timestamp() - max(1, int(days)) * 86400
     cutoff_iso = datetime.fromtimestamp(cutoff, tz=timezone.utc).isoformat().replace("+00:00", "Z")
     rows = con.execute(
-        """SELECT source_id,author,priority,observed_views,distribution_score,view_velocity_per_min,discovered_at
+        """SELECT source_id,author,priority,observed_views,distribution_score,reply_surface_score,reply_acquisition_score,
+                      observed_replies,views_per_reply,view_velocity_per_min,discovered_at
                FROM signal
               WHERE source_kind='x_profile' AND discovered_at>=?
               ORDER BY discovered_at DESC""",
@@ -321,7 +322,7 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
         dist = [int(x.get("distribution_score") or 0) for x in items]
         velocities = [float(x.get("view_velocity_per_min") or 0) for x in items if float(x.get("view_velocity_per_min") or 0) > 0]
         surfaces = [int(x.get("reply_surface_score") or 0) for x in items if x.get("observed_replies") is not None]
-        acquisitions = [int(x.get("reply_acquisition_score") or 0) for x in items]
+        acquisitions = [int(x.get("reply_acquisition_score") or 0) for x in items if int(x.get("reply_acquisition_score") or 0) > 0]
         vprs = [float(x.get("views_per_reply")) for x in items if x.get("views_per_reply") is not None]
         fb = feedback.get(creator, {})
         out.append({
@@ -347,6 +348,8 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
         key=lambda x: (
             x["feedback_score"],
             x["median_reply_impressions"] if x["median_reply_impressions"] is not None else -1,
+            x["median_reply_acquisition_score"] if x["median_reply_acquisition_score"] is not None else -1,
+            x["median_views_per_reply"] if x["median_views_per_reply"] is not None else -1,
             x["median_parent_views"] if x["median_parent_views"] is not None else -1,
             x["qualified_p0_p1"],
         ),

@@ -45,6 +45,18 @@ def age_bucket(minutes: float | None) -> str:
     return "GT_6H"
 
 
+
+def reply_surface_bucket(score: int | None, views_per_reply: float | None) -> str:
+    if score is None and views_per_reply is None:
+        return "UNKNOWN"
+    score_i = int(score or 0)
+    vpr = float(views_per_reply or 0.0)
+    if score_i >= 6 or vpr >= 3000:
+        return "OPEN"
+    if score_i >= 3 or vpr >= 300:
+        return "MODERATE"
+    return "CROWDED"
+
 def latest_action_rows(con: sqlite3.Connection) -> list[dict[str, Any]]:
     rows = con.execute(
         """
@@ -64,6 +76,9 @@ def latest_action_rows(con: sqlite3.Connection) -> list[dict[str, Any]]:
         d=dict(r)
         d["target_tier"] = follower_tier(d.get("target_account_followers"))
         d["target_age_bucket"] = age_bucket(d.get("target_post_age_minutes"))
+        d["reply_surface_bucket"] = reply_surface_bucket(
+            d.get("target_reply_surface_score_at_reply"), d.get("target_views_per_reply_at_reply")
+        )
         imp=d.get("impressions")
         eng=d.get("engagements")
         d["engagement_rate"] = (float(eng)/float(imp)) if imp and eng is not None else None
@@ -341,7 +356,7 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
 def build_formula_report(con: sqlite3.Connection, min_samples: int = 2) -> dict[str, Any]:
     rows=latest_action_rows(con)
     dimensions={}
-    for key in ["action_type","event_type","signal_topic","target_account","target_tier","target_age_bucket","angle_type","hook_type","media_type","has_external_link"]:
+    for key in ["action_type","event_type","signal_topic","target_account","target_tier","target_age_bucket","reply_surface_bucket","angle_type","hook_type","media_type","has_external_link"]:
         dimensions[key]=group_dimension(rows,key)
     combos=combo_report(rows,min_samples=min_samples)
     total=_summary(rows)
@@ -356,5 +371,5 @@ def build_formula_report(con: sqlite3.Connection, min_samples: int = 2) -> dict[
         "daily_follower_cohorts": cohorts[-30:],
         "follower_positive_patterns": positive_patterns,
         "creator_acquisition": creator_acquisition[:50],
-        "rule": "Do not declare a growth formula from one breakout post. Prefer combinations with >=3 samples; >=5 is stronger evidence. Follower causality is evaluated at day/cohort level using account snapshots, not falsely attributed to one overlapping action.",
+        "rule": "Do not declare a growth formula from one breakout post. Prefer combinations with >=3 samples; >=5 is stronger evidence. Follower causality is evaluated at day/cohort level using account snapshots, not falsely attributed to one overlapping action. Reply-surface buckets become actionable only after enough published replies have parent competition snapshots.",
     }

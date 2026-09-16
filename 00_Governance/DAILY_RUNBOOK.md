@@ -95,3 +95,7 @@ Keep total creator polling demand below collector capacity. High-reach/proven cr
 ## 14. Reply Surface Review
 
 For Reply acquisition, do not judge a target by parent views alone. Prefer high Reply Acquisition Score: live distribution plus an open reply surface plus proven creator feedback. Treat missing reply counts as unknown. Keep the editorial-value gate unchanged.
+
+## 15. Canonical Runtime State
+
+Production Collector, Editorial Worker, daily review, manual integrated diagnostics, and local reporting must all use the same service runtime SQLite database. Never create or point production at a second `china-tech-x.db`.

@@ -120,3 +120,10 @@ Recent account analysis showed replies can obtain materially more impressions th
 - New Reply Acquisition Score combines Distribution + Reply Surface + conservative Creator Feedback and is now the first ranking dimension among comparable verified-X opportunities.
 - Missing public reply counts remain unknown/neutral instead of being treated as zero replies.
 - Manual and automatically reconciled published Replies both snapshot parent views/replies/quotes/views-per-reply/surface score for later outcome learning.
+
+## Canonical Runtime Database — 2026-09-16
+
+- The only production SQLite database is `/Users/jh/services/china-tech-x-radar/runtime/china-tech-x.db`.
+- The development repository runtime path is a local symlink to the same database; it must not become a second live state store.
+- Production launcher scripts now fail closed if a local environment override points `CHINA_TECH_RADAR_DB` anywhere else.
+- Reply outcome formula reports now include `reply_surface_bucket` (`OPEN` / `MODERATE` / `CROWDED` / `UNKNOWN`) so future mature samples can test whether open reply surfaces actually increase Kenny impressions.

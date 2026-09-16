@@ -9,7 +9,7 @@ from china_tech_x_radar.classify import classify, distribution_opportunity, repl
 from china_tech_x_radar.db import connect, insert_signal, update_signal_observation, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
-from china_tech_x_radar.formula import age_bucket, follower_tier, build_formula_report, build_creator_feedback_map, creator_acquisition_report
+from china_tech_x_radar.formula import age_bucket, follower_tier, reply_surface_bucket, build_formula_report, build_creator_feedback_map, creator_acquisition_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, _effective_poll_minutes, process_pending_alerts
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
@@ -358,6 +358,20 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(latest['raw_follower_delta_since_previous_snapshot'],22)
             self.assertIsNone(latest['follower_delta'])
             self.assertFalse(latest['follower_attribution_eligible'])
+
+    def test_reply_surface_bucket_for_outcome_learning(self):
+        self.assertEqual(reply_surface_bucket(None,None),"UNKNOWN")
+        self.assertEqual(reply_surface_bucket(6,800),"OPEN")
+        self.assertEqual(reply_surface_bucket(4,500),"MODERATE")
+        self.assertEqual(reply_surface_bucket(1,80),"CROWDED")
+        self.assertEqual(reply_surface_bucket(2,5000),"OPEN")
+
+    def test_production_scripts_refuse_second_runtime_database(self):
+        root=Path(__file__).resolve().parents[1]
+        for rel in ("scripts/run_collector.sh","scripts/run_editorial.sh","scripts/run_cycle.sh","scripts/daily_review.sh"):
+            text=(root/rel).read_text(encoding="utf-8")
+            self.assertIn("refusing_noncanonical_production_db",text)
+            self.assertIn('CANONICAL_DB="$ROOT/runtime/china-tech-x.db"',text)
 
     def test_growth_formula_buckets_and_repeated_combo(self):
         self.assertEqual(age_bucket(8), "0_10M")

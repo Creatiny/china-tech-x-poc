@@ -9,6 +9,7 @@ max_alerts_per_cycle = 3
 # Direct-X distribution opportunity gate. Relevance still has to pass first.
 # Fresh posts get a brief grace window so we do not wait for virality before joining a conversation.
 x_distribution_min_score = 6
+x_reply_acquisition_min_score = 10
 x_early_grace_minutes = 5
 x_early_grace_base_score = 7
 x_breakout_p0_distribution_score = 10

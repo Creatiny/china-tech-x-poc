@@ -71,7 +71,8 @@ def cmd_list(args: argparse.Namespace) -> int:
     rows = con.execute(
         """
         SELECT s.id,s.priority,s.title,s.source_name,s.published_at,s.discovered_at,s.score,s.distribution_score,
-               s.observed_views,s.view_velocity_per_min,s.engagement_rate,s.feedback_score,s.feedback_samples,
+               s.observed_views,s.view_velocity_per_min,s.engagement_rate,s.reply_surface_score,s.reply_competition_known,
+               s.observed_replies,s.observed_quotes,s.views_per_reply,s.reply_acquisition_score,s.feedback_score,s.feedback_samples,
                s.feedback_median_impressions,s.feedback_growth_days,s.feedback_follower_gain,
                s.reason,s.canonical_url,s.x_search_url,
                a.status AS alert_status,a.sent_at
@@ -121,26 +122,37 @@ def cmd_decide(args: argparse.Namespace) -> int:
                 target_post_age_minutes = max(0.0, (posted_dt - target_dt).total_seconds() / 60.0)
             except Exception:
                 target_post_age_minutes = None
+        target_post_impressions = args.target_post_impressions_at_reply if args.target_post_impressions_at_reply is not None else signal["observed_views"]
+        target_post_replies = args.target_post_replies_at_reply if args.target_post_replies_at_reply is not None else signal["observed_replies"]
+        target_post_quotes = args.target_post_quotes_at_reply if args.target_post_quotes_at_reply is not None else signal["observed_quotes"]
+        target_views_per_reply = args.target_views_per_reply_at_reply if args.target_views_per_reply_at_reply is not None else signal["views_per_reply"]
+        target_surface_score = args.target_reply_surface_score_at_reply if args.target_reply_surface_score_at_reply is not None else signal["reply_surface_score"]
         con.execute(
             """
             INSERT INTO published_action(
               signal_id,action_type,event_type,target_url,target_account,target_account_followers,
-              target_posted_at,target_post_age_minutes,target_post_impressions_at_reply,angle_type,hook_type,
+              target_posted_at,target_post_age_minutes,target_post_impressions_at_reply,target_post_replies_at_reply,
+              target_post_quotes_at_reply,target_views_per_reply_at_reply,target_reply_surface_score_at_reply,angle_type,hook_type,
               media_type,has_external_link,published_url,published_text,posted_at
-            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(published_url) DO UPDATE SET
               action_type=excluded.action_type,event_type=excluded.event_type,target_url=excluded.target_url,
               target_account=excluded.target_account,target_account_followers=excluded.target_account_followers,
               target_posted_at=excluded.target_posted_at,target_post_age_minutes=excluded.target_post_age_minutes,
-              target_post_impressions_at_reply=excluded.target_post_impressions_at_reply,angle_type=excluded.angle_type,
+              target_post_impressions_at_reply=excluded.target_post_impressions_at_reply,
+              target_post_replies_at_reply=excluded.target_post_replies_at_reply,
+              target_post_quotes_at_reply=excluded.target_post_quotes_at_reply,
+              target_views_per_reply_at_reply=excluded.target_views_per_reply_at_reply,
+              target_reply_surface_score_at_reply=excluded.target_reply_surface_score_at_reply,angle_type=excluded.angle_type,
               hook_type=excluded.hook_type,media_type=excluded.media_type,has_external_link=excluded.has_external_link,
               published_text=excluded.published_text,posted_at=excluded.posted_at
             """,
             (
               args.signal_id,args.action_type.upper(),args.event_type.upper() if args.event_type else None,args.target_url,
               args.target_account,args.target_account_followers,args.target_posted_at,target_post_age_minutes,
-              args.target_post_impressions_at_reply,args.angle_type.upper() if args.angle_type else None,
-              args.hook_type.upper() if args.hook_type else None,args.media_type.upper(),1 if args.has_external_link else 0,
+              target_post_impressions,target_post_replies,target_post_quotes,target_views_per_reply,target_surface_score,
+              args.angle_type.upper() if args.angle_type else None,args.hook_type.upper() if args.hook_type else None,
+              args.media_type.upper(),1 if args.has_external_link else 0,
               args.published_url,args.published_text,posted_at,
             ),
         )
@@ -327,6 +339,10 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--target-posted-at")
     x.add_argument("--target-post-age-minutes", type=float)
     x.add_argument("--target-post-impressions-at-reply", type=int)
+    x.add_argument("--target-post-replies-at-reply", type=int)
+    x.add_argument("--target-post-quotes-at-reply", type=int)
+    x.add_argument("--target-views-per-reply-at-reply", type=float)
+    x.add_argument("--target-reply-surface-score-at-reply", type=int)
     x.add_argument("--angle-type", choices=["fact_add", "china_context", "comparison", "data_point", "contrarian", "global_implication", "technical_explanation", "question", "other"])
     x.add_argument("--hook-type", choices=["breaking", "number", "contrast", "why_it_matters", "thesis", "question", "none"], default="none")
     x.add_argument("--media-type", choices=["none", "image", "video", "chart"], default="none")

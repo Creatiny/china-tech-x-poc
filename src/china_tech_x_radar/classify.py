@@ -83,6 +83,61 @@ def distribution_opportunity(item: dict[str, Any], age_minutes: float) -> dict[s
     }
 
 
+
+def reply_surface_opportunity(item: dict[str, Any]) -> dict[str, float | int | None]:
+    """Estimate how much parent-post audience is available per competing direct reply.
+
+    Missing reply counts are treated as unknown/neutral, never as zero competition. The score is
+    intentionally bounded and complements (rather than replaces) distribution momentum.
+    """
+    metrics = item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+    views = _safe_metric(metrics, "views")
+    reply_known = "replies" in metrics and metrics.get("replies") is not None
+    quote_known = "quotes" in metrics and metrics.get("quotes") is not None
+    replies = _safe_metric(metrics, "replies") if reply_known else None
+    quotes = _safe_metric(metrics, "quotes") if quote_known else None
+    if not reply_known or views <= 0 or replies is None:
+        return {
+            "reply_surface_score": 0,
+            "reply_competition_known": 0,
+            "observed_replies": replies,
+            "observed_quotes": quotes,
+            "views_per_reply": None,
+        }
+
+    views_per_reply = float(views) / float(replies + 1)
+    if views_per_reply >= 10_000:
+        ratio_pts = 6
+    elif views_per_reply >= 3_000:
+        ratio_pts = 5
+    elif views_per_reply >= 1_000:
+        ratio_pts = 4
+    elif views_per_reply >= 300:
+        ratio_pts = 3
+    elif views_per_reply >= 100:
+        ratio_pts = 2
+    elif views_per_reply >= 30:
+        ratio_pts = 1
+    else:
+        ratio_pts = 0
+
+    low_competition_bonus = 2 if replies <= 2 and views >= 3_000 else 1 if replies <= 10 and views >= 1_000 else 0
+    saturation_penalty = 3 if replies >= 1_000 else 2 if replies >= 300 else 1 if replies >= 100 else 0
+    score = ratio_pts + low_competition_bonus - saturation_penalty
+    # Tiny threads should not look exceptional merely because nobody has replied yet.
+    if views < 300:
+        score = min(score, 1)
+    elif views < 1_000:
+        score = min(score, 2)
+    score = max(0, min(8, score))
+    return {
+        "reply_surface_score": int(score),
+        "reply_competition_known": 1,
+        "observed_replies": int(replies),
+        "observed_quotes": int(quotes) if quotes is not None else None,
+        "views_per_reply": round(views_per_reply, 1),
+    }
+
 def make_x_search_url(title: str, entity: str | None, topic: str | None) -> str:
     if entity and topic:
         q = f'"{entity}" {topic}'
@@ -132,6 +187,11 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     dist = distribution_opportunity(item, age) if direct_x_source else {
         "distribution_score": 0, "views": 0, "view_velocity_per_min": 0.0, "engagement_rate": 0.0, "interactions": 0
     }
+    surface = reply_surface_opportunity(item) if direct_x_source else {
+        "reply_surface_score": 0, "reply_competition_known": 0, "observed_replies": None,
+        "observed_quotes": None, "views_per_reply": None,
+    }
+    reply_acquisition_score = max(0, int(dist["distribution_score"]) + int(surface["reply_surface_score"]) + feedback_score) if direct_x_source else 0
 
     generic_entities = {"china", "chinese"}
     specific_entities = [e for e in entities if e.casefold() not in generic_entities]
@@ -164,11 +224,13 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         p0_min_score = int(source.get("p0_min_score", 7))
         p1_min_score = int(source.get("p1_min_score", 5))
         x_distribution_min = int(source.get("x_distribution_min_score", rules.get("x_distribution_min_score", 6)))
+        x_reply_acquisition_min = int(source.get("x_reply_acquisition_min_score", rules.get("x_reply_acquisition_min_score", 10)))
         x_early_grace_minutes = float(source.get("x_early_grace_minutes", rules.get("x_early_grace_minutes", 5)))
         x_early_grace_base_score = int(source.get("x_early_grace_base_score", rules.get("x_early_grace_base_score", 7)))
         distribution_ok = (
             not direct_x_source
             or int(dist["distribution_score"]) >= x_distribution_min
+            or reply_acquisition_score >= x_reply_acquisition_min
             or (age <= x_early_grace_minutes and score >= x_early_grace_base_score)
         )
         x_breakout_p0 = direct_x_source and int(dist["distribution_score"]) >= int(rules.get("x_breakout_p0_distribution_score", 10))
@@ -184,6 +246,10 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
                 f"dist={int(dist['distribution_score'])}",
                 f"views={int(dist['views'])}",
                 f"vel={float(dist['view_velocity_per_min']):.1f}/m",
+                f"surface={int(surface['reply_surface_score'])}",
+                f"replies={surface['observed_replies'] if surface['observed_replies'] is not None else 'unknown'}",
+                f"vpr={surface['views_per_reply'] if surface['views_per_reply'] is not None else 'unknown'}",
+                f"acq={reply_acquisition_score}",
                 f"feedback={feedback_score}/{feedback_samples}",
                 f"growthdays={feedback_growth_days}",
             ])
@@ -221,6 +287,12 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         "observed_views": int(dist["views"]),
         "view_velocity_per_min": float(dist["view_velocity_per_min"]),
         "engagement_rate": float(dist["engagement_rate"]),
+        "reply_surface_score": int(surface["reply_surface_score"]),
+        "reply_competition_known": int(surface["reply_competition_known"]),
+        "observed_replies": surface["observed_replies"],
+        "observed_quotes": surface["observed_quotes"],
+        "views_per_reply": surface["views_per_reply"],
+        "reply_acquisition_score": reply_acquisition_score,
         "feedback_score": feedback_score,
         "feedback_samples": feedback_samples,
         "feedback_median_impressions": feedback_median,

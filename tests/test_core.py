@@ -5,7 +5,7 @@ import unittest
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-from china_tech_x_radar.classify import classify, distribution_opportunity
+from china_tech_x_radar.classify import classify, distribution_opportunity, reply_surface_opportunity
 from china_tech_x_radar.db import connect, insert_signal, update_signal_observation, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
@@ -135,6 +135,42 @@ class CoreTests(unittest.TestCase):
         self.assertGreaterEqual(fast["distribution_score"], 10)
         self.assertGreater(fast["view_velocity_per_min"], slow["view_velocity_per_min"])
         self.assertGreater(fast["distribution_score"], slow["distribution_score"])
+
+    def test_reply_surface_prefers_open_thread_over_crowded_viral_thread(self):
+        open_thread = reply_surface_opportunity({"metrics":{"views":30000,"replies":10,"quotes":2}})
+        crowded = reply_surface_opportunity({"metrics":{"views":300000,"replies":3000,"quotes":200}})
+        self.assertEqual(open_thread["reply_competition_known"],1)
+        self.assertGreater(open_thread["reply_surface_score"], crowded["reply_surface_score"])
+        self.assertGreater(open_thread["views_per_reply"], crowded["views_per_reply"])
+        self.assertGreaterEqual(open_thread["reply_surface_score"],5)
+        self.assertEqual(crowded["reply_surface_score"],0)
+
+    def test_reply_surface_missing_reply_count_is_neutral_not_zero_competition(self):
+        surface = reply_surface_opportunity({"metrics":{"views":50000,"likes":1000}})
+        self.assertEqual(surface["reply_competition_known"],0)
+        self.assertEqual(surface["reply_surface_score"],0)
+        self.assertIsNone(surface["observed_replies"])
+        self.assertIsNone(surface["views_per_reply"])
+
+    def test_reply_acquisition_can_rescue_relevant_low_competition_post(self):
+        now=datetime.now(timezone.utc)
+        item={
+            "title":"AI agent workflow benchmark", "excerpt":"agent workflow",
+            "canonical_url":"https://x.com/a/status/99", "published_at":now-timedelta(minutes=120),
+            "metrics":{"views":3000,"replies":0,"quotes":0},
+        }
+        source={"kind":"x_profile","audience_focused":True,"source_weight":5,"p1_max_age_minutes":180}
+        rules={
+            "china_entities":[],"topic_terms":["ai","agent","benchmark"],"productivity_terms":["agent","workflow"],
+            "high_impact_terms":[],"noise_terms":[],"p0_max_age_minutes":30,"p1_max_age_minutes":360,
+            "max_candidate_age_minutes":1440,"x_distribution_min_score":6,"x_reply_acquisition_min_score":10,
+            "x_early_grace_minutes":5,"x_early_grace_base_score":7,"x_breakout_p0_distribution_score":10,
+        }
+        out=classify(item,source,rules,now=now)
+        self.assertLess(out["distribution_score"],6)
+        self.assertGreaterEqual(out["reply_surface_score"],5)
+        self.assertGreaterEqual(out["reply_acquisition_score"],10)
+        self.assertEqual(out["priority"],"P1")
 
     def test_named_ai_products_are_recognized_as_topics(self):
         now = datetime.now(timezone.utc)

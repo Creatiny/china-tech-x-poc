@@ -119,6 +119,12 @@ def format_publish_packet(signal: dict[str, Any], packet: dict[str, Any], *, has
         lines += [f"核心观点：{packet.get('core_position')}"]
     if decision == "REPLY":
         lines += [f"目标帖：{packet.get('target_url') or 'N/A'}", f"目标账号：{packet.get('target_account') or 'N/A'}"]
+        if int(signal.get("reply_competition_known") or 0):
+            lines += [
+                f"Reply窗口：父帖 {int(signal.get('observed_views') or 0):,} views｜{int(signal.get('observed_replies') or 0)} 条竞争回复｜约 {float(signal.get('views_per_reply') or 0):,.0f} views/回复｜Acquisition {int(signal.get('reply_acquisition_score') or 0)}",
+            ]
+        else:
+            lines += [f"Reply窗口：父帖 {int(signal.get('observed_views') or 0):,} views｜竞争回复数暂无公开数据｜Acquisition {int(signal.get('reply_acquisition_score') or 0)}"]
     lines += [
         "",
         "【最终文案｜直接复制】",

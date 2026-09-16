@@ -305,6 +305,9 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
         views = [int(x.get("observed_views") or 0) for x in items if int(x.get("observed_views") or 0) > 0]
         dist = [int(x.get("distribution_score") or 0) for x in items]
         velocities = [float(x.get("view_velocity_per_min") or 0) for x in items if float(x.get("view_velocity_per_min") or 0) > 0]
+        surfaces = [int(x.get("reply_surface_score") or 0) for x in items if x.get("observed_replies") is not None]
+        acquisitions = [int(x.get("reply_acquisition_score") or 0) for x in items]
+        vprs = [float(x.get("views_per_reply")) for x in items if x.get("views_per_reply") is not None]
         fb = feedback.get(creator, {})
         out.append({
             "creator": creator,
@@ -313,6 +316,9 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
             "median_parent_views": round(float(statistics.median(views)), 1) if views else None,
             "max_parent_views": max(views) if views else None,
             "median_distribution_score": round(float(statistics.median(dist)), 1) if dist else None,
+            "median_reply_surface_score": round(float(statistics.median(surfaces)), 1) if surfaces else None,
+            "median_reply_acquisition_score": round(float(statistics.median(acquisitions)), 1) if acquisitions else None,
+            "median_views_per_reply": round(float(statistics.median(vprs)), 1) if vprs else None,
             "median_view_velocity_per_min": round(float(statistics.median(velocities)), 2) if velocities else None,
             "reply_samples": int(fb.get("samples", 0)),
             "median_reply_impressions": fb.get("median_impressions"),

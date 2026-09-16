@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.6 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.7 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -91,3 +91,7 @@ Treat Collector health and Editorial Worker health separately. A slow/erroring e
 ## 13. Observation Budget
 
 Keep total creator polling demand below collector capacity. High-reach/proven creators get faster observation; the long-tail exploration pool is slower. Let mature Reply outcome feedback promote/demote effective cadence automatically rather than manually over-polling the entire list.
+
+## 14. Reply Surface Review
+
+For Reply acquisition, do not judge a target by parent views alone. Prefer high Reply Acquisition Score: live distribution plus an open reply surface plus proven creator feedback. Treat missing reply counts as unknown. Keep the editorial-value gate unchanged.

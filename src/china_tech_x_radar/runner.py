@@ -333,7 +333,8 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
     rows = con.execute(
         """SELECT a.id alert_id,a.signal_id,a.sent_at,a.editorial_packet_json,
                   a.reply_reconcile_attempts,a.reply_reconcile_last_checked_at,
-                  s.topic,s.published_at
+                  s.topic,s.published_at,s.observed_views,s.observed_replies,s.observed_quotes,
+                  s.views_per_reply,s.reply_surface_score
              FROM alert a JOIN signal s ON s.id=a.signal_id
             WHERE a.status='SENT' AND a.sent_at>=? AND a.matched_published_url IS NULL
               AND json_extract(a.editorial_packet_json,'$.decision')='REPLY'
@@ -364,17 +365,27 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
                 existing = con.execute("SELECT id FROM published_action WHERE signal_id=? ORDER BY id DESC LIMIT 1", (row["signal_id"],)).fetchone()
                 if existing:
                     con.execute(
-                        "UPDATE published_action SET published_url=?,published_text=?,posted_at=? WHERE id=?",
-                        (published_url, actual_text, posted_at, existing["id"]),
+                        """UPDATE published_action SET published_url=?,published_text=?,posted_at=?,
+                               target_post_impressions_at_reply=COALESCE(target_post_impressions_at_reply,?),
+                               target_post_replies_at_reply=COALESCE(target_post_replies_at_reply,?),
+                               target_post_quotes_at_reply=COALESCE(target_post_quotes_at_reply,?),
+                               target_views_per_reply_at_reply=COALESCE(target_views_per_reply_at_reply,?),
+                               target_reply_surface_score_at_reply=COALESCE(target_reply_surface_score_at_reply,?)
+                           WHERE id=?""",
+                        (published_url, actual_text, posted_at, row["observed_views"], row["observed_replies"],
+                         row["observed_quotes"], row["views_per_reply"], row["reply_surface_score"], existing["id"]),
                     )
                 else:
                     con.execute(
                         """INSERT INTO published_action(
                                signal_id,target_url,published_url,published_text,posted_at,action_type,event_type,
-                               target_account,target_posted_at,angle_type,media_type,has_external_link
-                           ) VALUES(?,?,?,?,?,'REPLY',?,?,?,?, 'NONE',0)""",
+                               target_account,target_posted_at,target_post_impressions_at_reply,target_post_replies_at_reply,
+                               target_post_quotes_at_reply,target_views_per_reply_at_reply,target_reply_surface_score_at_reply,
+                               angle_type,media_type,has_external_link
+                           ) VALUES(?,?,?,?,?,'REPLY',?,?,?,?,?,?,?,?,?, 'NONE',0)""",
                         (row["signal_id"], target_url, published_url, actual_text, posted_at, row["topic"],
-                         packet.get("target_account"), row["published_at"], packet.get("angle_type")),
+                         packet.get("target_account"), row["published_at"], row["observed_views"], row["observed_replies"],
+                         row["observed_quotes"], row["views_per_reply"], row["reply_surface_score"], packet.get("angle_type")),
                     )
                 con.execute(
                     """UPDATE alert SET matched_published_url=?,matched_at=?,reply_reconcile_last_checked_at=?,
@@ -435,7 +446,8 @@ def process_pending_alerts(
         WHERE a.status='PENDING'
         ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,
                  CASE WHEN s.target_mode='VERIFIED_X_TARGET' THEN 0 ELSE 1 END,
-                 s.distribution_score DESC, s.feedback_score DESC, s.view_velocity_per_min DESC,
+                 s.reply_acquisition_score DESC, s.distribution_score DESC, s.reply_surface_score DESC,
+                 s.feedback_score DESC, s.view_velocity_per_min DESC,
                  s.score DESC, COALESCE(s.published_at,s.discovered_at) DESC
         LIMIT ?
         """,
@@ -672,6 +684,12 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         "observed_views": int(result.get("observed_views", 0)),
                         "view_velocity_per_min": float(result.get("view_velocity_per_min", 0.0)),
                         "engagement_rate": float(result.get("engagement_rate", 0.0)),
+                        "reply_surface_score": int(result.get("reply_surface_score", 0)),
+                        "reply_competition_known": int(result.get("reply_competition_known", 0)),
+                        "observed_replies": result.get("observed_replies"),
+                        "observed_quotes": result.get("observed_quotes"),
+                        "views_per_reply": result.get("views_per_reply"),
+                        "reply_acquisition_score": int(result.get("reply_acquisition_score", 0)),
                         "feedback_score": int(result.get("feedback_score", 0)),
                         "feedback_samples": int(result.get("feedback_samples", 0)),
                         "feedback_median_impressions": result.get("feedback_median_impressions"),

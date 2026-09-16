@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.6
+- `PROJECT_SPEC.md` v3.7
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -112,3 +112,11 @@ Recent account analysis showed replies can obtain materially more impressions th
 - Configured cadence distribution: 1min×1, 2min×15, 4min×14, 6min×11, 8min×40.
 - Actual Reply outcome feedback now adapts effective cadence: +2 -> <=2min, +1 -> <=3min, negative mature evidence -> >=8min.
 - Collector bootstrap now defaults `CHINA_TECH_HTTP_PROXY=http://127.0.0.1:7890` when not explicitly supplied, preventing LaunchAgent replacement from silently falling back to unreachable direct X access.
+
+## Reply Surface Acquisition — 2026-09-16
+
+- Direct-X signals now persist public direct-reply/quote competition when available.
+- New Reply Surface Score rewards high parent reach per existing reply and penalizes saturated threads.
+- New Reply Acquisition Score combines Distribution + Reply Surface + conservative Creator Feedback and is now the first ranking dimension among comparable verified-X opportunities.
+- Missing public reply counts remain unknown/neutral instead of being treated as zero replies.
+- Manual and automatically reconciled published Replies both snapshot parent views/replies/quotes/views-per-reply/surface score for later outcome learning.

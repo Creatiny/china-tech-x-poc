@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.6
+# China Tech X POC — Canonical Project Spec v3.7
 
 ## 0. Authority
 
@@ -616,3 +616,49 @@ Actual Kenny Reply outcomes override the cold-start cadence conservatively:
 - neutral/insufficient evidence -> configured tier remains unchanged.
 
 This cadence adjustment changes observation frequency only. It never bypasses content relevance, live Distribution Opportunity, creator diversity/cooldown, editorial value, or human-voice gates.
+
+## 32. Reply Surface / Competition Opportunity
+
+Parent-post reach alone is not enough for Reply acquisition. A small account benefits most when a relevant post is already moving but its direct-reply surface is not yet saturated.
+
+For direct-X posts, when public metrics expose a reply count, persist:
+
+- `observed_replies`;
+- `observed_quotes`;
+- `views_per_reply = observed_views / (observed_replies + 1)`;
+- `reply_surface_score`;
+- `reply_acquisition_score`.
+
+If the public page does not expose reply count, competition is **unknown**, not zero. Missing reply count must stay neutral and must never be interpreted as an empty thread.
+
+### Reply Surface Score
+
+The score rewards audience available per existing direct reply and penalizes saturated threads. Conceptually:
+
+```text
+higher parent views per existing reply
++ low direct-reply count while reach is already meaningful
+- heavily saturated reply threads
+= higher Reply Surface Score
+```
+
+A 30K-view post with ~10 direct replies should normally outrank a 300K-view post with thousands of direct replies when relevance and freshness are comparable. Tiny posts are capped so zero replies on a low-reach thread cannot look artificially attractive.
+
+### Reply Acquisition Score
+
+For direct-X targets:
+
+```text
+Reply Acquisition Score
+  = Distribution Opportunity
+  + Reply Surface Score
+  + conservative Creator Feedback
+```
+
+This score is the primary ordering signal among comparable verified X reply opportunities, followed by Distribution Opportunity, Reply Surface, Creator Feedback, current view velocity, base relevance, and recency. A relevant post may pass the normal P1 distribution gate when its Reply Acquisition Score is sufficiently high even if raw distribution momentum alone is just below the standard threshold.
+
+Reply Surface does **not** relax the content-value requirement. A large open reply window with nothing useful for Kenny to add is still `SKIP`.
+
+### Learning snapshot at publication
+
+When Kenny publishes a Reply, automatically snapshot the parent post's observed views, direct replies, quotes, views-per-reply, and Reply Surface Score into `published_action`. The same snapshot must be recorded whether the action is manually registered or automatically reconciled from the target thread. This becomes the training evidence for learning which reply-surface conditions actually produce Kenny impressions/followers.

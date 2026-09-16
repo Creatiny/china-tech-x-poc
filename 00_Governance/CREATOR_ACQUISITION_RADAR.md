@@ -68,3 +68,7 @@ Accounts with respectable follower counts but current observed reach mostly in t
 ## Observation budget
 
 After Batch 2, the pool contains 90 configured X profiles / 81 enabled. Cadence was re-tiered to keep baseline demand at ~18.83 profile fetches/min against a 24/min theoretical stagger cap. Real Reply outcomes can automatically promote or demote effective cadence without changing publishing gates.
+
+## Reply Surface layer
+
+Creator reach is now evaluated together with per-post reply competition. The runtime ranks comparable direct-X opportunities by Reply Acquisition Score (distribution + reply surface + mature creator feedback). Future outcome analysis can compare `target_views_per_reply_at_reply` and `target_reply_surface_score_at_reply` against Kenny's actual Reply impressions.

@@ -16,7 +16,7 @@ def _match_terms(text: str, terms: list[str]) -> list[str]:
         if re.search(r"[\u3400-\u9fff]", t):
             matched = t in text
         else:
-            pattern = r"(?<!\w)" + re.escape(t) + r"(?!\w)"
+            pattern = r"(?<![A-Za-z0-9_])" + re.escape(t) + r"(?![A-Za-z0-9_])"
             matched = bool(re.search(pattern, text))
         if matched:
             out.append(term)
@@ -191,7 +191,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         "reply_surface_score": 0, "reply_competition_known": 0, "observed_replies": None,
         "observed_quotes": None, "views_per_reply": None,
     }
-    reply_acquisition_score = max(0, int(dist["distribution_score"]) + int(surface["reply_surface_score"]) + feedback_score) if direct_x_source else 0
+    reply_acquisition_score = max(0, int(dist["distribution_score"]) + round(int(surface["reply_surface_score"]) * float(rules.get("surface_ranking_weight", 1.0))) + feedback_score) if direct_x_source else 0
 
     generic_entities = {"china", "chinese"}
     specific_entities = [e for e in entities if e.casefold() not in generic_entities]
@@ -230,7 +230,7 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
         distribution_ok = (
             not direct_x_source
             or int(dist["distribution_score"]) >= x_distribution_min
-            or reply_acquisition_score >= x_reply_acquisition_min
+            or (bool(rules.get("allow_surface_gate_rescue", True)) and reply_acquisition_score >= x_reply_acquisition_min)
             or (age <= x_early_grace_minutes and score >= x_early_grace_base_score)
         )
         x_breakout_p0 = direct_x_source and int(dist["distribution_score"]) >= int(rules.get("x_breakout_p0_distribution_score", 10))

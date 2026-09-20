@@ -59,8 +59,8 @@ class CoreTests(unittest.TestCase):
             row=con.execute("select status,error from alert where signal_id=?",(sid,)).fetchone()
             self.assertEqual(result["recovered_stale_processing"],1)
             self.assertEqual(result["processed"],0)
-            self.assertEqual(row["status"],"PENDING")
-            self.assertEqual(row["error"],"channel_not_configured")
+            self.assertEqual(row["status"],"EXPIRED")
+            self.assertEqual(row["error"],"publication_time_unknown")
 
     def test_creator_feedback_adapts_poll_cadence_conservatively(self):
         source={"kind":"x_profile","handle":"candidate","poll_minutes":8}
@@ -353,7 +353,7 @@ class CoreTests(unittest.TestCase):
             for i, imp in enumerate((120, 180, 220), start=1):
                 cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ((str(i)*64)[:64],'x_a','A','x_profile',f'T{i}','@creator',now,'P1',8,'r',now))
                 sid=cur.lastrowid
-                cur=con.execute("INSERT INTO published_action(signal_id,action_type,target_account,published_url,published_text,posted_at) VALUES(?,'REPLY','@creator',?,?,?)", (sid,f'https://x.com/me/{i}','text',now))
+                cur=con.execute("INSERT INTO published_action(signal_id,action_type,target_account,published_url,published_text,posted_at) VALUES(?,'REPLY','@creator',?,?,?)", (sid,f'https://x.com/me/{i}','text',iso(datetime.now(timezone.utc)-timedelta(days=2))))
                 aid=cur.lastrowid
                 con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions) VALUES(?,?,?)", (aid,now,imp))
             con.commit()
@@ -759,7 +759,7 @@ class CoreTests(unittest.TestCase):
     def test_editorial_prompt_enforces_new_language_and_viewpoint_rules(self):
         prompt = final_prompt({"priority":"P1","title":"AI coding agent launch","excerpt":"workflow","source_name":"S","canonical_url":"source","reason":"r","topic":"agent","target_mode":"TARGET_SEARCH_REQUIRED"})
         self.assertIn("Original posts are ALWAYS Chinese", prompt)
-        self.assertIn("Replies MUST follow the verified parent-post language", prompt)
+        self.assertIn("replies ONLY to Chinese-language parent posts", prompt)
         self.assertIn("WHAT_I_BELIEVE", prompt)
         self.assertIn("News is raw material", prompt)
 

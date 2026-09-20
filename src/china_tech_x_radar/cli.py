@@ -46,6 +46,18 @@ def cmd_editorial(args: argparse.Namespace) -> int:
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
+def cmd_health(args: argparse.Namespace) -> int:
+    from .operating_policy import health_report
+    from .editorial import load_editorial_config
+    root=project_root()
+    con=connect(db_path(root))
+    try:
+        print(json.dumps(health_report(con,load_editorial_config(root)),ensure_ascii=False,indent=2))
+    finally:
+        con.close()
+    return 0
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     root = project_root()
     con = connect(db_path(root))
@@ -122,11 +134,17 @@ def cmd_decide(args: argparse.Namespace) -> int:
                 target_post_age_minutes = max(0.0, (posted_dt - target_dt).total_seconds() / 60.0)
             except Exception:
                 target_post_age_minutes = None
-        target_post_impressions = args.target_post_impressions_at_reply if args.target_post_impressions_at_reply is not None else signal["observed_views"]
-        target_post_replies = args.target_post_replies_at_reply if args.target_post_replies_at_reply is not None else signal["observed_replies"]
-        target_post_quotes = args.target_post_quotes_at_reply if args.target_post_quotes_at_reply is not None else signal["observed_quotes"]
-        target_views_per_reply = args.target_views_per_reply_at_reply if args.target_views_per_reply_at_reply is not None else signal["views_per_reply"]
-        target_surface_score = args.target_reply_surface_score_at_reply if args.target_reply_surface_score_at_reply is not None else signal["reply_surface_score"]
+        from .operating_policy import parse_time
+        captured_time=parse_time(signal['metrics_observed_at'])
+        reply_time=parse_time(posted_at)
+        eligible = bool(args.action_type.upper()=='REPLY' and captured_time and reply_time and 0 <= (reply_time-captured_time).total_seconds() <= 1800)
+        def parent_metric(argument, key):
+            return argument if argument is not None else signal[key] if eligible else None
+        target_post_impressions=parent_metric(args.target_post_impressions_at_reply,'observed_views')
+        target_post_replies=parent_metric(args.target_post_replies_at_reply,'observed_replies')
+        target_post_quotes=parent_metric(args.target_post_quotes_at_reply,'observed_quotes')
+        target_views_per_reply=parent_metric(args.target_views_per_reply_at_reply,'views_per_reply')
+        target_surface_score=parent_metric(args.target_reply_surface_score_at_reply,'reply_surface_score')
         con.execute(
             """
             INSERT INTO published_action(
@@ -158,6 +176,9 @@ def cmd_decide(args: argparse.Namespace) -> int:
         )
         row = con.execute("SELECT id FROM published_action WHERE published_url=?", (args.published_url,)).fetchone()
         action_id = row["id"] if row else None
+        if action_id and eligible:
+            con.execute("UPDATE published_action SET parent_snapshot_observed_at=?,parent_snapshot_origin='prepublication_local_observation' WHERE id=? AND parent_snapshot_origin IS NULL",(signal['metrics_observed_at'],action_id))
+
     con.commit()
     print(json.dumps({"signal_id": args.signal_id, "decision": args.decision, "action_id": action_id}, ensure_ascii=False))
     return 0
@@ -255,7 +276,9 @@ def cmd_review(args: argparse.Namespace) -> int:
     json_path.write_text(json.dumps(safe, ensure_ascii=False, indent=2, default=str) + "\n", encoding="utf-8")
     if review.get("markdown"):
         md_path.write_text(review["markdown"], encoding="utf-8")
-    if args.notify:
+    from .operating_policy import operator_available
+    from .editorial import load_editorial_config
+    if args.notify and operator_available(load_editorial_config(root)):
         sender = FeishuSender()
         if not sender.available():
             raise SystemExit("Feishu channel not configured")
@@ -316,6 +339,9 @@ def build_parser() -> argparse.ArgumentParser:
     x = sub.add_parser("editorial")
     x.add_argument("--max-alerts", type=int)
     x.set_defaults(func=cmd_editorial)
+
+    x = sub.add_parser("health")
+    x.set_defaults(func=cmd_health)
 
     x = sub.add_parser("status")
     x.set_defaults(func=cmd_status)

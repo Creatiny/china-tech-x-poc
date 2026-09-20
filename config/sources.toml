@@ -93,13 +93,14 @@ id = "x_jenzhuscott"
 kind = "x_profile"
 name = "X @jenzhuscott"
 handle = "jenzhuscott"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 3
 require_title_topic = true
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -107,12 +108,13 @@ id = "x_quxiaoyin"
 kind = "x_profile"
 name = "X @quxiaoyin"
 handle = "quxiaoyin"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -148,12 +150,13 @@ id = "x_jukan05"
 kind = "x_profile"
 name = "X @jukan05"
 handle = "jukan05"
-poll_minutes = 1
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -189,12 +192,13 @@ id = "x_damonchen"
 kind = "x_profile"
 name = "X @damonchen"
 handle = "damonchen"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -216,12 +220,13 @@ id = "x_ptrubey"
 kind = "x_profile"
 name = "X @ptrubey"
 handle = "ptrubey"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 4
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -229,12 +234,13 @@ id = "x_wevolverapp"
 kind = "x_profile"
 name = "X @wevolverapp"
 handle = "wevolverapp"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 4
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -314,12 +320,13 @@ id = "x_ycombinator"
 kind = "x_profile"
 name = "X @ycombinator"
 handle = "ycombinator"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -327,12 +334,13 @@ id = "x_andrewyng"
 kind = "x_profile"
 name = "X @AndrewYNg"
 handle = "AndrewYNg"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -340,12 +348,13 @@ id = "x_karenxcheng"
 kind = "x_profile"
 name = "X @karenxcheng"
 handle = "karenxcheng"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -353,12 +362,13 @@ id = "x_nateberkopec"
 kind = "x_profile"
 name = "X @nateberkopec"
 handle = "nateberkopec"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -366,12 +376,13 @@ id = "x_jackclarksf"
 kind = "x_profile"
 name = "X @jackclarkSF"
 handle = "jackclarkSF"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -379,12 +390,13 @@ id = "x_intellectronica"
 kind = "x_profile"
 name = "X @intellectronica"
 handle = "intellectronica"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -392,12 +404,13 @@ id = "x_vasuman"
 kind = "x_profile"
 name = "X @vasuman"
 handle = "vasuman"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -405,12 +418,13 @@ id = "x_mihail_eric"
 kind = "x_profile"
 name = "X @mihail_eric"
 handle = "mihail_eric"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -419,6 +433,7 @@ kind = "x_profile"
 name = "X @shao__meng"
 handle = "shao__meng"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 source_weight = 5
@@ -433,12 +448,13 @@ name = "X @karpathy — Andrej Karpathy"
 handle = "karpathy"
 creator_role = "research_engineering"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -448,12 +464,13 @@ name = "X @simonw — Simon Willison"
 handle = "simonw"
 creator_role = "llm_tools_engineering"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -463,12 +480,13 @@ name = "X @hamelhusain — Hamel Husain"
 handle = "hamelhusain"
 creator_role = "evals_reliability"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -478,12 +496,13 @@ name = "X @sh_reya — Shreya Shankar"
 handle = "sh_reya"
 creator_role = "evals_data_ai_engineering"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -493,12 +512,13 @@ name = "X @eugeneyan — Eugene Yan"
 handle = "eugeneyan"
 creator_role = "applied_ai_evals"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -508,12 +528,13 @@ name = "X @chipro — Chip Huyen"
 handle = "chipro"
 creator_role = "ai_engineering_agents"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -523,12 +544,13 @@ name = "X @badlogicgames — Mario Zechner"
 handle = "badlogicgames"
 creator_role = "pi_agent_engineering"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -538,12 +560,13 @@ name = "X @mitsuhiko — Armin Ronacher"
 handle = "mitsuhiko"
 creator_role = "ai_coding_systems"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -553,12 +576,13 @@ name = "X @gneubig — Graham Neubig"
 handle = "gneubig"
 creator_role = "openhands_agent_research"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -568,12 +592,13 @@ name = "X @DrJimFan — Jim Fan"
 handle = "DrJimFan"
 creator_role = "robotics_world_models"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -583,12 +608,13 @@ name = "X @fchollet — François Chollet"
 handle = "fchollet"
 creator_role = "reasoning_arc_agi"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -598,12 +624,13 @@ name = "X @lilianweng — Lilian Weng"
 handle = "lilianweng"
 creator_role = "ai_research_safety_agents"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -613,12 +640,13 @@ name = "X @_lopopolo — Ryan Lopopolo"
 handle = "_lopopolo"
 creator_role = "harness_agent_engineering"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -628,12 +656,13 @@ name = "X @onusoz — Onur Solmaz"
 handle = "onusoz"
 creator_role = "openclaw_local_agents"
 creator_quality = "core_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -643,12 +672,13 @@ name = "X @dexhorthy — Dex Horthy"
 handle = "dexhorthy"
 creator_role = "harness_engineering"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -658,13 +688,14 @@ name = "X @ylecun — Yann LeCun"
 handle = "ylecun"
 creator_role = "world_models_research"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -674,13 +705,14 @@ name = "X @drfeifei — Fei-Fei Li"
 handle = "drfeifei"
 creator_role = "spatial_intelligence_world_models"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -690,13 +722,14 @@ name = "X @demishassabis — Demis Hassabis"
 handle = "demishassabis"
 creator_role = "frontier_ai_world_models"
 creator_quality = "core_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -707,14 +740,15 @@ name = "X @kskrygan — Kirill Skrygan"
 handle = "kskrygan"
 creator_role = "agent_coding_ide"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -725,14 +759,15 @@ name = "X @omarsar0 — Elvis / DAIR.AI"
 handle = "omarsar0"
 creator_role = "agent_harness_research"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -743,14 +778,15 @@ name = "X @nummanali — Numman Ali"
 handle = "nummanali"
 creator_role = "agentic_engineering"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -761,14 +797,15 @@ name = "X @voxyz_ai — Vox"
 handle = "voxyz_ai"
 creator_role = "ai_native_operations"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -779,14 +816,15 @@ name = "X @pham_blnh — Binh Pham"
 handle = "pham_blnh"
 creator_role = "robotics_world_models"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -797,14 +835,15 @@ name = "X @bilawalsidhu — Bilawal Sidhu"
 handle = "bilawalsidhu"
 creator_role = "world_models_spatial_ai"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -815,14 +854,15 @@ name = "X @abdelstark — Abdel"
 handle = "abdelstark"
 creator_role = "physical_ai_world_models"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -833,14 +873,15 @@ name = "X @leothecurious — Davinci"
 handle = "leothecurious"
 creator_role = "robotics_world_models"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -851,14 +892,15 @@ name = "X @fofrai — Fofr"
 handle = "fofrai"
 creator_role = "interactive_world_models"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -869,14 +911,15 @@ name = "X @roberthaisfield — Rob Haisfield"
 handle = "roberthaisfield"
 creator_role = "agent_product_hci"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -887,14 +930,15 @@ name = "X @gm8xx8 — gm8xx8"
 handle = "gm8xx8"
 creator_role = "llm_inference_systems"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -905,14 +949,15 @@ name = "X @bingxu_ — Bing Xu"
 handle = "bingxu_"
 creator_role = "ai_systems_kernels"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -923,14 +968,15 @@ name = "X @hxiao — Han Xiao"
 handle = "hxiao"
 creator_role = "ai_retrieval_verification"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -941,14 +987,15 @@ name = "X @samhogan — Sam Hogan"
 handle = "samhogan"
 creator_role = "inference_infrastructure"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -959,14 +1006,15 @@ name = "X @himanshustwts — Himanshu"
 handle = "himanshustwts"
 creator_role = "ai_systems_physical_ai"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 
@@ -977,14 +1025,15 @@ name = "X @thom_wolf — Thomas Wolf"
 handle = "thom_wolf"
 creator_role = "open_ai_robotics"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 # Reply-acquisition expansion batch — 2026-09-16
@@ -999,12 +1048,13 @@ name = "X @zephyr_z9 — Zephyr"
 handle = "zephyr_z9"
 creator_role = "ai_chips_semiconductor"
 creator_quality = "expansion_technical"
-poll_minutes = 2
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1014,12 +1064,13 @@ name = "X @SemiAnalysis_ — SemiAnalysis"
 handle = "semianalysis_"
 creator_role = "ai_compute_semiconductor"
 creator_quality = "expansion_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1030,6 +1081,7 @@ handle = "maxforai"
 creator_role = "china_ai_technical_synthesis"
 creator_quality = "expansion_technical"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1048,14 +1100,15 @@ extra_topic_terms = ["/retro", "lint", "linter", "pre-commit", "ci workflow", "c
 extra_productivity_terms = ["/retro", "lint", "pre-commit", "ci workflow", "ci workflows"]
 creator_role = "ai_coding_developer_workflows"
 creator_quality = "expansion_technical"
-poll_minutes = 2
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1067,14 +1120,15 @@ extra_topic_terms = ["astra", "fable", "gauntlet loops"]
 extra_productivity_terms = ["astra", "fable", "gauntlet loops", "remote workers"]
 creator_role = "agent_workflows_ai_products"
 creator_quality = "expansion_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1085,6 +1139,7 @@ handle = "op7418"
 creator_role = "china_ai_tools_builders"
 creator_quality = "expansion_technical"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1101,14 +1156,15 @@ name = "X @damnang2 — Damnang"
 handle = "damnang2"
 creator_role = "semiconductor_industry_engineering"
 creator_quality = "technical_fact"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1118,12 +1174,13 @@ name = "X @tencentai_news — Tencent AI"
 handle = "tencentai_news"
 creator_role = "china_ai_primary_source"
 creator_quality = "technical_fact"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = true
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1134,6 +1191,7 @@ handle = "alchainhust"
 creator_role = "china_ai_native_coding"
 creator_quality = "expansion_technical"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1150,14 +1208,15 @@ name = "X @_akhaliq — AK"
 handle = "_akhaliq"
 creator_role = "ai_research_primary_papers"
 creator_quality = "technical_fact"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1167,14 +1226,15 @@ name = "X @aidotengineer — AI Engineer"
 handle = "aidotengineer"
 creator_role = "ai_engineering_builders"
 creator_quality = "technical_fact"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1184,14 +1244,15 @@ name = "X @gakonst — Georgios Konstantopoulos"
 handle = "gakonst"
 creator_role = "agent_harness_engineering"
 creator_quality = "expansion_technical"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1201,14 +1262,15 @@ name = "X @iliraliu_ — Ilir Aliu"
 handle = "iliraliu_"
 creator_role = "physical_ai_robotics"
 creator_quality = "expansion_technical"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1218,14 +1280,15 @@ name = "X @tanayj — Tanay Jaipuria"
 handle = "tanayj"
 creator_role = "ai_infra_business_technical"
 creator_quality = "expansion_technical"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1235,14 +1298,15 @@ name = "X @skirano — Pietro Schirano"
 handle = "skirano"
 creator_role = "ai_product_builder"
 creator_quality = "expansion_technical"
-poll_minutes = 8
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1252,14 +1316,15 @@ name = "X @thehumanoidhub — The Humanoid Hub"
 handle = "thehumanoidhub"
 creator_role = "physical_ai_robotics_fact"
 creator_quality = "technical_fact"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1269,14 +1334,15 @@ name = "X @swyx — swyx"
 handle = "swyx"
 creator_role = "ai_engineering_agents"
 creator_quality = "expansion_technical"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1286,14 +1352,15 @@ name = "X @doodlestein — Jeffrey Emanuel"
 handle = "doodlestein"
 creator_role = "agent_coding_workflows"
 creator_quality = "expansion_technical"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1304,6 +1371,7 @@ handle = "bourneliu66"
 creator_role = "china_ai_product_builder"
 creator_quality = "expansion_technical"
 poll_minutes = 6
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1323,12 +1391,13 @@ name = "X @bcherny — Boris Cherny"
 handle = "bcherny"
 creator_role = "claude_code_primary_builder"
 creator_quality = "core_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1338,14 +1407,15 @@ name = "X @charliejhills — Charlie Hills"
 handle = "charliejhills"
 creator_role = "ai_coding_workflows"
 creator_quality = "expansion_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1355,14 +1425,15 @@ name = "X @adocomplete — Ado"
 handle = "adocomplete"
 creator_role = "claude_code_primary_community"
 creator_quality = "technical_fact"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1373,6 +1444,7 @@ handle = "laogui"
 creator_role = "china_ai_builder_tools"
 creator_quality = "expansion_technical"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1390,6 +1462,7 @@ handle = "bozhou_ai"
 creator_role = "china_ai_coding_builder"
 creator_quality = "expansion_technical"
 poll_minutes = 2
+acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 require_title_topic = true
@@ -1406,12 +1479,13 @@ name = "X @claudeai — Claude"
 handle = "claudeai"
 creator_role = "ai_lab_product_primary"
 creator_quality = "primary_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1421,12 +1495,13 @@ name = "X @OpenAI"
 handle = "openai"
 creator_role = "ai_lab_primary"
 creator_quality = "primary_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1436,12 +1511,13 @@ name = "X @AnthropicAI"
 handle = "anthropicai"
 creator_role = "ai_lab_primary"
 creator_quality = "primary_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1451,12 +1527,13 @@ name = "X @cognition"
 handle = "cognition"
 creator_role = "ai_coding_product_primary"
 creator_quality = "primary_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1466,12 +1543,13 @@ name = "X @cursor_ai"
 handle = "cursor_ai"
 creator_role = "ai_coding_product_primary"
 creator_quality = "primary_technical"
-poll_minutes = 2
+poll_minutes = 10
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1481,12 +1559,13 @@ name = "X @GoogleDeepMind"
 handle = "googledeepmind"
 creator_role = "ai_research_lab_primary"
 creator_quality = "primary_technical"
-poll_minutes = 4
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 source_weight = 4
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1496,14 +1575,15 @@ name = "X @huggingface"
 handle = "huggingface"
 creator_role = "open_ai_ecosystem_primary"
 creator_quality = "technical_fact"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 240
-p1_max_age_minutes = 240
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1513,12 +1593,103 @@ name = "X @vercel"
 handle = "vercel"
 creator_role = "ai_developer_infra_primary"
 creator_quality = "technical_fact"
-poll_minutes = 6
+poll_minutes = 20
+acquisition_role = "reference"
 china_focused = false
 audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 240
-p1_max_age_minutes = 240
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+
+[[source]]
+id = "x_linearuncle"
+kind = "x_profile"
+name = "X @linearuncle — 中文 AI 实战观察"
+handle = "linearuncle"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+acquisition_role = "chinese_acquisition"
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_vincent_ainotes"
+kind = "x_profile"
+name = "X @vincent_ainotes — 中文 AI 实战观察"
+handle = "vincent_ainotes"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+acquisition_role = "chinese_acquisition"
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_vikingmute"
+kind = "x_profile"
+name = "X @vikingmute — 中文 AI 实战观察"
+handle = "vikingmute"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+poll_minutes = 3
+acquisition_role = "chinese_acquisition"
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_seekjourney"
+kind = "x_profile"
+name = "X @seekjourney — 中文 AI 实战观察"
+handle = "seekjourney"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+acquisition_role = "chinese_acquisition"
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
+enabled = true
+
+[[source]]
+id = "x_vista8"
+kind = "x_profile"
+name = "X @vista8 — 中文 AI 实战观察"
+handle = "vista8"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+poll_minutes = 4
+acquisition_role = "chinese_acquisition"
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 180
+p1_max_age_minutes = 180
 enabled = true

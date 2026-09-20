@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.7
+# China Tech X POC — Canonical Project Spec v3.8
 
 ## 0. Authority
 
@@ -33,29 +33,17 @@ Useful viewpoint / real practice / consequential change
 
 **North Star:** relevant follower growth caused by a clear follow reason, not posting volume or raw impressions.
 
-## 2. Audience and Positioning
+## 2. Audience and positioning
 
-### Audience
+Primary audience: Chinese-speaking developers, independent builders and small teams using AI agents or coding tools to deliver real work.
 
-One coherent audience:
+Core promise: **实测 AI 怎么帮小团队把事情做成：成本、踩坑、验收和交付。**
 
-> People who follow AI technology and care about turning AI into real productivity.
+Kenny's first-hand operating/building evidence is the differentiator. Chinese models and local deployment are useful comparative evidence, not a mandate to cover every China-tech headline.
 
-Typical members include AI builders, developers, founders, product people, operators, investors, and serious AI users.
+Primary themes: agent/coding workflows that deliver; model choice/cost/latency under the same real task; failures, recovery and independent verification with concrete evidence.
 
-### Positioning
-
-Internal positioning:
-
-> **不报道 AI，判断 AI 正在改变什么。**
-
-English shorthand:
-
-> **Don’t report AI. Think about what AI changes.**
-
-China technology remains an important source of differentiated evidence and first-hand context, but **China is no longer a hard boundary for topic selection**.
-
-A China-related item is worth publishing only when it matters to the target audience. A global AI/agent/coding/productivity item may be worth publishing even when it has no China entity.
+Exclude generic macro, market/ticker commentary, funding summaries, broad gadget launches and untested AI hype. Robotics/world-model topics need a concrete connection to an actual builder workflow. No guaranteed virality or follower-growth claims.
 
 ## 3. Content Product
 
@@ -81,23 +69,15 @@ For `WHAT CHANGES`, the content must answer at least one:
 - What changes for individual productivity?
 - What common interpretation is probably wrong or incomplete?
 
-## 4. Language Policy
+## 4. Language policy
 
-### Original content
+Chinese is the sole automatic publishing-recommendation language during this acquisition correction. Originals and recommended Replies are Chinese. Reply targets must themselves be Chinese-language conversations; do not paste Chinese replies into English threads for reach.
 
-**All original posts, threads, and X Articles are published in Chinese.**
+English technical and official accounts remain research/reference sources. A strong English source may support a Chinese original POST, under the same strict evidence/quality and attention budget. It does not generate an automatic English REPLY.
 
-This is a hard rule. Do not split the account into parallel Chinese and English original-content tracks.
+Kenny may explicitly request or write English replies manually. Existing English posts are not deleted. No new account is required.
 
-### Replies
-
-Reply language follows the parent post:
-
-- Chinese parent post -> Chinese reply;
-- English parent post -> English reply;
-- other languages -> follow the parent language when practical, otherwise only reply when a natural high-quality response is possible.
-
-X translation is treated as sufficient for cross-language discovery. Language is not used to split the target audience.
+This is a coherent audience/conversion strategy, NOT a claim that X imposes an account-wide bilingual penalty. X's disclosed personalisation and language controls do not establish such a blanket penalty. Translation is not assumed to remove audience mismatch.
 
 ## 5. Editorial Priority
 
@@ -451,83 +431,25 @@ For growth, creator diversity is an operating constraint: ordinary P1 Replies sh
 
 Creator discovery is ongoing maintenance, not a one-time list build. Add qualified creators regularly; do not wait for the existing pool to become stale.
 
-## 27. Distribution Opportunity Signal Engine
+## 27. Distribution evidence and limits
 
-Direct X reply discovery must optimize for **distribution opportunity after relevance**, not for news importance alone. The engine exists to identify conversations that are both worth joining and already showing audience movement.
+Relevance and useful added information are prerequisites. Parent-post public views and replies are observations, not a promise of exposure for Kenny.
 
-Hard ordering of concerns:
+`view_velocity_per_min` currently means lifetime average views divided by post age; it is NOT a measured recent growth slope. Do not label it acceleration. `views_per_reply` is a heuristic ratio, not an equal division of readers across a conversation.
 
-```text
-audience/topic relevance
- -> Kenny can add real value
- -> live distribution opportunity
- -> creator diversity
- -> operator attention
-```
+The score only ranks candidates after relevance and timing gates. Surface contributes 25% of its old weight (at most 2 points), and cannot rescue a post that lacks minimum distribution evidence in production. Unknown reply counts stay unknown.
 
-Virality never rescues an off-audience or low-value candidate. A high-view post that fails the topic/value gate remains `DROP/SKIP`.
+Repeated direct-X observations update live measurements and classification while preserving first discovery time; `metrics_observed_at` records measurement timing. Sent decisions remain historical facts and are not reopened when metrics change.
 
-For verified direct X targets, capture observable public metrics at discovery time when available: views, likes, replies, reposts, quotes, and bookmarks. Derive and persist at least:
+## 28. Measured outcome feedback
 
-- `distribution_score`;
-- `observed_views`;
-- `view_velocity_per_min`;
-- `engagement_rate`.
+Track only confirmed published URLs. A SENT Feishu packet is a recommendation delivered to Kenny, not a published X post. Profile total-post counters are not original-post counts.
 
-The deterministic distribution score combines freshness, view velocity, current view scale, engagement rate, and reply/quote conversation activity. Configuration thresholds live in `config/rules.toml` and may be calibrated from outcome evidence without changing the editorial identity.
+Public outcomes are sampled using a persistent per-action attempt clock. Missing/unchanged results must advance that clock so old items cannot monopolise the worker. Successful unchanged observations are persisted with a new capture time. Missing public metrics and profile visits are not filled with zero.
 
-Exact post deduplication must **not** freeze distribution evidence. Every subsequent observation of the same direct-X status refreshes public metrics and re-runs classification while preserving the original discovery timestamp. A post may graduate from `DROP/P2` to `P1/P0` when it begins to break out; if no alert existed before, that graduation creates the normal editorial opportunity. Conversely, a still-pending alert is expired if the live target no longer qualifies by the time it is re-observed. Existing `SENT/SKIP/HOLD` editorial decisions are not automatically reopened merely because views later increase.
+Creator feedback uses at least three observations captured at least 24 hours after their respective Replies were published. The sample remains observational and small, not a causal prediction. Snapshots captured minutes after posting must never teach a negative creator prior.
 
-A normal direct-X P1 candidate must pass the relevance score and either show sufficient distribution momentum or fall inside a short early-discovery grace window with strong relevance. This prevents waiting until a post is already saturated while still suppressing flat posts that never begin to move.
-
-A clearly breakout direct-X target may be promoted to P0 by distribution evidence even without a keyword-based “high impact” marker. P0 remains exceptional; editorial quality still controls whether anything is sent.
-
-Pending editorial work is ordered by:
-
-1. P0 before P1;
-2. verified direct X targets before search-required candidates at the same priority;
-3. higher `distribution_score`;
-4. higher `view_velocity_per_min`;
-5. relevance score and recency.
-
-The editorial model must see the distribution evidence but treat it only as **timing/distribution evidence**. REPLY is still allowed only when Kenny adds an approved value type from Section 20. Do not send generic commentary merely because a parent post is viral.
-
-Creator diversity rules in Section 26 remain active. Distribution opportunity is a reason to join the right conversation early, not a reason to repeatedly farm one large account.
-
-
-## 28. Closed-Loop Outcome Feedback
-
-The signal engine must learn from Kenny's actual published outcomes, not only from parent-post virality. Public X data is used at $0 cost to close the loop.
-
-### Automatic post outcome capture
-
-For published X posts/replies with a known URL, automatically capture public metrics when available: views, likes, replies, reposts, quotes, and bookmarks. Sampling frequency tapers with age: relatively frequent shortly after publishing, then hourly/daily as the post matures. Profile visits are **not** publicly exposed and must remain `null` unless supplied from first-party analytics; never infer or fabricate them.
-
-### Automatic account snapshots
-
-Read the public `@KennyChinaTech` profile periodically and persist follower count. Follower deltas are evaluated at cohort/day level. A gap of more than one calendar day between snapshots is not eligible for causal attribution to that day's content.
-
-### Creator feedback prior
-
-Actual Reply outcomes may influence future creator ranking only conservatively:
-
-- at least 3 Reply outcome samples are required before impression-based feedback activates;
-- median Reply impressions are used instead of one breakout maximum;
-- the creator feedback score is a small ranking prior and never bypasses relevance, distribution, editorial-value, voice, or creator-diversity gates;
-- follower growth may add at most a weak positive prior only on clean evidence days where consecutive daily follower snapshots exist and exactly one published action occurred; multi-action days are not attributed to one creator;
-- insufficient evidence remains neutral rather than being treated as failure.
-
-The ranking sequence for comparable direct-X candidates is therefore:
-
-```text
-relevance/value gate
- -> live distribution opportunity
- -> conservative historical outcome feedback
- -> current view velocity
- -> base relevance/recency
-```
-
-This feedback loop optimizes for durable relevant-audience growth, not raw impressions alone.
+Follower changes remain account/day descriptive measures. No creator-level follower bonus is applied because publication/profile-visit coverage is incomplete. Recent original posts can be reconciled from the owner's visible profile against actual SENT copy and timestamps; public profile coverage is limited, not a complete analytics export.
 
 ## 29. Reply-Acquisition Creator Expansion
 
@@ -595,70 +517,34 @@ Hard rules:
 - SQLite WAL and busy timeout remain the shared-state coordination mechanism.
 - Manual integrated `run` may remain available for diagnostics, but production launchd uses the isolated collector and editorial commands.
 
-## 31. Adaptive Creator Observation Budget
+## 31. Observation budget
 
-A larger creator pool must not degrade discovery latency. Monitoring cadence is a scarce acquisition budget and is allocated by evidence.
+The 15-second launchd interval is not the realised cycle throughput. Include fetch duration, missed intervals and tail latency when assessing capacity.
 
-Static observation tiers provide the cold-start prior:
+The 2026-09-20 audit measured a 27.3-second median start interval on the last 500 cycles. Baseline profile demand is now about 8.77 fetches/minute, down from 18.83. No increase in batch concurrency or maximum worker count was required.
 
-- `1–2 min`: proven or very high-reach acquisition creators and high-value primary AI/coding accounts;
-- `4 min`: core technical creators with strong audience fit;
-- `6 min`: technical-fact / ecosystem sources;
-- `8 min`: broad exploration layer.
+12 Chinese acquisition creators receive the fast daytime observation share. 74 English/global references remain available at slower cadence. Reference sources cannot be promoted back to aggressive polling by historical Reply feedback. At night, all tagged profiles use at least a 30-minute interval; collection remains active without waking the operator.
 
-The aggregate configured X polling demand must remain below the staggered collector capacity (`max_x_profiles_per_cycle` / collector interval), with material headroom for network variance. Expansion that would overload the collector must first rebalance lower-value cadence.
+## 32. Reply Surface provenance
 
-Actual Kenny Reply outcomes override the cold-start cadence conservatively:
+Surface is an unvalidated opportunity heuristic, not X's own ranking formula. Retain the raw observations and use the bounded contribution in Section 27. Do not claim that a 30K/10 thread always beats a 300K/3000 thread.
 
-- Creator Feedback `>= +2` -> effective interval no slower than 2 minutes;
-- Creator Feedback `+1` -> effective interval no slower than 3 minutes;
-- Creator Feedback `< 0` -> effective interval at least 8 minutes;
-- neutral/insufficient evidence -> configured tier remains unchanged.
+At Feishu delivery, save an immutable opportunity snapshot with `metrics_observed_at`. On later Reply reconciliation, parent evidence may be used only if it was observed before publication and no more than 30 minutes earlier. Label it `prepublication_alert_observation`, never an exact publication-time measurement. A later live parent observation must not be copied back into historical at-reply fields.
 
-This cadence adjustment changes observation frequency only. It never bypasses content relevance, live Distribution Opportunity, creator diversity/cooldown, editorial value, or human-voice gates.
+Historical fields without explicit timing provenance remain unverified for surface outcome cohorts. Do not rewrite historical measurements or manufacture paired training data.
 
-## 32. Reply Surface / Competition Opportunity
+## 33. Operator availability, budget pacing and content quality
 
-Parent-post reach alone is not enough for Reply acquisition. A small account benefits most when a relevant post is already moving but its direct-reply surface is not yet saturated.
+Default actionable window: **08:00 inclusive to 22:00 exclusive, Asia/Shanghai**. This is a configurable operational default based on Kenny's stated sleeping-hours problem, not an assertion of his exact sleep schedule. P0 does not bypass quiet hours. During quiet hours the editorial worker does not draft or send; collection continues. Recheck the clock immediately before external delivery.
 
-For direct-X posts, when public metrics expose a reply count, persist:
+At the start of daytime work, expire stale or time-unknown opportunities rather than dumping overnight Reply suggestions. English reference profiles retain a 12-hour original-source window, so valid overnight evidence can support a daytime Chinese original rather than a late English Reply. Quiet hours apply to daily-review notifications too; the existing review is moved to 21:00.
 
-- `observed_replies`;
-- `observed_quotes`;
-- `views_per_reply = observed_views / (observed_replies + 1)`;
-- `reply_surface_score`;
-- `reply_acquisition_score`.
+Preflight checks happen BEFORE model calls: operator availability, topic fit, parent language, age, evidence of reach (300+ public views and distribution score >=6), creator cooldown, rolling attention caps and cumulative daypart caps. Replies default to a three-hour opportunity limit. Insufficient current reach may be rechecked; missing metrics are not invented.
 
-If the public page does not expose reply count, competition is **unknown**, not zero. Missing reply count must stay neutral and must never be interpreted as an empty thread.
+Daily recommendation ceilings: 10 Replies and 2 originals, NOT production quotas. Reply cumulative ceilings: 3 before noon, 7 before 18:00, 10 thereafter. Original ceiling: 1 before noon, 2 thereafter. Existing rolling/creator attention limits also apply, including to P0.
 
-### Reply Surface Score
+Model daily budgets remain unchanged. Cumulative available budget is 40% in the morning, 80% in the afternoon and 100% after 18:00. Never reset `budget_revision` to evade already-used allowance. A cheap editorial gate precedes final drafting. The full Humanizer self-audit remains mandatory; a separate model rewrite is reserved for a detected copy violation.
 
-The score rewards audience available per existing direct reply and penalizes saturated threads. Conceptually:
+Provider quota/timeout failures enter a persistent bounded backoff instead of generating a call storm. Local/daypart budget exhaustion is DEFERRED to a later eligible window; re-check staleness before retry. Do not auto-retry ambiguous external delivery failures.
 
-```text
-higher parent views per existing reply
-+ low direct-reply count while reach is already meaningful
-- heavily saturated reply threads
-= higher Reply Surface Score
-```
-
-A 30K-view post with ~10 direct replies should normally outrank a 300K-view post with thousands of direct replies when relevance and freshness are comparable. Tiny posts are capped so zero replies on a low-reach thread cannot look artificially attractive.
-
-### Reply Acquisition Score
-
-For direct-X targets:
-
-```text
-Reply Acquisition Score
-  = Distribution Opportunity
-  + Reply Surface Score
-  + conservative Creator Feedback
-```
-
-This score is the primary ordering signal among comparable verified X reply opportunities, followed by Distribution Opportunity, Reply Surface, Creator Feedback, current view velocity, base relevance, and recency. A relevant post may pass the normal P1 distribution gate when its Reply Acquisition Score is sufficiently high even if raw distribution momentum alone is just below the standard threshold.
-
-Reply Surface does **not** relax the content-value requirement. A large open reply window with nothing useful for Kenny to add is still `SKIP`.
-
-### Learning snapshot at publication
-
-When Kenny publishes a Reply, automatically snapshot the parent post's observed views, direct replies, quotes, views-per-reply, and Reply Surface Score into `published_action`. The same snapshot must be recorded whether the action is manually registered or automatically reconciled from the target thread. This becomes the training evidence for learning which reply-surface conditions actually produce Kenny impressions/followers.
+Every proposed post/reply needs concrete added evidence with provenance. An original must name its subject in the actual text and give a useful observation, not anonymous numbers or a generic slogan. Short replies are preferred; originals may use two or three readable paragraphs. A repeated "needs real testing" caveat is not information gain. No invented first-hand experience, no automatically chosen Article topics, no auto-X publishing.

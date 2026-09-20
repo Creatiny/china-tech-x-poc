@@ -205,10 +205,20 @@ def migrate(con: sqlite3.Connection) -> None:
         );
         """
     )
+    con.executescript("""
+        CREATE TABLE IF NOT EXISTS outcome_capture_state (
+          action_id INTEGER PRIMARY KEY REFERENCES published_action(id),
+          last_attempt_at TEXT NOT NULL, last_success_at TEXT, error TEXT, attempts INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS editorial_runtime_state (
+          name TEXT PRIMARY KEY, retry_at TEXT NOT NULL, reason TEXT NOT NULL, updated_at TEXT NOT NULL
+        );
+    """)
     cols = {r[1] for r in con.execute("PRAGMA table_info(signal)")}
     if "score" not in cols:
         con.execute("ALTER TABLE signal ADD COLUMN score INTEGER NOT NULL DEFAULT 0")
     signal_migrations = {
+        "metrics_observed_at": "TEXT",
         "distribution_score": "INTEGER NOT NULL DEFAULT 0",
         "observed_views": "INTEGER NOT NULL DEFAULT 0",
         "view_velocity_per_min": "REAL NOT NULL DEFAULT 0",
@@ -237,6 +247,8 @@ def migrate(con: sqlite3.Connection) -> None:
         "target_posted_at": "TEXT",
         "target_post_age_minutes": "REAL",
         "target_post_impressions_at_reply": "INTEGER",
+        "parent_snapshot_observed_at": "TEXT",
+        "parent_snapshot_origin": "TEXT",
         "target_post_replies_at_reply": "INTEGER",
         "target_post_quotes_at_reply": "INTEGER",
         "target_views_per_reply_at_reply": "REAL",
@@ -256,6 +268,9 @@ def migrate(con: sqlite3.Connection) -> None:
         "editorial_at": "TEXT",
         "editorial_model": "TEXT",
         "asset_path": "TEXT",
+        "retry_at": "TEXT",
+        "delivery_started_at": "TEXT",
+        "opportunity_snapshot_json": "TEXT",
         "reply_reconcile_last_checked_at": "TEXT",
         "reply_reconcile_attempts": "INTEGER NOT NULL DEFAULT 0",
         "matched_published_url": "TEXT",
@@ -318,7 +333,7 @@ def insert_signal(con: sqlite3.Connection, record: dict[str, Any]) -> tuple[int,
         "observed_views","view_velocity_per_min","engagement_rate","reply_surface_score","reply_competition_known",
         "observed_replies","observed_quotes","views_per_reply","reply_acquisition_score","feedback_score","feedback_samples",
         "feedback_median_impressions","feedback_growth_days","feedback_follower_gain","reason","topic",
-        "x_search_url","target_mode","suggested_angle","raw_json","created_at",
+        "x_search_url","target_mode","suggested_angle","raw_json","metrics_observed_at","created_at",
     ]
     defaults = {
         "distribution_score": 0,
@@ -357,7 +372,7 @@ def update_signal_observation(con: sqlite3.Connection, signal_id: int, record: d
         "distribution_score","observed_views","view_velocity_per_min","engagement_rate",
         "reply_surface_score","reply_competition_known","observed_replies","observed_quotes","views_per_reply",
         "reply_acquisition_score","feedback_score","feedback_samples","feedback_median_impressions","feedback_growth_days",
-        "feedback_follower_gain","reason","topic","x_search_url","target_mode","suggested_angle","raw_json",
+        "feedback_follower_gain","reason","topic","x_search_url","target_mode","suggested_angle","raw_json","metrics_observed_at",
     ]
     defaults = {
         "score": 0, "distribution_score": 0, "observed_views": 0,

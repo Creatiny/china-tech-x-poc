@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from .operating_policy import active, operator_available, paced_limits, lane_for, packet_violations
+
 GENERIC_ENTITIES = {"china", "chinese"}
 
 CANNED_REPLY_OPENERS = (
@@ -83,6 +85,9 @@ def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = Non
 
 
 def _reserve_model_call(con: sqlite3.Connection, cfg: dict[str, Any], purpose: str, model: str) -> int:
+    if active(cfg) and not operator_available(cfg):
+        raise RuntimeError("operator_asleep")
+    cfg = paced_limits(cfg)
     revision = str(cfg.get("budget_revision") or "legacy")
     max_tokens = int(cfg.get("max_tokens_per_day", 180000))
     if purpose == "GATE":
@@ -212,6 +217,8 @@ def _specific_entity_present(signal: dict[str, Any]) -> bool:
 
 
 def should_direct_final(signal: dict[str, Any], cfg: dict[str, Any]) -> bool:
+    if active(cfg):
+        return False  # Cheap editorial qualification now precedes every expensive final draft.
     # Verified X targets are already narrow, timely reply candidates; skip the generic-news gate.
     if str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET":
         return int(signal.get("score") or 0) >= int(cfg.get("p1_reply_min_score", 7)) and str(signal.get("priority") or "").upper() in {"P0", "P1"}
@@ -225,7 +232,7 @@ def should_direct_final(signal: dict[str, Any], cfg: dict[str, Any]) -> bool:
 
 def gate_prompt(signal: dict[str, Any]) -> str:
     return f'''Editorial gate for @KennyChinaTech.
-Audience: people who care about AI technology and how AI becomes real productivity, products, better workflows, lower costs, or new business models.
+Audience: Chinese-speaking developers, independent builders and small teams delivering real work with AI agents and coding tools.
 Core rule: news is material; viewpoint is the product. China-side evidence is a differentiation advantage, not a mandatory topic boundary.
 
 Return ONLY JSON {{"decision":"PASS|SKIP","confidence":0.0,"reason":"short concrete reason"}}. Do not browse. Do not invent facts.
@@ -235,6 +242,7 @@ PASS only if the candidate can support at least one of:
 - WHAT_CHANGES: a development that materially changes AI capability, cost, workflow, reliability, product design, business model, or competitive dynamics.
 SKIP generic macro/politics/general business, ordinary funding/earnings, headline restatements, generic China news, or AI news with no concrete productivity consequence.
 
+Intended lane: {signal.get('operating_lane','legacy')}. English reference material may support a named-subject CHINESE original; do not assess it as an English reply when the lane is POST. A generic caveat without a concrete added fact is SKIP.
 Title: {signal.get('title','')}
 Excerpt: {signal.get('excerpt','')}
 Source: {signal.get('source_name','')}
@@ -252,7 +260,7 @@ def load_spec_guardrails(root: Path) -> str:
     except Exception as exc:
         raise RuntimeError(f"project_spec_unreadable:{exc}") from exc
     parts: list[str] = []
-    for section in (19, 20, 23):
+    for section in (2, 4, 19, 20, 23, 33):
         match = re.search(rf"(?ms)^## {section}\. .*?(?=^## \d+\.|\Z)", text)
         if not match:
             raise RuntimeError(f"project_spec_missing_section:{section}")
@@ -343,7 +351,11 @@ def language_gate_violations(packet: dict[str, Any]) -> list[str]:
 
 def final_prompt(signal: dict[str, Any], spec_guardrails: str = "", humanizer_path: str = "", kenny_voice: str = "", recent_openers: list[str] | None = None) -> str:
     direct_target = str(signal.get("target_mode") or "") == "VERIFIED_X_TARGET"
-    if direct_target:
+    if signal.get("operating_lane") == "POST":
+        target_instruction = ("This is REFERENCE MATERIAL for a CHINESE original post, not a reply target. "
+                              "Decide POST or SKIP only. Do not search for or recommend an English reply. "
+                              "The original needs a named subject, one concrete finding and what a small team can do with it.")
+    elif direct_target:
         target_instruction = (
             f"This candidate is itself a verified direct X target post: {signal.get('canonical_url')}. "
             "Do not search for a different target. Decide REPLY or SKIP only; do not turn this X target into an ORIGINAL POST. "
@@ -355,9 +367,9 @@ def final_prompt(signal: dict[str, Any], spec_guardrails: str = "", humanizer_pa
     opener_block = "\n".join(f"- {x}" for x in recent_openers) if recent_openers else "- none available"
     return f'''You are the final editorial operator for @KennyChinaTech.
 
-Audience: people who follow AI technology and care about turning AI into real productivity.
-Positioning: 不报道 AI，判断 AI 正在改变什么。 News is raw material; Kenny's viewpoint is the product.
-Original posts are ALWAYS Chinese. Replies MUST follow the verified parent-post language.
+Audience: Chinese-speaking developers, independent builders and small teams using AI agents and coding tools to deliver real work.
+Positioning: 实测 AI 怎么帮小团队把事情做成：成本、踩坑、验收和交付。 News is raw material; concrete experience and evidence are the product.
+Original posts are ALWAYS Chinese. The automated acquisition lane recommends replies ONLY to Chinese-language parent posts. English primary sources are research material, not an English reply quota.
 China technology is a differentiation source, not a mandatory boundary.
 
 MANDATORY PRE-DRAFT SPEC CHECK:
@@ -413,7 +425,7 @@ Decision rules:
 
 Language rules:
 - POST final_copy MUST be natural Chinese, even if the source is English.
-- REPLY MUST follow the parent post language. English target -> English reply. Chinese target -> Chinese reply.
+- In this automatic acquisition lane, REPLY targets must be Chinese and the reply must be Chinese. English references may support Chinese originals only.
 
 Voice gate:
 - sound like Kenny joining a real conversation, never a report, press release, analyst note, or AI summary;
@@ -426,6 +438,9 @@ Voice gate:
 - no setup, recap, throat-clearing, generic praise, or formal conclusion;
 - if two drafts mean the same thing, choose the shorter one.
 
+Do not append a generic "needs real testing / verification / reliability" caveat to every topic. It is not information gain by itself.
+An added fact must materially change the parent discussion; give the exact fact, result or reproducible check and provenance in added_evidence. Never invent Kenny's experiments.
+For POST, name the model/tool/project IN the actual copy, not just metadata. Use two or three short paragraphs when needed: concrete observation, evidence, usable conclusion. An anonymous number or generic industry maxim is SKIP.
 REPLY defaults to one short, conversational sentence. Use a second sentence only when the point would otherwise lose accuracy or useful evidence. Aim for <=35 English words or about <=60 Chinese characters; never add words for completeness. POST should also be as short as the idea allows.
 
 For POST, do NOT put the source URL in final_copy. Provide source_url separately.
@@ -435,7 +450,7 @@ Visual decision:
 - REPLY: normally NONE.
 - POST: EDITORIAL_CARD only when 2-3 verified facts/data points materially improve comprehension.
 
-Return ONLY one-line JSON with exactly these keys:
+Return ONLY one-line JSON. Include added_evidence as an object with detail and source_url (or local_evidence_path for an actually supplied local source), and subject_name. Required base keys:
 {{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
@@ -486,7 +501,7 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
     if decision not in {"POST", "REPLY", "SKIP"}:
         decision = "SKIP"
     packet["decision"] = decision
-    if decision in {"POST", "REPLY"} and str(packet.get("final_copy") or "").strip():
+    if decision in {"POST", "REPLY"} and str(packet.get("final_copy") or "").strip() and (not cfg.get("humanize_only_on_violation",False) or bool(language_gate_violations(packet))):
         rewrite = _run_codex(
             con, root, cfg, "HUMANIZE",
             humanize_copy_prompt(signal, packet, humanizer_path, kenny_voice, openers),
@@ -496,7 +511,7 @@ def enrich_signal(con: sqlite3.Connection, root: Path, signal: dict[str, Any]) -
         if not rewritten_copy:
             raise RuntimeError("humanizer_empty_copy")
         packet["final_copy"] = rewritten_copy
-    violations = language_gate_violations(packet)
+    violations = language_gate_violations(packet) + packet_violations(signal, packet, cfg)
     if violations:
         return {
             "decision": "SKIP",

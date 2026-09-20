@@ -28,6 +28,7 @@ from .db import (
 from .sources import fetch_source, fingerprint, fetch_account_posts_from_url, fetch_x_profile_stats
 from .visuals import render_editorial_card
 from .formula import build_creator_feedback_map
+from .operating_policy import active, operator_available, preflight, packet_violations, lane_for
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -55,7 +56,7 @@ def load_toml(path: Path) -> dict[str, Any]:
 
 def _sent_packet_counts_since(con: sqlite3.Connection, start_utc: str) -> dict[str, int]:
     rows = con.execute(
-        """SELECT s.priority,a.editorial_packet_json FROM alert a JOIN signal s ON s.id=a.signal_id
+        """SELECT a.priority,a.editorial_packet_json FROM alert a JOIN signal s ON s.id=a.signal_id
            WHERE a.status='SENT' AND a.editorial_status='READY' AND a.sent_at>=?""",
         (start_utc,),
     ).fetchall()
@@ -136,6 +137,17 @@ def _creator_reply_counts(con: sqlite3.Connection, creator: str) -> tuple[int, i
 
 
 def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> tuple[bool, str]:
+    if active(cfg):
+        allowed, reason, _ = preflight(con, signal, cfg)
+        if not allowed:
+            return False, reason
+        violations = packet_violations(signal, packet, cfg)
+        if violations:
+            return False, ",".join(violations)
+        confidence = float(packet.get("confidence") or 0)
+        if confidence < float(cfg.get("p1_min_confidence", .88)):
+            return False, "confidence_below_threshold"
+        return True, "daytime_chinese_evidence_checked"
     priority = str(signal.get("priority") or "P1").upper()
     decision = str(packet.get("decision") or "SKIP").upper()
     confidence = float(packet.get("confidence") or 0.0)
@@ -226,72 +238,73 @@ def _outcome_due(posted_at: datetime | None, last_captured_at: datetime | None, 
 
 
 def capture_published_outcomes(con: sqlite3.Connection, *, handle: str = "KennyChinaTech", max_items: int = 2) -> dict[str, int]:
-    """Capture public X outcome metrics for our published replies/posts without paid API access."""
+    """Fair, bounded public-metric refresh. A failed/unchanged check also advances its attempt clock."""
     now = datetime.now(timezone.utc)
-    rows = con.execute(
-        """
-        SELECT p.*, MAX(o.captured_at) AS last_captured_at
-          FROM published_action p
-          LEFT JOIN outcome_snapshot o ON o.action_id=p.id
-         WHERE p.published_url IS NOT NULL AND p.posted_at>=?
-         GROUP BY p.id
-         ORDER BY CASE WHEN MAX(o.captured_at) IS NULL THEN 0 ELSE 1 END,
-                  COALESCE(MAX(o.captured_at),p.posted_at) ASC
-        """,
-        ((now - timedelta(days=14)).isoformat().replace("+00:00", "Z"),),
-    ).fetchall()
-    checked = captured = errors = 0
+    rows=con.execute("""SELECT p.*,MAX(o.captured_at) AS last_captured_at,t.last_attempt_at,t.error AS last_attempt_error
+      FROM published_action p LEFT JOIN outcome_snapshot o ON o.action_id=p.id
+      LEFT JOIN outcome_capture_state t ON t.action_id=p.id
+      WHERE p.published_url IS NOT NULL AND p.posted_at>=? GROUP BY p.id
+      ORDER BY COALESCE(t.last_attempt_at,MAX(o.captured_at),p.posted_at) ASC""",(iso(now-timedelta(days=14)),)).fetchall()
+    checked=captured=errors=missing=0
     for row in rows:
-        if checked >= max_items:
-            break
-        posted_at = _parse_iso(row["posted_at"])
-        last_at = _parse_iso(row["last_captured_at"])
-        if not _outcome_due(posted_at, last_at, now):
-            continue
-        checked += 1
+        if checked>=max_items:break
+        attempt=_parse_iso(row['last_attempt_at'])
+        latest=_parse_iso(row['last_captured_at'])
+        last=attempt or latest
+        if row['last_attempt_error'] and attempt:
+            if (now-attempt).total_seconds()<1800:continue
+        elif not _outcome_due(_parse_iso(row['posted_at']),last,now):continue
+        checked+=1
+        con.execute("INSERT INTO outcome_capture_state(action_id,last_attempt_at,attempts,error) VALUES(?,?,1,'attempt_in_progress') ON CONFLICT(action_id) DO UPDATE SET last_attempt_at=excluded.last_attempt_at,attempts=outcome_capture_state.attempts+1,error=excluded.error",(row['id'],iso(now)));con.commit()
         try:
-            items = fetch_account_posts_from_url(str(row["published_url"]), handle)
-            wanted = _tweet_id(row["published_url"])
-            item = next((x for x in items if _tweet_id(x.get("canonical_url")) == wanted), None)
-            if not item:
-                continue
-            metrics = item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
-            impressions = metrics.get("views")
-            if impressions is None:
-                continue
-            component_keys = ("likes", "replies", "reposts", "quotes", "bookmarks")
-            known_components = [int(metrics[k]) for k in component_keys if k in metrics and metrics[k] is not None]
-            engagements = sum(known_components) if known_components else None
-            latest = con.execute(
-                "SELECT * FROM outcome_snapshot WHERE action_id=? ORDER BY captured_at DESC LIMIT 1",
-                (row["id"],),
-            ).fetchone()
-            changed = latest is None or any(
-                latest[k] != v for k, v in {
-                    "impressions": int(impressions),
-                    "engagements": engagements,
-                    "likes": metrics.get("likes"),
-                    "replies": metrics.get("replies"),
-                    "reposts": metrics.get("reposts"),
-                    "quotes": metrics.get("quotes"),
-                    "bookmarks": metrics.get("bookmarks"),
-                }.items()
-            )
-            if not changed:
-                continue
-            con.execute(
-                """INSERT INTO outcome_snapshot(
-                       action_id,captured_at,impressions,engagements,likes,replies,reposts,quotes,bookmarks,profile_visits,notes
-                   ) VALUES(?,?,?,?,?,?,?,?,?,NULL,?)""",
-                (row["id"], iso(), int(impressions), engagements, metrics.get("likes"), metrics.get("replies"),
-                 metrics.get("reposts"), metrics.get("quotes"), metrics.get("bookmarks"),
-                 "Auto-captured from public X SSR; profile visits are not publicly exposed."),
-            )
-            con.commit()
-            captured += 1
-        except Exception:
-            errors += 1
-    return {"checked": checked, "captured": captured, "errors": errors}
+            items=fetch_account_posts_from_url(str(row['published_url']),handle)
+            wanted=_tweet_id(row['published_url'])
+            item=next((x for x in items if _tweet_id(x.get('canonical_url'))==wanted),None)
+            metrics=item.get('metrics',{}) if item else {}
+            if not isinstance(metrics,dict) or metrics.get('views') is None:
+                missing+=1
+                con.execute("UPDATE outcome_capture_state SET error='public_metrics_unavailable' WHERE action_id=?",(row['id'],));con.commit();continue
+            keys=('likes','replies','reposts','quotes','bookmarks')
+            engagements=sum(int(metrics[k]) for k in keys) if all(metrics.get(k) is not None for k in keys) else None
+            captured_at=iso()
+            # Persist unchanged successes too: a 24-hour observation is different evidence from a 1-minute observation.
+            con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions,engagements,likes,replies,reposts,quotes,bookmarks,profile_visits,notes) VALUES(?,?,?,?,?,?,?,?,?,NULL,?)",(row['id'],captured_at,int(metrics['views']),engagements,*[metrics.get(k) for k in keys],'Public snapshot; repeated views, not unique readers. Profile visits unavailable.'))
+            con.execute("UPDATE outcome_capture_state SET last_success_at=?,error=NULL WHERE action_id=?",(captured_at,row['id']));con.commit();captured+=1
+        except Exception as exc:
+            errors+=1
+            con.execute("UPDATE outcome_capture_state SET error=? WHERE action_id=?",(type(exc).__name__,row['id']));con.commit()
+    return dict(checked=checked,captured=captured,errors=errors,missing=missing)
+
+
+def reconcile_sent_originals(con: sqlite3.Connection, handle: str = "KennyChinaTech") -> dict[str, int]:
+    source_id = "__original_reconcile__:"+handle.casefold()
+    now = datetime.now(timezone.utc)
+    if not source_due(get_source_state(con,source_id),30,now):
+        return dict(checked=0,matched=0)
+    try:
+        from .sources import fetch_x_profile
+        items,_,_=fetch_x_profile({'handle':handle,'request_timeout_seconds':10},None)
+        rows=con.execute("SELECT a.id,a.signal_id,a.sent_at,a.editorial_packet_json FROM alert a WHERE status='SENT' AND json_extract(editorial_packet_json,'$.decision')='POST' AND sent_at>=? ORDER BY sent_at DESC",(iso(now-timedelta(days=14)),)).fetchall()
+        matched=0
+        for item in items:
+            url=item.get('canonical_url');published=item.get('published_at')
+            if not url or not published or con.execute('SELECT 1 FROM published_action WHERE published_url=?',(url,)).fetchone():continue
+            candidates=[]
+            for row in rows:
+                packet=json.loads(row['editorial_packet_json'] or '{}')
+                sent=_parse_iso(row['sent_at'])
+                if not sent or not 0 <= (published-sent).total_seconds() <= 48*3600:continue
+                similarity=_reply_copy_score(packet.get('final_copy'),item.get('excerpt') or item.get('title'))
+                if similarity>=.88:candidates.append((similarity,row,packet))
+            if not candidates:continue
+            _,row,packet=max(candidates,key=lambda z:z[0])
+            con.execute("INSERT INTO published_action(signal_id,action_type,published_url,published_text,posted_at,angle_type,media_type,has_external_link) VALUES(?,'ORIGINAL',?,?,?,?, 'NONE',0)",(row['signal_id'],url,item.get('excerpt') or item.get('title'),iso(published),packet.get('angle_type')))
+            con.execute('UPDATE alert SET matched_published_url=?,matched_at=? WHERE id=?',(url,iso(),row['id']));con.commit();matched+=1
+        save_source_state(con,source_id,success=True,item_count=len(items))
+        return dict(checked=len(items),matched=matched)
+    except Exception as exc:
+        save_source_state(con,source_id,success=False,error=type(exc).__name__)
+        return dict(checked=0,matched=0,errors=1)
 
 
 def capture_account_snapshot(con: sqlite3.Connection, rules: dict[str, Any]) -> dict[str, Any]:
@@ -332,7 +345,7 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
     check_before = datetime.fromtimestamp(now.timestamp() - 5 * 60, tz=timezone.utc).isoformat().replace("+00:00", "Z")
     rows = con.execute(
         """SELECT a.id alert_id,a.signal_id,a.sent_at,a.editorial_packet_json,
-                  a.reply_reconcile_attempts,a.reply_reconcile_last_checked_at,
+                  a.reply_reconcile_attempts,a.reply_reconcile_last_checked_at,a.opportunity_snapshot_json,
                   s.topic,s.published_at,s.observed_views,s.observed_replies,s.observed_quotes,
                   s.views_per_reply,s.reply_surface_score
              FROM alert a JOIN signal s ON s.id=a.signal_id
@@ -362,19 +375,18 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
                 published_url = str(best.get("canonical_url") or "")
                 posted_at = iso(best.get("published_at")) if best.get("published_at") else checked_at
                 actual_text = str(best.get("excerpt") or expected)
+                try:
+                    parent_snapshot = json.loads(row['opportunity_snapshot_json'] or '{}')
+                except (ValueError,TypeError):
+                    parent_snapshot = {}
+                observed_at = _parse_iso(parent_snapshot.get('metrics_observed_at'))
+                published_time = _parse_iso(posted_at)
+                eligible_snapshot = observed_at and published_time and 0 <= (published_time-observed_at).total_seconds() <= 1800
+                if not eligible_snapshot:
+                    parent_snapshot = {}
                 existing = con.execute("SELECT id FROM published_action WHERE signal_id=? ORDER BY id DESC LIMIT 1", (row["signal_id"],)).fetchone()
                 if existing:
-                    con.execute(
-                        """UPDATE published_action SET published_url=?,published_text=?,posted_at=?,
-                               target_post_impressions_at_reply=COALESCE(target_post_impressions_at_reply,?),
-                               target_post_replies_at_reply=COALESCE(target_post_replies_at_reply,?),
-                               target_post_quotes_at_reply=COALESCE(target_post_quotes_at_reply,?),
-                               target_views_per_reply_at_reply=COALESCE(target_views_per_reply_at_reply,?),
-                               target_reply_surface_score_at_reply=COALESCE(target_reply_surface_score_at_reply,?)
-                           WHERE id=?""",
-                        (published_url, actual_text, posted_at, row["observed_views"], row["observed_replies"],
-                         row["observed_quotes"], row["views_per_reply"], row["reply_surface_score"], existing["id"]),
-                    )
+                    con.execute("UPDATE published_action SET published_url=?,published_text=?,posted_at=? WHERE id=?",(published_url,actual_text,posted_at,existing['id']))
                 else:
                     con.execute(
                         """INSERT INTO published_action(
@@ -384,9 +396,11 @@ def reconcile_sent_replies(con: sqlite3.Connection, *, handle: str = "KennyChina
                                angle_type,media_type,has_external_link
                            ) VALUES(?,?,?,?,?,'REPLY',?,?,?,?,?,?,?,?,?, 'NONE',0)""",
                         (row["signal_id"], target_url, published_url, actual_text, posted_at, row["topic"],
-                         packet.get("target_account"), row["published_at"], row["observed_views"], row["observed_replies"],
-                         row["observed_quotes"], row["views_per_reply"], row["reply_surface_score"], packet.get("angle_type")),
+                         packet.get("target_account"), row["published_at"], parent_snapshot.get("observed_views"), parent_snapshot.get("observed_replies"),
+                         parent_snapshot.get("observed_quotes"), parent_snapshot.get("views_per_reply"), parent_snapshot.get("reply_surface_score"), packet.get("angle_type")),
                     )
+                if not existing and eligible_snapshot:
+                    con.execute("UPDATE published_action SET parent_snapshot_observed_at=?,parent_snapshot_origin='prepublication_alert_observation' WHERE published_url=?",(parent_snapshot['metrics_observed_at'],published_url))
                 con.execute(
                     """UPDATE alert SET matched_published_url=?,matched_at=?,reply_reconcile_last_checked_at=?,
                            reply_reconcile_attempts=coalesce(reply_reconcile_attempts,0)+1 WHERE id=?""",
@@ -423,6 +437,18 @@ def process_pending_alerts(
     """
     rules = load_toml(root / "config" / "rules.toml")
     limit = int(max_alerts if max_alerts is not None else rules.get("max_alerts_per_cycle", 3))
+    cfg = load_editorial_config(root)
+    if active(cfg):
+        from .daytime_editorial import process
+        import fcntl
+        database = str(con.execute("PRAGMA database_list").fetchone()[2])
+        with open(database + ".editorial.lock", "a") as lock:
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                return {"state":"WORKER_BUSY","processed":0,"sent":0}
+            return process(con, root, cfg, limit)
+
     result: dict[str, Any] = {
         "processed": 0, "sent": 0, "skipped": 0, "held": 0, "errors": 0,
         "recovered_stale_processing": 0,
@@ -563,6 +589,10 @@ def _effective_poll_minutes(source: dict[str, Any], creator_feedback: dict[str, 
     base = max(1, int(source.get("poll_minutes", 5)))
     if source.get("kind") != "x_profile":
         return base
+    if source.get("acquisition_role") and (datetime.now(ZoneInfo("Asia/Shanghai")).hour < 8 or datetime.now(ZoneInfo("Asia/Shanghai")).hour >= 22):
+        return max(base,30)
+    if source.get("acquisition_role") == "reference":
+        return base
     creator = _normalize_target_creator(source.get("handle"))
     fb = creator_feedback.get(creator, {})
     score = int(fb.get("score", 0))
@@ -701,6 +731,7 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
                         "target_mode": result.get("target_mode", "TARGET_SEARCH_REQUIRED"),
                         "suggested_angle": result.get("suggested_angle"),
                         "raw_json": json_text(item),
+                        "metrics_observed_at": iso(),
                         "created_at": discovered,
                     }
                     signal_id, created = insert_signal(con, record)
@@ -756,11 +787,12 @@ def run_cycle(con: sqlite3.Connection, root: Path, *, send_alerts: bool = True) 
 
         # Post-publication tracking is secondary to discovery/alerts. Keep it cheap and run it last.
         reconcile_sent_replies(con, max_items=1)
-        capture_published_outcomes(
+        counters["outcome_capture"] = capture_published_outcomes(
             con,
             handle=str(rules.get("account_handle") or "KennyChinaTech"),
             max_items=int(rules.get("outcome_capture_max_items_per_cycle", 2)),
         )
+        counters["original_reconcile"] = reconcile_sent_originals(con, str(rules.get("account_handle") or "KennyChinaTech"))
         capture_account_snapshot(con, rules)
 
         record_cycle_finish(

@@ -6,7 +6,7 @@
 
 ## Canonical Authority
 
-- `PROJECT_SPEC.md` v3.7
+- `PROJECT_SPEC.md` v3.8
 - `EXECUTION_PLAN.md` v2.0
 - `00_Governance/OPERATING_KPI.md` v4.0
 
@@ -127,3 +127,13 @@ Recent account analysis showed replies can obtain materially more impressions th
 - The development repository runtime path is a local symlink to the same database; it must not become a second live state store.
 - Production launcher scripts now fail closed if a local environment override points `CHINA_TECH_RADAR_DB` anywhere else.
 - Reply outcome formula reports now include `reply_surface_bucket` (`OPEN` / `MODERATE` / `CROWDED` / `UNKNOWN`) so future mature samples can test whether open reply surfaces actually increase Kenny impressions.
+
+## 2026-09-20 operational correction (authoritative current policy)
+
+Policy v3.8 supersedes earlier language/cadence/Surface/instant-snapshot claims. Follow the current PROJECT_SPEC sections 2,4,27,28,31–33.
+
+Audit: Sep16–20 follower snapshots 27->30. 84 sent packages, of which 59 were sent 00–08 Beijing; 69 Replies, of which 54 were sent in that overnight window. This is recommendation timing, not complete publishing/click analytics. 7/81 observed creators were predominantly Chinese. The previous outcome scheduler starved newer actions; their early 1–12 view snapshots were not mature results. Exact URLs were re-read: two MaxForAI Replies had 492 and 502 views, one SemiAnalysis Reply 801. These remain view counts, not unique people or attributable followers.
+
+Implemented: Chinese acquisition / global reference separation; 08–22 quiet gate before drafting and sending, including P0; daypart budget reservation without increasing/resetting allowance; preflight before model use; provider backoff; observed-outcome fairness and maturity; original URL reconciliation; timestamped pre-publication snapshots; bounded Surface contribution; ASCII-token boundaries within Chinese text. No X post, Reply, follow, profile edit or deletion is automated.
+
+Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-growth-audit/`. Code/tests passing does not demonstrate improved follower growth; evaluate subsequent mature outcomes.

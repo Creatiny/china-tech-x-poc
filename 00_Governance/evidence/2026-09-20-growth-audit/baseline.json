@@ -1,0 +1,2328 @@
+{
+  "captured_at": "2026-09-20T10:02:40.647295+00:00",
+  "timezone": "Asia/Shanghai",
+  "windows": {
+    "since_sep16": {
+      "alert_count": 445,
+      "statuses": {
+        "EDITORIAL_SKIP": 75,
+        "EDITORIAL_HOLD": 87,
+        "SENT": 84,
+        "EDITORIAL_ERROR": 199
+      },
+      "sent_kinds": {
+        "REPLY": 69,
+        "POST": 15
+      },
+      "sent_languages": {
+        "en": 61,
+        "zh": 23
+      },
+      "sent_by_day": {
+        "2026-09-16": 17,
+        "2026-09-17": 28,
+        "2026-09-18": 24,
+        "2026-09-19": 4,
+        "2026-09-20": 11
+      },
+      "time_bins": [
+        {
+          "hours": "00-08",
+          "sent": 59,
+          "reply": 54,
+          "post": 5,
+          "zh": 8,
+          "en": 51,
+          "matched": 3
+        },
+        {
+          "hours": "08-12",
+          "sent": 20,
+          "reply": 12,
+          "post": 8,
+          "zh": 13,
+          "en": 7,
+          "matched": 8
+        },
+        {
+          "hours": "12-18",
+          "sent": 3,
+          "reply": 2,
+          "post": 1,
+          "zh": 1,
+          "en": 2,
+          "matched": 0
+        },
+        {
+          "hours": "18-22",
+          "sent": 2,
+          "reply": 1,
+          "post": 1,
+          "zh": 1,
+          "en": 1,
+          "matched": 0
+        },
+        {
+          "hours": "22-24",
+          "sent": 0,
+          "reply": 0,
+          "post": 0,
+          "zh": 0,
+          "en": 0,
+          "matched": 0
+        }
+      ],
+      "errors": [
+        [
+          "RuntimeError",
+          194
+        ],
+        [
+          "creator_24h_cooldown",
+          30
+        ],
+        [
+          "creator_7d_cap",
+          20
+        ],
+        [
+          "p1_reply_window_cap_reached",
+          12
+        ],
+        [
+          "p1_post_daily_slot_used",
+          12
+        ],
+        [
+          "p1_confidence_below_threshold",
+          11
+        ],
+        [
+          "TimeoutError",
+          5
+        ],
+        [
+          "p1_post_score_below_threshold",
+          1
+        ],
+        [
+          "p1_reply_score_below_threshold",
+          1
+        ]
+      ],
+      "top_sent_creators": [
+        [
+          "",
+          8
+        ],
+        [
+          "@semianalysis_",
+          6
+        ],
+        [
+          "contact@pandaily.com (Pandaily)",
+          6
+        ],
+        [
+          "@jukan05",
+          4
+        ],
+        [
+          "@claudeai",
+          3
+        ],
+        [
+          "@omarsar0",
+          3
+        ],
+        [
+          "@tanayj",
+          3
+        ],
+        [
+          "@aidotengineer",
+          3
+        ],
+        [
+          "@mattshumer_",
+          3
+        ],
+        [
+          "@gakonst",
+          3
+        ],
+        [
+          "@maxforai",
+          3
+        ],
+        [
+          "@bcherny",
+          3
+        ],
+        [
+          "@himanshustwts",
+          3
+        ],
+        [
+          "@hxiao",
+          2
+        ],
+        [
+          "@jenzhuscott",
+          2
+        ]
+      ],
+      "tracked_published": 11,
+      "published_kind": {
+        "REPLY": 11
+      },
+      "own_impressions_median": 2,
+      "by_language": {
+        "zh": {
+          "n": 5,
+          "with_metrics": 5,
+          "median": 2,
+          "max": 12,
+          "parent_lag_median_minutes": 86.8
+        },
+        "en": {
+          "n": 6,
+          "with_metrics": 6,
+          "median": 2.5,
+          "max": 390,
+          "parent_lag_median_minutes": 17.9
+        },
+        "unknown": {
+          "n": 0,
+          "with_metrics": 0,
+          "median": null,
+          "max": null,
+          "parent_lag_median_minutes": null
+        }
+      }
+    },
+    "last14d": {
+      "alert_count": 1118,
+      "statuses": {
+        "EDITORIAL_SKIP": 224,
+        "SENT": 164,
+        "EDITORIAL_HOLD": 188,
+        "EDITORIAL_ERROR": 542
+      },
+      "sent_kinds": {
+        "REPLY": 134,
+        "POST": 30
+      },
+      "sent_languages": {
+        "en": 115,
+        "zh": 49
+      },
+      "sent_by_day": {
+        "2026-09-06": 1,
+        "2026-09-07": 2,
+        "2026-09-09": 7,
+        "2026-09-10": 3,
+        "2026-09-11": 2,
+        "2026-09-12": 11,
+        "2026-09-13": 17,
+        "2026-09-14": 22,
+        "2026-09-15": 15,
+        "2026-09-16": 17,
+        "2026-09-17": 28,
+        "2026-09-18": 24,
+        "2026-09-19": 4,
+        "2026-09-20": 11
+      },
+      "time_bins": [
+        {
+          "hours": "00-08",
+          "sent": 90,
+          "reply": 83,
+          "post": 7,
+          "zh": 13,
+          "en": 77,
+          "matched": 6
+        },
+        {
+          "hours": "08-12",
+          "sent": 30,
+          "reply": 17,
+          "post": 13,
+          "zh": 19,
+          "en": 11,
+          "matched": 10
+        },
+        {
+          "hours": "12-18",
+          "sent": 22,
+          "reply": 16,
+          "post": 6,
+          "zh": 8,
+          "en": 14,
+          "matched": 10
+        },
+        {
+          "hours": "18-22",
+          "sent": 18,
+          "reply": 14,
+          "post": 4,
+          "zh": 7,
+          "en": 11,
+          "matched": 6
+        },
+        {
+          "hours": "22-24",
+          "sent": 4,
+          "reply": 4,
+          "post": 0,
+          "zh": 2,
+          "en": 2,
+          "matched": 1
+        }
+      ],
+      "errors": [
+        [
+          "RuntimeError",
+          521
+        ],
+        [
+          "creator_24h_cooldown",
+          34
+        ],
+        [
+          "p1_reply_window_cap_reached",
+          30
+        ],
+        [
+          "p1_confidence_below_threshold",
+          27
+        ],
+        [
+          "creator_7d_cap",
+          23
+        ],
+        [
+          "p1_post_score_below_threshold",
+          19
+        ],
+        [
+          "p1_post_daily_slot_used",
+          18
+        ],
+        [
+          "post_daily_cap_reached",
+          17
+        ],
+        [
+          "TimeoutExpired",
+          15
+        ],
+        [
+          "reply_daily_cap_reached",
+          10
+        ],
+        [
+          "b_reply_daily_cap_reached",
+          7
+        ],
+        [
+          "TimeoutError",
+          5
+        ],
+        [
+          "p1_reply_score_below_threshold",
+          3
+        ],
+        [
+          "superseded_by_v5_prefilter",
+          1
+        ],
+        [
+          "NameError",
+          1
+        ]
+      ],
+      "top_sent_creators": [
+        [
+          "@jukan05",
+          19
+        ],
+        [
+          "",
+          17
+        ],
+        [
+          "contact@pandaily.com (Pandaily)",
+          14
+        ],
+        [
+          "@shao__meng",
+          13
+        ],
+        [
+          "@onusoz",
+          6
+        ],
+        [
+          "@semianalysis_",
+          6
+        ],
+        [
+          "@fchollet",
+          5
+        ],
+        [
+          "@nateberkopec",
+          5
+        ],
+        [
+          "@dexhorthy",
+          4
+        ],
+        [
+          "@quxiaoyin",
+          4
+        ],
+        [
+          "@omarsar0",
+          4
+        ],
+        [
+          "@ycombinator",
+          3
+        ],
+        [
+          "@mitsuhiko",
+          3
+        ],
+        [
+          "@voxyz_ai",
+          3
+        ],
+        [
+          "@claudeai",
+          3
+        ]
+      ],
+      "tracked_published": 34,
+      "published_kind": {
+        "REPLY": 34
+      },
+      "own_impressions_median": 40,
+      "by_language": {
+        "zh": {
+          "n": 13,
+          "with_metrics": 13,
+          "median": 40,
+          "max": 628,
+          "parent_lag_median_minutes": 50.0
+        },
+        "en": {
+          "n": 21,
+          "with_metrics": 20,
+          "median": 31.0,
+          "max": 1472,
+          "parent_lag_median_minutes": 8.4
+        },
+        "unknown": {
+          "n": 0,
+          "with_metrics": 0,
+          "median": null,
+          "max": null,
+          "parent_lag_median_minutes": null
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "id": 1,
+      "signal_id": 943,
+      "target_url": null,
+      "published_url": "https://x.com/KennyChinaTech/status/2094405136366047694",
+      "published_text": "A Chinese court has frozen up to $300m of Nexperia-owned assets in China.\n\nThe court case is new. The supply-chain split isn’t.\n\nWingtech says Dongguan handles ~70% of Nexperia’s annual shipments. Its China unit has rebuilt local MOSFET and logic-IC supply, but transistors—54% of Q1 chip revenue—are still being shipped from existing inventory because overseas wafer supply remains cut off.\n\nThis gives Wingtech leverage. It doesn’t put the two sides back together.\n\nhttps://www.reuters.com/world/asia-pacific/chinese-court-freezes-dutch-chipmaker-nexperia-bvs-stakes-four-china-units-2026-08-31/",
+      "posted_at": "2026-08-31T12:41:11.332Z",
+      "action_type": "ORIGINAL",
+      "event_type": "SEMICONDUCTOR",
+      "target_account": null,
+      "target_account_followers": null,
+      "target_posted_at": null,
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "CHINA_CONTEXT",
+      "hook_type": "CONTRAST",
+      "media_type": "IMAGE",
+      "has_external_link": 1,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 47,
+      "outcome_at": "2026-09-01T02:28:23.075395Z",
+      "likes": 0,
+      "replies": 0,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": null,
+      "outcome_age_hours": 13.8
+    },
+    {
+      "id": 3,
+      "signal_id": 678873,
+      "target_url": "https://x.com/shao__meng/status/2097622055672012970",
+      "published_url": "https://x.com/KennyChinaTech/status/2097634631902486739",
+      "published_text": "@shao__meng @shuding 这个方向的价值不只是把包做小，而是把“每种语言维护一套 grammar”改成“一个模型按上下文猜 token 类型”。gpu-lexer 的实测数据很有说服力：27.4KB、热门语言加权一致率 90.35%，5.56M 字符的 warmed benchmark 里是 402ms，对比 Shiki 的",
+      "posted_at": "2026-09-09T10:34:03Z",
+      "action_type": "REPLY",
+      "event_type": "gpu",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-09T09:44:04Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 138,
+      "outcome_at": "2026-09-15T16:24:28.729151Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 50.0,
+      "outcome_age_hours": 149.8
+    },
+    {
+      "id": 2,
+      "signal_id": 678808,
+      "target_url": "https://x.com/jukan05/status/2097618417067205107",
+      "published_url": null,
+      "published_text": "Exactly. This is why AI capacity planning has to model the whole system, not just GPU and HBM shipments. TSMC’s Advanced Backend Fab 6 is designed for over 1 million 12-inch wafer-equivalents and more than 10 million testing hours per year—proof that packaging and testing are first-class capacity constraints.",
+      "posted_at": "2026-09-09T10:40:54.813857Z",
+      "action_type": "REPLY",
+      "event_type": "memory",
+      "target_account": "jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-09T09:29:37Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": null,
+      "outcome_at": null,
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 71.3,
+      "outcome_age_hours": null
+    },
+    {
+      "id": 4,
+      "signal_id": 1021712,
+      "target_url": "https://x.com/shao__meng/status/2098615707953254567",
+      "published_url": "https://x.com/KennyChinaTech/status/2098616999140340213",
+      "published_text": "@shao__meng 把“模型能力”和“Harness 加成”拆开了。报告里不同代码、视觉和自动化 benchmark 仍分别使用 DeepSeek Harness、Claude Code 或官方 scaffold；所以选 Coding Agent，不能只看模型榜单，得在自己的工具链和任务上测端到端完成率。",
+      "posted_at": "2026-09-12T03:37:37Z",
+      "action_type": "REPLY",
+      "event_type": "agent",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T03:32:29Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 401,
+      "outcome_at": "2026-09-16T18:23:16.382220Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 5.1,
+      "outcome_age_hours": 110.8
+    },
+    {
+      "id": 5,
+      "signal_id": 1050484,
+      "target_url": "https://x.com/nateberkopec/status/2098707351138419117",
+      "published_url": "https://x.com/KennyChinaTech/status/2098742478539194426",
+      "published_text": "@nateberkopec Yes—but I don’t rely on the agent remembering a “human only” rule. I put those paths in CODEOWNERS and require code-owner approval on protected branches; GitHub supports both automatic owner review requests and blocking the merge until approval. CI also fails if the protected",
+      "posted_at": "2026-09-12T11:56:14Z",
+      "action_type": "REPLY",
+      "event_type": "agents",
+      "target_account": "@nateberkopec",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T09:36:39Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 99,
+      "outcome_at": "2026-09-17T09:47:55.628538Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 139.6,
+      "outcome_age_hours": 117.9
+    },
+    {
+      "id": 6,
+      "signal_id": 1058319,
+      "target_url": "https://x.com/nateberkopec/status/2098729112714248448",
+      "published_url": "https://x.com/KennyChinaTech/status/2098742680360534458",
+      "published_text": "@nateberkopec That criticism is too broad. METR’s latest evaluations found frontier agents completing tasks that would take humans more than two full-time days, while its controlled trial found early-2025 AI systems still weren’t accelerating experienced developers. The useful safety work is",
+      "posted_at": "2026-09-12T11:57:02Z",
+      "action_type": "REPLY",
+      "event_type": "ai",
+      "target_account": "@nateberkopec",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T11:03:07Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 16,
+      "outcome_at": "2026-09-18T00:30:17.853918Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 53.9,
+      "outcome_age_hours": 132.6
+    },
+    {
+      "id": 7,
+      "signal_id": 1065930,
+      "target_url": "https://x.com/shao__meng/status/2098750142585438506",
+      "published_url": "https://x.com/KennyChinaTech/status/2098751140217467296",
+      "published_text": "@shao__meng CS336 的含金量在于它不是“看懂 Transformer”就结束：官方作业一路做到 Triton FlashAttention、分布式训练、Common Crawl 清洗去重，以及用 RL 训练推理模型。想把 AI 变成生产力，建议把它当成一条完整模型生产链来练；CS221 再补上搜索、概率、决策和逻辑，知识才不容易被下一代模型架构带走。",
+      "posted_at": "2026-09-12T12:30:39Z",
+      "action_type": "REPLY",
+      "event_type": "artificial intelligence",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T12:26:41Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 210,
+      "outcome_at": "2026-09-17T09:48:23.077704Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 4.0,
+      "outcome_age_hours": 117.3
+    },
+    {
+      "id": 8,
+      "signal_id": 1078449,
+      "target_url": "https://x.com/shao__meng/status/2098783138118041760",
+      "published_url": "https://x.com/KennyChinaTech/status/2098785131276419153",
+      "published_text": "@shao__meng 这其实把 Agent 的成本瓶颈说得很清楚：以后拼的不只是模型每秒吐多少 token，而是能复用多少上下文。前缀缓存的收益高度依赖命中率；命中率低，KV 被驱逐后就得重新计算，100 轮循环从 55 倍降到 10 倍不会自动发生。",
+      "posted_at": "2026-09-12T14:45:43Z",
+      "action_type": "REPLY",
+      "event_type": "llm",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T14:37:48Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 628,
+      "outcome_at": "2026-09-17T09:48:46.585788Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 7.9,
+      "outcome_age_hours": 115.1
+    },
+    {
+      "id": 9,
+      "signal_id": 1088846,
+      "target_url": "https://x.com/onusoz/status/2098812431309119997",
+      "published_url": "https://x.com/KennyChinaTech/status/2098817038353629418",
+      "published_text": "@onusoz DeepSeek reports 90.6 on Terminal-Bench 2.1, but that result uses its own Minimal Harness with a 1M-token context. Independent work has already shown the same V4 Flash moving from 82.7% to 88.1% with harness adaptation, so your contamination concern is especially relevant: the",
+      "posted_at": "2026-09-12T16:52:30Z",
+      "action_type": "REPLY",
+      "event_type": "model",
+      "target_account": "@onusoz",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-12T16:34:12Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 194,
+      "outcome_at": "2026-09-15T16:18:23.555106Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 18.3,
+      "outcome_age_hours": 71.4
+    },
+    {
+      "id": 10,
+      "signal_id": 1155404,
+      "target_url": "https://x.com/_lopopolo/status/2098972026216280273",
+      "published_url": "https://x.com/KennyChinaTech/status/2098972490894860506",
+      "published_text": "@_lopopolo Claude Code users approved roughly 93% of permission prompts, so permission boundaries matter. Human review can easily turn into rubber-stamping.",
+      "posted_at": "2026-09-13T03:10:13Z",
+      "action_type": "REPLY",
+      "event_type": "agent",
+      "target_account": "_lopopolo",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T03:08:22Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 40,
+      "outcome_at": "2026-09-15T16:18:25.461172Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 1.9,
+      "outcome_age_hours": 61.1
+    },
+    {
+      "id": 11,
+      "signal_id": 1173094,
+      "target_url": "https://x.com/onusoz/status/2099016722322006311",
+      "published_url": "https://x.com/KennyChinaTech/status/2099020874838167944",
+      "published_text": "@onusoz If contamination is plausible, leaderboard wins mean a lot less. I’d test the same real agent tasks on a private, time-split eval first.",
+      "posted_at": "2026-09-13T06:22:29Z",
+      "action_type": "REPLY",
+      "event_type": "model",
+      "target_account": "@onusoz",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T06:05:59Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 291,
+      "outcome_at": "2026-09-15T16:18:27.933145Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 16.5,
+      "outcome_age_hours": 57.9
+    },
+    {
+      "id": 12,
+      "signal_id": 1173914,
+      "target_url": "https://x.com/jukan05/status/2099018934293016847",
+      "published_url": "https://x.com/KennyChinaTech/status/2099021060033425734",
+      "published_text": "@jukan05 I'd wait before calling this a reshuffle. That's a 2Q26 ranking, while TrendForce still had Qualcomm third and AMD fourth for 2025.",
+      "posted_at": "2026-09-13T06:23:13Z",
+      "action_type": "REPLY",
+      "event_type": "semiconductor",
+      "target_account": "@jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T06:14:46Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 1472,
+      "outcome_at": "2026-09-15T16:18:30.119397Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 8.4,
+      "outcome_age_hours": 57.9
+    },
+    {
+      "id": 13,
+      "signal_id": 1182204,
+      "target_url": "https://x.com/jukan05/status/2099041118554079256",
+      "published_url": "https://x.com/KennyChinaTech/status/2099041887659463145",
+      "published_text": "@jukan05 The four-week-to-one-week claim is a real productivity signal, but I’d still want to know if verification and sign-off are included.",
+      "posted_at": "2026-09-13T07:45:58Z",
+      "action_type": "REPLY",
+      "event_type": "agents",
+      "target_account": "@jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T07:42:55Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 277,
+      "outcome_at": "2026-09-15T16:18:32.043148Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 3.0,
+      "outcome_age_hours": 56.5
+    },
+    {
+      "id": 14,
+      "signal_id": 1273820,
+      "target_url": "https://x.com/shao__meng/status/2099275387595592189",
+      "published_url": "https://x.com/KennyChinaTech/status/2099302884416552983",
+      "published_text": "@shao__meng @thoma_gu 不错的学习资料，自己动手的话，Agent 先在内部试错再动手，才更接近可靠自动化，光给 LLM 再喂一批文本，生产力价值没那么大。",
+      "posted_at": "2026-09-14T01:03:05Z",
+      "action_type": "REPLY",
+      "event_type": "llm",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T23:13:49Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 27,
+      "outcome_at": "2026-09-15T16:18:40.527818Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 109.3,
+      "outcome_age_hours": 39.3
+    },
+    {
+      "id": 15,
+      "signal_id": 1276213,
+      "target_url": "https://x.com/shao__meng/status/2099281275370754227",
+      "published_url": "https://x.com/KennyChinaTech/status/2099303948457029933",
+      "published_text": "@shao__meng @gauri__gupta 这类笔记拿来搭知识地图挺好，真要降成本还是得按 workload 选优化，没实际经验建议不要直接硬背，面试会翻车",
+      "posted_at": "2026-09-14T01:07:19Z",
+      "action_type": "REPLY",
+      "event_type": "llm",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-13T23:37:13Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 208,
+      "outcome_at": "2026-09-15T16:18:50.539071Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 90.1,
+      "outcome_age_hours": 39.2
+    },
+    {
+      "id": 16,
+      "signal_id": 1307960,
+      "target_url": "https://x.com/jukan05/status/2099360970242166892",
+      "published_url": "https://x.com/KennyChinaTech/status/2099361555846660539",
+      "published_text": "@jukan05 2028 is the number I'd watch. Packaging reliability, not chip design, may decide when AI hardware capacity actually shows up.",
+      "posted_at": "2026-09-14T04:56:13Z",
+      "action_type": "REPLY",
+      "event_type": "semiconductor",
+      "target_account": "@jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T04:53:54Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 611,
+      "outcome_at": "2026-09-15T16:18:52.550803Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 2.3,
+      "outcome_age_hours": 35.4
+    },
+    {
+      "id": 17,
+      "signal_id": 1312494,
+      "target_url": "https://x.com/shao__meng/status/2099372086565498886",
+      "published_url": "https://x.com/KennyChinaTech/status/2099399144985305308",
+      "published_text": "@shao__meng @LottieFiles 好工具，感谢分享！先把节奏、缓动和情绪判断对，再决定用 CSS、Framer Motion 还是 Lottie。",
+      "posted_at": "2026-09-14T07:25:35Z",
+      "action_type": "REPLY",
+      "event_type": "agent",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T05:38:04Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 40,
+      "outcome_at": "2026-09-15T16:18:55.067928Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 107.5,
+      "outcome_age_hours": 32.9
+    },
+    {
+      "id": 18,
+      "signal_id": 1322132,
+      "target_url": "https://x.com/shao__meng/status/2099397038412644519",
+      "published_url": "https://x.com/KennyChinaTech/status/2099408478335037475",
+      "published_text": "@shao__meng 我让codex学完这些课程，并提炼核心要素在自己的Agent Harness中，Agent 分数不能只看一个维度：METR看任务时长，GDPval首版偏一次性交付，DeepScholar-Bench偏研究综合和引用质量，生产里还得单独算验收和返工成本。",
+      "posted_at": "2026-09-14T08:02:41Z",
+      "action_type": "REPLY",
+      "event_type": "agent",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T07:17:13Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 55,
+      "outcome_at": "2026-09-15T16:18:57.402222Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 45.5,
+      "outcome_age_hours": 32.3
+    },
+    {
+      "id": 19,
+      "signal_id": 1330976,
+      "target_url": "https://x.com/quxiaoyin/status/2099420293865570495",
+      "published_url": "https://x.com/KennyChinaTech/status/2099420862386700562",
+      "published_text": "@quxiaoyin The U.S. still has the best model, but Stanford puts the lead at just 2.7% as of March. For real work, productivity, cost, access, and workflow fit matter more than a slim leaderboard lead.",
+      "posted_at": "2026-09-14T08:51:53Z",
+      "action_type": "REPLY",
+      "event_type": "ai",
+      "target_account": "@quxiaoyin",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T08:49:38Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 22,
+      "outcome_at": "2026-09-15T16:19:05.559396Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 2.2,
+      "outcome_age_hours": 31.5
+    },
+    {
+      "id": 20,
+      "signal_id": 1334221,
+      "target_url": "https://x.com/jukan05/status/2099428842674999442",
+      "published_url": "https://x.com/KennyChinaTech/status/2099430766023471596",
+      "published_text": "@jukan05 Terafab still won’t add much compute anytime soon. A new fab takes 2–3 years to build, then another 1–2 years to ramp.",
+      "posted_at": "2026-09-14T09:31:14Z",
+      "action_type": "REPLY",
+      "event_type": "semiconductor",
+      "target_account": "@jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T09:23:36Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 214,
+      "outcome_at": "2026-09-15T16:19:08.874826Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 7.6,
+      "outcome_age_hours": 30.8
+    },
+    {
+      "id": 21,
+      "signal_id": 1336684,
+      "target_url": "https://x.com/quxiaoyin/status/2099434892555862312",
+      "published_url": "https://x.com/KennyChinaTech/status/2099435833661284756",
+      "published_text": "@quxiaoyin IPO pressure makes this tricky. I’d watch shipped task reliability and inference cost, not release cadence.",
+      "posted_at": "2026-09-14T09:51:23Z",
+      "action_type": "REPLY",
+      "event_type": "ipo",
+      "target_account": "@quxiaoyin",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T09:47:38Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 12,
+      "outcome_at": "2026-09-15T16:19:16.081317Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 3.8,
+      "outcome_age_hours": 30.5
+    },
+    {
+      "id": 22,
+      "signal_id": 1339491,
+      "target_url": "https://x.com/wevolverapp/status/2099441704533151826",
+      "published_url": "https://x.com/KennyChinaTech/status/2099442470467883412",
+      "published_text": "@WevolverApp Talking to the arm is a nice demo. I’d care more about whether it can detect a bad grasp and retry safely on its own.",
+      "posted_at": "2026-09-14T10:17:45Z",
+      "action_type": "REPLY",
+      "event_type": "agentic",
+      "target_account": "@wevolverapp",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-14T10:14:42Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 16,
+      "outcome_at": "2026-09-15T16:19:21.225607Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 3.0,
+      "outcome_age_hours": 30.0
+    },
+    {
+      "id": 23,
+      "signal_id": 1474817,
+      "target_url": "https://x.com/jukan05/status/2099768821137723876",
+      "published_url": "https://x.com/KennyChinaTech/status/2099769745914687614",
+      "published_text": "@jukan05 50,000 wafers a month by 2027 sounds good, but with over half of Phase 3 equipment sourced in China, yield is what I’d watch for AI memory supply.",
+      "posted_at": "2026-09-15T07:58:13Z",
+      "action_type": "REPLY",
+      "event_type": "fab",
+      "target_account": "@jukan05",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-15T07:54:33Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 158,
+      "outcome_at": "2026-09-15T21:20:18.630022Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 3.7,
+      "outcome_age_hours": 13.4
+    },
+    {
+      "id": 24,
+      "signal_id": 1509397,
+      "target_url": "https://x.com/voxyz_ai/status/2099844989047930938",
+      "published_url": "https://x.com/KennyChinaTech/status/2099853391174554021",
+      "published_text": "@Voxyz_ai I’d judge coding agents on whether they preserve the shared component system, not whether one page compiles.",
+      "posted_at": "2026-09-15T13:30:36Z",
+      "action_type": "REPLY",
+      "event_type": "ai",
+      "target_account": "@voxyz_ai",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-15T12:57:13Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": null,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": null,
+      "impressions": 15,
+      "outcome_at": "2026-09-15T21:45:10.515837Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 33.4,
+      "outcome_age_hours": 8.2
+    },
+    {
+      "id": 27,
+      "signal_id": 1585119,
+      "target_url": "https://x.com/semianalysis_/status/2100027188393189711",
+      "published_url": "https://x.com/KennyChinaTech/status/2100031426175598914",
+      "published_text": "@SemiAnalysis_ The gap is closing on some stacks, but this isn’t the default comparison: InferenceX puts GB300 at $0.06/M tokens versus $0.46 for MI355X on GLM5.1 at 30 tok/s/user.",
+      "posted_at": "2026-09-16T01:18:03Z",
+      "action_type": "REPLY",
+      "event_type": "agentic",
+      "target_account": "@SemiAnalysis_",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-16T01:01:12Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 14780,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": 7,
+      "target_post_quotes_at_reply": 3,
+      "target_views_per_reply_at_reply": 1847.5,
+      "target_reply_surface_score_at_reply": 5,
+      "impressions": 390,
+      "outcome_at": "2026-09-16T02:58:58.074280Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 16.9,
+      "outcome_age_hours": 1.7
+    },
+    {
+      "id": 25,
+      "signal_id": 1586207,
+      "target_url": "https://x.com/hxiao/status/2100030701018218900",
+      "published_url": "https://x.com/KennyChinaTech/status/2100031995804070303",
+      "published_text": "@hxiao I’d treat the eval environment as part of the benchmark. Cursor found 63% of successful Opus 4.8 Max fixes were retrieved, not derived.",
+      "posted_at": "2026-09-16T01:20:19Z",
+      "action_type": "REPLY",
+      "event_type": "benchmark",
+      "target_account": "@hxiao",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-16T01:15:10Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 5,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 2,
+      "outcome_at": "2026-09-16T01:21:55.021407Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 5.2,
+      "outcome_age_hours": 0.0
+    },
+    {
+      "id": 26,
+      "signal_id": 1587909,
+      "target_url": "https://x.com/maxforai/status/2100035358339842353",
+      "published_url": "https://x.com/KennyChinaTech/status/2100036090459717706",
+      "published_text": "@MaxForAI Jev 如果真能在 70–500ms 内做结构化决策，还能给出校准后的置信度，我会先把它当自动化系统里的判断模块，接下来就看真实任务会错多少。",
+      "posted_at": "2026-09-16T01:36:35Z",
+      "action_type": "REPLY",
+      "event_type": "openai",
+      "target_account": "@maxforai",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-16T01:33:40Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 125,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 2,
+      "outcome_at": "2026-09-16T01:40:50.784550Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 2.9,
+      "outcome_age_hours": 0.1
+    },
+    {
+      "id": 28,
+      "signal_id": 1662286,
+      "target_url": "https://x.com/gakonst/status/2100252456844501282",
+      "published_url": "https://x.com/KennyChinaTech/status/2100258687667569114",
+      "published_text": "@gakonst I’d want to see Solar hold on real contracts: same gas, same bytecode size, fewer unsafe escape hatches. If it does, safer Solidity could mean less audit and maintenance work.",
+      "posted_at": "2026-09-16T16:21:06Z",
+      "action_type": "REPLY",
+      "event_type": "benchmark",
+      "target_account": "@gakonst",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-16T15:56:21Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 1242,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": 1,
+      "target_post_quotes_at_reply": 0,
+      "target_views_per_reply_at_reply": 621.0,
+      "target_reply_surface_score_at_reply": 4,
+      "impressions": 3,
+      "outcome_at": "2026-09-16T16:23:48.486501Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 24.8,
+      "outcome_age_hours": 0.0
+    },
+    {
+      "id": 29,
+      "signal_id": 1662567,
+      "target_url": "https://x.com/jenzhuscott/status/2100254164475383930",
+      "published_url": "https://x.com/KennyChinaTech/status/2100258924452778349",
+      "published_text": "@jenzhuscott Pre-built AI workers are useful when they can run a workflow end to end, with permissions, retries, and human handoff. Otherwise, it's just a chatbot with a job title.",
+      "posted_at": "2026-09-16T16:22:03Z",
+      "action_type": "REPLY",
+      "event_type": "agent",
+      "target_account": "@jenzhuscott",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-16T16:03:08Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 261,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 2,
+      "outcome_at": "2026-09-16T16:27:50.632682Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 18.9,
+      "outcome_age_hours": 0.1
+    },
+    {
+      "id": 30,
+      "signal_id": 1711437,
+      "target_url": "https://x.com/laogui/status/2100376582456230079",
+      "published_url": "https://x.com/KennyChinaTech/status/2100403991687614525",
+      "published_text": "@laogui Radius 说白了就是先充 credits，再按模型用量结算，费用在上游价上加支付处理费，卖点是多模型路由和统一账单。",
+      "posted_at": "2026-09-17T01:58:29Z",
+      "action_type": "REPLY",
+      "event_type": "ai",
+      "target_account": "@laogui",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-17T00:09:35Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 125,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 1,
+      "outcome_at": "2026-09-17T01:59:24.777972Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 108.9,
+      "outcome_age_hours": 0.0
+    },
+    {
+      "id": 31,
+      "signal_id": 1722599,
+      "target_url": "https://x.com/semianalysis_/status/2100403373803528245",
+      "published_url": "https://x.com/KennyChinaTech/status/2100412057497817485",
+      "published_text": "@SemiAnalysis_ The June 2 executive order points to early government access to powerful models without slowing deployment, so builders should watch access and compliance costs more than the label \"regulation.\"",
+      "posted_at": "2026-09-17T02:30:32Z",
+      "action_type": "REPLY",
+      "event_type": "openai",
+      "target_account": "@SemiAnalysis_",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-17T01:56:02Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 5990,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 2,
+      "outcome_at": "2026-09-17T02:36:50.921154Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 34.5,
+      "outcome_age_hours": 0.1
+    },
+    {
+      "id": 32,
+      "signal_id": 1733024,
+      "target_url": "https://x.com/maxforai/status/2100431701172453714",
+      "published_url": "https://x.com/KennyChinaTech/status/2100437509096472593",
+      "published_text": "@MaxForAI 如果这轮谈成，Manus 公开披露的 ARR 已过 1 亿美元，至少说明 Agent 开始靠持续交付任务收费，不只是靠 demo 定价。不过说实话，Manus只适合新手用，产出质量真不如codex和claude",
+      "posted_at": "2026-09-17T04:11:41Z",
+      "action_type": "REPLY",
+      "event_type": "benchmark",
+      "target_account": "@maxforai",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-17T03:48:36Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 560,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": 0,
+      "target_post_quotes_at_reply": 0,
+      "target_views_per_reply_at_reply": 560.0,
+      "target_reply_surface_score_at_reply": 2,
+      "impressions": 12,
+      "outcome_at": "2026-09-17T04:16:52.017845Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 23.1,
+      "outcome_age_hours": 0.1
+    },
+    {
+      "id": 33,
+      "signal_id": 1857260,
+      "target_url": "https://x.com/damnang2/status/2100732977420566784",
+      "published_url": "https://x.com/KennyChinaTech/status/2100758303743877478",
+      "published_text": "@damnang2 Agent 成本最后看权重和 KV cache 要搬几次，GPU 峰值算力再高也不顶用。",
+      "posted_at": "2026-09-18T01:26:24Z",
+      "action_type": "REPLY",
+      "event_type": "gpu",
+      "target_account": "@damnang2",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-17T23:43:00Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 4312,
+      "angle_type": "PRODUCTIVITY_IMPACT",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 1,
+      "outcome_at": "2026-09-18T01:28:44.990471Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 103.4,
+      "outcome_age_hours": 0.0
+    },
+    {
+      "id": 34,
+      "signal_id": 1858958,
+      "target_url": "https://x.com/shao__meng/status/2100736711877902636",
+      "published_url": "https://x.com/KennyChinaTech/status/2100758549563576550",
+      "published_text": "@shao__meng @JinaAI_ 91.14 这个分数不低，本地跑长文档解析，已经可以认真算成本了。",
+      "posted_at": "2026-09-18T01:27:23Z",
+      "action_type": "REPLY",
+      "event_type": "gpu",
+      "target_account": "@shao__meng",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-18T00:00:36Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 1638,
+      "angle_type": "KEY_NUMBER",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 2,
+      "outcome_at": "2026-09-18T01:33:16.788132Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "zh",
+      "lag_minutes": 86.8,
+      "outcome_age_hours": 0.1
+    },
+    {
+      "id": 35,
+      "signal_id": 1876808,
+      "target_url": "https://x.com/tanayj/status/2100776572961927266",
+      "published_url": "https://x.com/KennyChinaTech/status/2100778127383556511",
+      "published_text": "@tanayj Snap feels like the safest bet. AI Clips already turns one photo into a 5-second video, with distribution and monetization built in.",
+      "posted_at": "2026-09-18T02:45:10Z",
+      "action_type": "REPLY",
+      "event_type": "launch",
+      "target_account": "@tanayj",
+      "target_account_followers": null,
+      "target_posted_at": "2026-09-18T02:39:00Z",
+      "target_post_age_minutes": null,
+      "target_post_impressions_at_reply": 93,
+      "angle_type": "PRIMARY_SOURCE",
+      "hook_type": null,
+      "media_type": "NONE",
+      "has_external_link": 0,
+      "target_post_replies_at_reply": null,
+      "target_post_quotes_at_reply": null,
+      "target_views_per_reply_at_reply": null,
+      "target_reply_surface_score_at_reply": 0,
+      "impressions": 7,
+      "outcome_at": "2026-09-18T02:47:46.740188Z",
+      "likes": null,
+      "replies": null,
+      "profile_visits": null,
+      "language": "en",
+      "lag_minutes": 6.2,
+      "outcome_age_hours": 0.0
+    }
+  ],
+  "creator_language_observations": [
+    {
+      "handle": "jenzhuscott",
+      "sample": 20,
+      "zh": 0,
+      "en": 18,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "quxiaoyin",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "jukan05",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 1,
+      "zh_primary": false
+    },
+    {
+      "handle": "damonchen",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "ptrubey",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "wevolverapp",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "ycombinator",
+      "sample": 14,
+      "zh": 0,
+      "en": 14,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "AndrewYNg",
+      "sample": 9,
+      "zh": 0,
+      "en": 9,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "karenxcheng",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "nateberkopec",
+      "sample": 20,
+      "zh": 0,
+      "en": 18,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "jackclarkSF",
+      "sample": 11,
+      "zh": 0,
+      "en": 10,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "intellectronica",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "vasuman",
+      "sample": 14,
+      "zh": 0,
+      "en": 12,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "mihail_eric",
+      "sample": 11,
+      "zh": 0,
+      "en": 11,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "shao__meng",
+      "sample": 20,
+      "zh": 17,
+      "en": 1,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "karpathy",
+      "sample": 6,
+      "zh": 0,
+      "en": 6,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "simonw",
+      "sample": 15,
+      "zh": 0,
+      "en": 15,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "hamelhusain",
+      "sample": 14,
+      "zh": 0,
+      "en": 14,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "sh_reya",
+      "sample": 14,
+      "zh": 0,
+      "en": 13,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "eugeneyan",
+      "sample": 7,
+      "zh": 0,
+      "en": 7,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "chipro",
+      "sample": 6,
+      "zh": 0,
+      "en": 6,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "badlogicgames",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "mitsuhiko",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "gneubig",
+      "sample": 12,
+      "zh": 0,
+      "en": 12,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "DrJimFan",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "fchollet",
+      "sample": 19,
+      "zh": 0,
+      "en": 19,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "lilianweng",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "_lopopolo",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "onusoz",
+      "sample": 20,
+      "zh": 0,
+      "en": 18,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "dexhorthy",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "ylecun",
+      "sample": 5,
+      "zh": 0,
+      "en": 3,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "drfeifei",
+      "sample": 8,
+      "zh": 0,
+      "en": 8,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "demishassabis",
+      "sample": 9,
+      "zh": 0,
+      "en": 7,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "kskrygan",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "omarsar0",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "nummanali",
+      "sample": 7,
+      "zh": 0,
+      "en": 6,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "voxyz_ai",
+      "sample": 20,
+      "zh": 0,
+      "en": 17,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "pham_blnh",
+      "sample": 14,
+      "zh": 0,
+      "en": 12,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "bilawalsidhu",
+      "sample": 12,
+      "zh": 0,
+      "en": 12,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "abdelstark",
+      "sample": 20,
+      "zh": 0,
+      "en": 18,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "leothecurious",
+      "sample": 20,
+      "zh": 0,
+      "en": 17,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "fofrai",
+      "sample": 12,
+      "zh": 0,
+      "en": 9,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "roberthaisfield",
+      "sample": 11,
+      "zh": 0,
+      "en": 11,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "gm8xx8",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "bingxu_",
+      "sample": 11,
+      "zh": 0,
+      "en": 10,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "hxiao",
+      "sample": 19,
+      "zh": 0,
+      "en": 18,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "samhogan",
+      "sample": 13,
+      "zh": 0,
+      "en": 12,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "himanshustwts",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "thom_wolf",
+      "sample": 12,
+      "zh": 0,
+      "en": 11,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "zephyr_z9",
+      "sample": 20,
+      "zh": 0,
+      "en": 13,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "semianalysis_",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "maxforai",
+      "sample": 20,
+      "zh": 16,
+      "en": 2,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "mattpocockuk",
+      "sample": 14,
+      "zh": 0,
+      "en": 14,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "mattshumer_",
+      "sample": 17,
+      "zh": 0,
+      "en": 16,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "op7418",
+      "sample": 17,
+      "zh": 15,
+      "en": 1,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "damnang2",
+      "sample": 20,
+      "zh": 1,
+      "en": 15,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "tencentai_news",
+      "sample": 8,
+      "zh": 0,
+      "en": 8,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "alchainhust",
+      "sample": 17,
+      "zh": 11,
+      "en": 0,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "_akhaliq",
+      "sample": 11,
+      "zh": 0,
+      "en": 11,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "aidotengineer",
+      "sample": 18,
+      "zh": 0,
+      "en": 18,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "gakonst",
+      "sample": 20,
+      "zh": 0,
+      "en": 19,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "iliraliu_",
+      "sample": 19,
+      "zh": 0,
+      "en": 18,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "tanayj",
+      "sample": 18,
+      "zh": 0,
+      "en": 18,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "skirano",
+      "sample": 7,
+      "zh": 0,
+      "en": 7,
+      "poll": 8,
+      "zh_primary": false
+    },
+    {
+      "handle": "thehumanoidhub",
+      "sample": 10,
+      "zh": 0,
+      "en": 10,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "swyx",
+      "sample": 8,
+      "zh": 0,
+      "en": 8,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "doodlestein",
+      "sample": 20,
+      "zh": 0,
+      "en": 20,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "bourneliu66",
+      "sample": 7,
+      "zh": 6,
+      "en": 0,
+      "poll": 6,
+      "zh_primary": true
+    },
+    {
+      "handle": "bcherny",
+      "sample": 9,
+      "zh": 0,
+      "en": 8,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "charliejhills",
+      "sample": 15,
+      "zh": 0,
+      "en": 12,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "adocomplete",
+      "sample": 15,
+      "zh": 0,
+      "en": 13,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "laogui",
+      "sample": 8,
+      "zh": 8,
+      "en": 0,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "bozhou_ai",
+      "sample": 16,
+      "zh": 13,
+      "en": 0,
+      "poll": 2,
+      "zh_primary": true
+    },
+    {
+      "handle": "claudeai",
+      "sample": 9,
+      "zh": 0,
+      "en": 9,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "openai",
+      "sample": 7,
+      "zh": 0,
+      "en": 7,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "anthropicai",
+      "sample": 9,
+      "zh": 0,
+      "en": 9,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "cognition",
+      "sample": 7,
+      "zh": 0,
+      "en": 7,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "cursor_ai",
+      "sample": 5,
+      "zh": 0,
+      "en": 5,
+      "poll": 2,
+      "zh_primary": false
+    },
+    {
+      "handle": "googledeepmind",
+      "sample": 7,
+      "zh": 0,
+      "en": 7,
+      "poll": 4,
+      "zh_primary": false
+    },
+    {
+      "handle": "huggingface",
+      "sample": 5,
+      "zh": 0,
+      "en": 4,
+      "poll": 6,
+      "zh_primary": false
+    },
+    {
+      "handle": "vercel",
+      "sample": 8,
+      "zh": 0,
+      "en": 7,
+      "poll": 6,
+      "zh_primary": false
+    }
+  ],
+  "pool": {
+    "enabled": 81,
+    "zh_primary": 7,
+    "configured_polls_min": 18.83
+  },
+  "collector": {
+    "completed": 499,
+    "median_start_interval_sec": 27.3,
+    "p90_start_interval_sec": 42.1,
+    "source_success_rate": 0.965,
+    "cycles_with_source_errors": 19
+  },
+  "model_daily": [
+    {
+      "usage_date": "2026-09-16",
+      "purpose": "FINAL",
+      "success": 1,
+      "n": 50,
+      "tokens": 1482207
+    },
+    {
+      "usage_date": "2026-09-16",
+      "purpose": "GATE",
+      "success": 1,
+      "n": 21,
+      "tokens": 126763
+    },
+    {
+      "usage_date": "2026-09-16",
+      "purpose": "HUMANIZE",
+      "success": 1,
+      "n": 41,
+      "tokens": 488356
+    },
+    {
+      "usage_date": "2026-09-17",
+      "purpose": "FINAL",
+      "success": 1,
+      "n": 50,
+      "tokens": 1454215
+    },
+    {
+      "usage_date": "2026-09-17",
+      "purpose": "GATE",
+      "success": 1,
+      "n": 27,
+      "tokens": 147358
+    },
+    {
+      "usage_date": "2026-09-17",
+      "purpose": "HUMANIZE",
+      "success": 0,
+      "n": 1,
+      "tokens": 5000
+    },
+    {
+      "usage_date": "2026-09-17",
+      "purpose": "HUMANIZE",
+      "success": 1,
+      "n": 43,
+      "tokens": 470737
+    },
+    {
+      "usage_date": "2026-09-18",
+      "purpose": "FINAL",
+      "success": 1,
+      "n": 50,
+      "tokens": 1402380
+    },
+    {
+      "usage_date": "2026-09-18",
+      "purpose": "GATE",
+      "success": 1,
+      "n": 29,
+      "tokens": 146991
+    },
+    {
+      "usage_date": "2026-09-18",
+      "purpose": "HUMANIZE",
+      "success": 1,
+      "n": 48,
+      "tokens": 527897
+    },
+    {
+      "usage_date": "2026-09-19",
+      "purpose": "FINAL",
+      "success": 0,
+      "n": 37,
+      "tokens": 0
+    },
+    {
+      "usage_date": "2026-09-19",
+      "purpose": "FINAL",
+      "success": 1,
+      "n": 12,
+      "tokens": 345201
+    },
+    {
+      "usage_date": "2026-09-19",
+      "purpose": "GATE",
+      "success": 0,
+      "n": 12,
+      "tokens": 0
+    },
+    {
+      "usage_date": "2026-09-19",
+      "purpose": "GATE",
+      "success": 1,
+      "n": 3,
+      "tokens": 14981
+    },
+    {
+      "usage_date": "2026-09-19",
+      "purpose": "HUMANIZE",
+      "success": 1,
+      "n": 11,
+      "tokens": 113188
+    },
+    {
+      "usage_date": "2026-09-20",
+      "purpose": "FINAL",
+      "success": 0,
+      "n": 2,
+      "tokens": 60000
+    },
+    {
+      "usage_date": "2026-09-20",
+      "purpose": "FINAL",
+      "success": 1,
+      "n": 40,
+      "tokens": 1075808
+    },
+    {
+      "usage_date": "2026-09-20",
+      "purpose": "GATE",
+      "success": 0,
+      "n": 2,
+      "tokens": 12000
+    },
+    {
+      "usage_date": "2026-09-20",
+      "purpose": "GATE",
+      "success": 1,
+      "n": 13,
+      "tokens": 80035
+    },
+    {
+      "usage_date": "2026-09-20",
+      "purpose": "HUMANIZE",
+      "success": 1,
+      "n": 31,
+      "tokens": 302855
+    }
+  ]
+}

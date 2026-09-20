@@ -10,6 +10,8 @@ max_alerts_per_cycle = 3
 # Fresh posts get a brief grace window so we do not wait for virality before joining a conversation.
 x_distribution_min_score = 6
 x_reply_acquisition_min_score = 10
+surface_ranking_weight = 0.25
+allow_surface_gate_rescue = false
 x_early_grace_minutes = 5
 x_early_grace_base_score = 7
 x_breakout_p0_distribution_score = 10
@@ -37,7 +39,7 @@ topic_terms = [
   "robot", "robotics", "humanoid", "ev", "electric vehicle", "battery", "autonomous",
   "manufacturing", "data center", "datacenter", "cloud", "ipo", "raises", "earnings",
   "launch", "benchmark", "eval", "evals", "evaluation", "reasoning", "world model", "world models", "reinforcement learning", "rl", "coding agent", "agentic coding",
-  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents",
+  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "智能体", "编程", "工作流", "上下文",
   "export", "sanction", "supply chain",
   "人工智能", "大模型", "芯片", "半导体", "算力", "机器人", "人形", "电动车", "电动汽车", "电池", "自动驾驶", "智驾", "数据中心", "云计算", "开源", "基准", "量产", "存储", "内存"
 ]
@@ -48,7 +50,7 @@ productivity_terms = [
   "eval", "evals", "evaluation", "verification", "reliability", "reasoning", "inference",
   "context window", "memory", "multi-agent", "multi agent", "orchestration", "runtime",
   "AI coding", "coding agent", "AI agent", "AI agents", "world model", "world models",
-  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "workflows",
+  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "智能体", "编程", "工作流", "上下文", "workflows",
   "智能体", "代理", "编程", "代码", "开发者", "软件开发", "自动化", "工作流", "生产力",
   "评测", "验证", "可靠性", "推理", "推理成本", "上下文", "记忆", "多智能体", "世界模型"
 ]

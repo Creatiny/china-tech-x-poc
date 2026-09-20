@@ -77,7 +77,7 @@ def latest_action_rows(con: sqlite3.Connection) -> list[dict[str, Any]]:
         d["target_tier"] = follower_tier(d.get("target_account_followers"))
         d["target_age_bucket"] = age_bucket(d.get("target_post_age_minutes"))
         d["reply_surface_bucket"] = reply_surface_bucket(
-            d.get("target_reply_surface_score_at_reply"), d.get("target_views_per_reply_at_reply")
+            d.get("target_reply_surface_score_at_reply") if d.get("parent_snapshot_origin") else None, d.get("target_views_per_reply_at_reply") if d.get("parent_snapshot_origin") else None
         )
         imp=d.get("impressions")
         eng=d.get("engagements")
@@ -128,12 +128,11 @@ def combo_report(rows: list[dict[str, Any]], min_samples: int = 2) -> list[dict[
 
 
 
-def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3) -> dict[str, dict[str, Any]]:
+def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3, min_outcome_age_hours: float = 24) -> dict[str, dict[str, Any]]:
     """Build conservative creator-level priors from our own reply outcomes and clean follower days.
 
-    Impression feedback activates after `min_samples`. Follower growth is allowed to contribute only
-    when snapshots are on consecutive days and exactly one published action occurred on that day;
-    even then it is a +1 maximum weak prior, never a negative penalty.
+    Impression feedback requires at least `min_samples` snapshots taken 24h after publication.
+    Daily follower changes are descriptive only; they never alter creator ranking.
     """
     rows = con.execute(
         """
@@ -145,7 +144,9 @@ def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3)
               SELECT oo.id FROM outcome_snapshot oo WHERE oo.action_id=p.id ORDER BY oo.captured_at DESC LIMIT 1
           )
          WHERE upper(p.action_type)='REPLY' AND o.impressions IS NOT NULL
-        """
+           AND julianday(o.captured_at)-julianday(p.posted_at)>=?
+        """,
+        (min_outcome_age_hours/24,),
     ).fetchall()
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -212,7 +213,7 @@ def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3)
             elif med < 30:
                 impression_score = -1
         growth = growth_by_creator.get(creator, [])
-        growth_score = 1 if len(growth) >= 2 and float(statistics.median(growth)) > 0 else 0
+        growth_score = 0  # Incomplete publication coverage cannot justify creator-level follower attribution.
         score = max(-1, min(3, impression_score + growth_score))
         out[creator] = {
             "score": score,

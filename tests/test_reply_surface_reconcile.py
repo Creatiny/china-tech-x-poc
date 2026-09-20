@@ -63,6 +63,7 @@ class ReplySurfaceReconcileTests(unittest.TestCase):
                 "INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_packet_json) VALUES(?,?,?,?,?,?)",
                 (sid, "P1", now, now, "SENT", json.dumps(packet)),
             )
+            con.execute("UPDATE alert SET opportunity_snapshot_json=? WHERE signal_id=?",(json.dumps({**rec,"metrics_observed_at":now}),sid))
             con.commit()
             reply_item = {
                 "canonical_url": "https://x.com/KennyChinaTech/status/9",

@@ -60,6 +60,53 @@ class GrowthPolicyTests(unittest.TestCase):
         self.assertEqual(self.con.execute('SELECT count(*) FROM model_usage').fetchone()[0],21)
         self.assertEqual(cfg['max_final_calls_per_day'],50)
 
+    def test_distribution_four_is_enough_for_high_fit_chinese_reply(self):
+        from china_tech_x_radar.classify import classify
+        rules=tomllib.loads((ROOT/'config/rules.toml').read_text())
+        source={"kind":"x_profile","audience_focused":True,"source_weight":4,"p1_min_score":6,"p1_max_age_minutes":180,"max_candidate_age_minutes":720}
+        item={"title":"Codex 编程 Agent 工作流实测","excerpt":"代码 自动化 验收","published_at":NOW-timedelta(minutes=20),"metrics":{"views":500,"replies":2}}
+        out=classify(item,source,rules,now=NOW)
+        self.assertGreaterEqual(out["score"],6)
+        self.assertEqual(out["priority"],"P1")
+        self.assertGreaterEqual(out["distribution_score"],4)
+
+    def test_chinese_reply_material_becomes_original_after_three_hours(self):
+        s=self.signal(published_at=iso(NOW-timedelta(minutes=220)),priority='P1')
+        self.assertEqual(policy.lane_for(s,CFG,NOW),'POST')
+        allowed,reason,retry=policy.preflight(self.con,s,CFG,NOW)
+        self.assertTrue(allowed)
+        self.assertEqual(reason,'daytime_chinese_acquisition')
+
+    def test_creator_24h_is_soft_but_six_hour_floor_is_hard(self):
+        s=self.signal(author='@same')
+        packet=self.packet(s);packet['target_account']='@same'
+        ten_hours=iso(NOW-timedelta(hours=10))
+        self.con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)",(s['id'],'P1',ten_hours,ten_hours,'SENT','READY',json.dumps(packet,ensure_ascii=False)))
+        self.con.commit()
+        allowed,_,_=policy.preflight(self.con,s,CFG,NOW)
+        self.assertTrue(allowed)
+        self.assertGreater(policy.creator_attention_penalty(self.con,s,CFG,NOW),0)
+        self.con.execute("UPDATE alert SET sent_at=?,created_at=? WHERE status='SENT'",(iso(NOW-timedelta(hours=2)),iso(NOW-timedelta(hours=2))))
+        self.con.commit()
+        allowed,reason,retry=policy.preflight(self.con,s,CFG,NOW)
+        self.assertFalse(allowed);self.assertEqual(reason,'creator_hard_safety_cooldown');self.assertIsNotNone(retry)
+
+    def test_weekly_three_is_soft_five_is_hard(self):
+        candidate=self.signal(index=20,author='@same')
+        packet=self.packet(candidate);packet['target_account']='@same'
+        for i in range(5):
+            historic=self.signal(index=30+i,author='@same')
+            t=iso(NOW-timedelta(days=i+1))
+            self.con.execute("INSERT INTO alert(signal_id,priority,created_at,sent_at,status,editorial_status,editorial_packet_json) VALUES(?,?,?,?,?,?,?)",(historic['id'],'P1',t,t,'SENT','READY',json.dumps(packet,ensure_ascii=False)))
+            if i==2:
+                self.con.commit()
+                allowed,_,_=policy.preflight(self.con,candidate,CFG,NOW)
+                self.assertTrue(allowed)
+                self.assertGreaterEqual(policy.creator_attention_penalty(self.con,candidate,CFG,NOW),1)
+        self.con.commit()
+        allowed,reason,_=policy.preflight(self.con,candidate,CFG,NOW)
+        self.assertFalse(allowed);self.assertEqual(reason,'creator_hard_weekly_cap')
+
     def test_missing_or_low_reach_is_deferred_not_sent(self):
         s=self.signal(observed_views=2,priority='P0')
         allowed,reason,retry=policy.preflight(self.con,s,CFG,NOW)

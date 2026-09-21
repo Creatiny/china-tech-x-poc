@@ -8,7 +8,7 @@ max_alerts_per_cycle = 3
 
 # Direct-X distribution opportunity gate. Relevance still has to pass first.
 # Fresh posts get a brief grace window so we do not wait for virality before joining a conversation.
-x_distribution_min_score = 6
+x_distribution_min_score = 4
 x_reply_acquisition_min_score = 10
 surface_ranking_weight = 0.25
 allow_surface_gate_rescue = false
@@ -65,3 +65,7 @@ high_impact_terms = [
 noise_terms = [
   "coupon", "giveaway", "horoscope", "celebrity", "sports", "lottery"
 ]
+
+chinese_core_creator_target = 25
+
+chinese_exploration_creator_target = 20

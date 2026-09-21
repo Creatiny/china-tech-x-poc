@@ -1,4 +1,4 @@
-# China Tech X POC — Canonical Project Spec v3.8
+# China Tech X POC — Canonical Project Spec v3.9
 
 ## 0. Authority
 
@@ -421,25 +421,38 @@ After drafting, run one Humanizer self-audit internally: ask what still sounds m
 The profile is based primarily on Kenny's natural working/conversation language. Existing AI-generated Replies are negative examples, not positive training data. Humanizer makes the copy human; the Kenny profile makes it sound like Kenny.
 
 
-## 26. Creator Expansion and Reply Diversity
+## 26. Chinese creator expansion and reply diversity
 
-The monitored creator pool must keep expanding. Do not optimize Reply volume around a small familiar cluster. Maintain two layers: a stable `core_technical` pool and a growing `expansion_technical` pool discovered from adjacent technical communities.
+The acquisition graph must match the profile promise: Chinese AI practice first.
 
-Expansion priorities: agent/harness/evals, AI coding and developer tools, inference/AI systems, world models/robotics/physical AI, and China/global builders with first-hand technical evidence. Prefer practitioners and researchers over news aggregators, hype accounts, finance/ticker accounts, and generic AI-tool curators.
+Maintain three layers:
 
-For growth, creator diversity is an operating constraint: ordinary P1 Replies should not repeatedly target the same creator. Default cooldown is one P1 Reply per creator per 24 hours and at most three P1 Replies per creator in seven days. P0 may bypass this when the opportunity is genuinely exceptional. At similar quality, prefer a creator Kenny has not engaged with recently.
+- chinese_acquisition: proven / high-potential Chinese creators, observed frequently;
+- chinese_exploration: newly discovered Chinese builders/technical creators, observed at lower cadence until evidence promotes them;
+- reference: global/English technical and official sources used mainly as evidence for Chinese originals.
 
-Creator discovery is ongoing maintenance, not a one-time list build. Add qualified creators regularly; do not wait for the existing pool to become stale.
+Targets are 25 Chinese core/acquisition creators + 20 Chinese exploration creators. These are coverage targets, not quotas to fill with weak accounts. Add creators only after checking recent posts for AI-building relevance and real public reach. Exploration accounts earn promotion through repeated useful opportunities and Kenny's mature Reply outcomes.
 
-## 27. Distribution evidence and limits
+Expansion priorities: Agent / AI Coding / Harness / Evals / MCP / inference, independent developers and small teams using AI to ship, China AI builders, and first-hand testing. Avoid AI-tool listicles, finance/ticker accounts, side-hustle engagement farms and generic viral accounts.
 
-Relevance and useful added information are prerequisites. Parent-post public views and replies are observations, not a promise of exposure for Kenny.
+Creator diversity is a ranking preference, not a normal hard veto. A recent creator receives a soft ordering penalty; a strong new opportunity may still surface. Safety limits remain: at least 6 hours between recommended Replies to the same creator and at most 5 recommendations to that creator in seven days. The old 24-hour / three-per-week values remain soft diversity reference points, not hard blocks.
 
-`view_velocity_per_min` currently means lifetime average views divided by post age; it is NOT a measured recent growth slope. Do not label it acceleration. `views_per_reply` is a heuristic ratio, not an equal division of readers across a conversation.
+At similar opportunity quality, prefer a creator Kenny has not engaged with recently.
 
-The score only ranks candidates after relevance and timing gates. Surface contributes 25% of its old weight (at most 2 points), and cannot rescue a post that lacks minimum distribution evidence in production. Unknown reply counts stay unknown.
+## 27. Distribution evidence and admission
 
-Repeated direct-X observations update live measurements and classification while preserving first discovery time; `metrics_observed_at` records measurement timing. Sent decisions remain historical facts and are not reopened when metrics change.
+Relevance, Chinese-audience fit and useful added information are prerequisites. Parent-post public metrics are evidence for timing, not a promise of Kenny exposure.
+
+For Chinese Reply candidates:
+
+- public views must normally reach at least 300 before drafting;
+- distribution_score >= 4 is the current low evidence floor;
+- the previous >= 6 requirement is retired as a hard gate;
+- distribution, Reply Surface and Creator history rank opportunities after basic relevance rather than vetoing otherwise strong AI-practice discussions.
+
+view_velocity_per_min is lifetime average views divided by age, not measured recent acceleration. views_per_reply is an unvalidated heuristic ratio. Surface stays bounded and cannot by itself admit a candidate.
+
+Repeated observations refresh live metrics and classification while preserving first discovery time. Unknown metrics stay unknown.
 
 ## 28. Measured outcome feedback
 
@@ -517,13 +530,18 @@ Hard rules:
 - SQLite WAL and busy timeout remain the shared-state coordination mechanism.
 - Manual integrated `run` may remain available for diagnostics, but production launchd uses the isolated collector and editorial commands.
 
-## 31. Observation budget
+## 31. Observation budget and creator pool targets
 
-The 15-second launchd interval is not the realised cycle throughput. Include fetch duration, missed intervals and tail latency when assessing capacity.
+The 15-second launchd interval is not realised throughput; account for fetch time and tail latency.
 
-The 2026-09-20 audit measured a 27.3-second median start interval on the last 500 cycles. Baseline profile demand is now about 8.77 fetches/minute, down from 18.83. No increase in batch concurrency or maximum worker count was required.
+The system now aims for:
+- 25 Chinese core/acquisition creators;
+- 20 Chinese exploration creators;
+- roughly 50–70 global/English reference creators as capacity permits.
 
-12 Chinese acquisition creators receive the fast daytime observation share. 74 English/global references remain available at slower cadence. Reference sources cannot be promoted back to aggressive polling by historical Reply feedback. At night, all tagged profiles use at least a 30-minute interval; collection remains active without waking the operator.
+This is a staged target, not permission to fill slots with weak accounts. New Chinese candidates enter exploration at 6–8 minute cadence. Strong observed reach + repeated useful conversations + mature Reply outcomes may promote them to faster cadence. Weak/noisy accounts are downgraded or removed.
+
+Reference accounts stay slower and cannot regain aggressive polling from old English Reply history. Nighttime collection remains low cadence and silent to the operator. Expansion must stay within measured collector capacity before adding concurrency.
 
 ## 32. Reply Surface provenance
 
@@ -533,18 +551,41 @@ At Feishu delivery, save an immutable opportunity snapshot with `metrics_observe
 
 Historical fields without explicit timing provenance remain unverified for surface outcome cohorts. Do not rewrite historical measurements or manufacture paired training data.
 
-## 33. Operator availability, budget pacing and content quality
+## 33. Operator availability, opportunity routing and content quality
 
-Default actionable window: **08:00 inclusive to 22:00 exclusive, Asia/Shanghai**. This is a configurable operational default based on Kenny's stated sleeping-hours problem, not an assertion of his exact sleep schedule. P0 does not bypass quiet hours. During quiet hours the editorial worker does not draft or send; collection continues. Recheck the clock immediately before external delivery.
+Default actionable window remains 08:00 inclusive to 22:00 exclusive, Asia/Shanghai. P0 does not bypass quiet hours. Collection continues overnight; drafting and Feishu delivery do not.
 
-At the start of daytime work, expire stale or time-unknown opportunities rather than dumping overnight Reply suggestions. English reference profiles retain a 12-hour original-source window, so valid overnight evidence can support a daytime Chinese original rather than a late English Reply. Quiet hours apply to daily-review notifications too; the existing review is moved to 21:00.
+Preflight happens before model calls: topic fit, language, age, minimum public reach, basic distribution evidence, attention budget and hard creator safety caps.
 
-Preflight checks happen BEFORE model calls: operator availability, topic fit, parent language, age, evidence of reach (300+ public views and distribution score >=6), creator cooldown, rolling attention caps and cumulative daypart caps. Replies default to a three-hour opportunity limit. Insufficient current reach may be rechecked; missing metrics are not invented.
+### Reply vs original routing
 
-Daily recommendation ceilings: 10 Replies and 2 originals, NOT production quotas. Reply cumulative ceilings: 3 before noon, 7 before 18:00, 10 thereafter. Original ceiling: 1 before noon, 2 thereafter. Existing rolling/creator attention limits also apply, including to P0.
+A fresh Chinese direct-X opportunity is primarily a Reply candidate for the first 180 minutes.
 
-Model daily budgets remain unchanged. Cumulative available budget is 40% in the morning, 80% in the afternoon and 100% after 18:00. Never reset `budget_revision` to evade already-used allowance. A cheap editorial gate precedes final drafting. The full Humanizer self-audit remains mandatory; a separate model rewrite is reserved for a detected copy violation.
+After the Reply window closes, a strong Chinese AI-practice signal does not become worthless. Until 12 hours after publication it may be routed into the Chinese ORIGINAL lane, where the editorial model must decide whether Kenny has a standalone thesis/evidence worth owning. This prevents useful topics such as Agent Evals, Harness releases or real deployment lessons from being discarded merely because the reply window passed.
 
-Provider quota/timeout failures enter a persistent bounded backoff instead of generating a call storm. Local/daypart budget exhaustion is DEFERRED to a later eligible window; re-check staleness before retry. Do not auto-retry ambiguous external delivery failures.
+### Creator diversity
 
-Every proposed post/reply needs concrete added evidence with provenance. An original must name its subject in the actual text and give a useful observation, not anonymous numbers or a generic slogan. Short replies are preferred; originals may use two or three readable paragraphs. A repeated "needs real testing" caveat is not information gain. No invented first-hand experience, no automatically chosen Article topics, no auto-X publishing.
+The old one-per-24h / three-per-7d limits are now soft ranking preferences. Hard safety limits are 6 hours between Replies to the same creator and 5 in seven days. Strong opportunities can therefore beat the soft penalty without letting the system farm one account.
+
+### Attention and quality
+
+Daily ceilings remain 10 Reply recommendations and 2 original recommendations, not quotas. Existing daypart pacing remains. Every recommendation still needs concrete added evidence and provenance. Generic agreement and a repeated "needs real testing" caveat do not qualify.
+
+Model budgets remain unchanged and are not reset to manufacture more output. Provider failures use bounded backoff. No auto-X publishing.
+
+## 34. Profile and pinned post
+
+Current public identity is aligned and should remain stable unless outcome evidence suggests otherwise:
+
+- display name: Kenny Chen | AI 实战;
+- handle: @KennyChinaTech;
+- header promise: 把 AI 用进真实项目。;
+- bio promise: Agent / AI 编程 / 自动化, with public results, cost, mistakes, verification and delivery.
+
+The pinned post is the conversion layer between borrowed Reply reach and a follow. It must answer, in Chinese and in Kenny's natural voice:
+
+1. What Kenny is actually building/testing;
+2. what evidence/results/failures he will share;
+3. what a follower will repeatedly get from this account.
+
+Do not pin a generic AI news post or an old English long-form article as the primary profile promise. The owner selects the pinned-post theme; the runtime must not change the pin automatically.

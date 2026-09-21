@@ -137,3 +137,13 @@ Audit: Sep16–20 follower snapshots 27->30. 84 sent packages, of which 59 were 
 Implemented: Chinese acquisition / global reference separation; 08–22 quiet gate before drafting and sending, including P0; daypart budget reservation without increasing/resetting allowance; preflight before model use; provider backoff; observed-outcome fairness and maturity; original URL reconciliation; timestamped pre-publication snapshots; bounded Surface contribution; ASCII-token boundaries within Chinese text. No X post, Reply, follow, profile edit or deletion is automated.
 
 Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-growth-audit/`. Code/tests passing does not demonstrate improved follower growth; evaluate subsequent mature outcomes.
+
+
+## 2026-09-21 creator/routing correction
+
+- SPEC v3.9: Chinese creator coverage target 25 core + 20 exploration; expansion is evidence-gated, not list-filling.
+- Reply distribution hard gate reduced from 6 to 4 with 300-view floor; distribution remains ranking evidence.
+- Creator 24h / 3-per-week constraints converted to soft ranking penalties; hard safety is 6h / 5-per-week.
+- Chinese direct-X material older than the 180-minute Reply window can route to Chinese ORIGINAL consideration until 12h.
+- Initial exploration additions: @chenchengpro, @meathill1, @AxtonLiu. Only @chenchengpro currently has strong recent reach evidence, so all enter at exploration/low cadence except future outcome-based promotion.
+- Profile is already aligned; pinned-post topic awaits owner selection.

@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-from .operating_policy import operator_available, preflight, lane_for, next_release, utc_iso, parse_time, packet_violations
+from .operating_policy import operator_available, preflight, lane_for, next_release, utc_iso, parse_time, packet_violations, creator_attention_penalty
 
 
 def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int) -> dict[str,Any]:
@@ -27,7 +27,7 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
       ORDER BY CASE s.priority WHEN 'P0' THEN 0 ELSE 1 END,s.reply_acquisition_score DESC,s.distribution_score DESC,COALESCE(s.published_at,s.discovered_at) DESC LIMIT 120""",(utc_iso(now),)).fetchall()
     candidates=[]
     for row in rows:
-        signal=dict(row); signal['operating_lane']=lane_for(signal,cfg)
+        signal=dict(row); signal['operating_lane']=lane_for(signal,cfg,now)
         allowed,reason,retry=preflight(con,signal,cfg,now)
         if not allowed:
             status='EDITORIAL_DEFERRED' if retry else 'EXPIRED' if reason in {'opportunity_expired','not_qualified','publication_time_unknown','future_publication_time'} else 'EDITORIAL_HOLD'
@@ -36,7 +36,7 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
         else:
             candidates.append(signal)
     con.commit()
-    candidates.sort(key=lambda s:(s['operating_lane']!='REPLY',s.get('priority')!='P0',-int(s.get('reply_acquisition_score') or 0)))
+    candidates.sort(key=lambda s:(s['operating_lane']!='REPLY',s.get('priority')!='P0',-(int(s.get('reply_acquisition_score') or 0)-creator_attention_penalty(con,s,cfg,now))))
     sender=FeishuSender()
     if candidates and not sender.available():
         return {**result,'state':'CHANNEL_UNAVAILABLE'}

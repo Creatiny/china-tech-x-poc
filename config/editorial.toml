@@ -39,7 +39,11 @@ max_p1_reply_packets_per_day = 12
 
 # Creator diversity: broaden audience reach instead of repeatedly replying to the same accounts.
 p1_creator_cooldown_hours = 24
+creator_hard_cooldown_hours = 6
 max_p1_replies_per_creator_7d = 3
+creator_hard_weekly_cap = 5
+creator_recent_penalty_points = 2
+creator_weekly_penalty_points = 1
 
 # User availability and a coherent Chinese acquisition audience (2026-09-20).
 operator_aware_policy = true
@@ -49,7 +53,7 @@ operator_active_end = "22:00"
 reply_max_age_minutes = 180
 original_source_max_age_minutes = 720
 reply_min_observed_views = 300
-reply_min_distribution_score = 6
+reply_min_distribution_score = 4
 max_reply_packets_per_day = 10
 # Final drafting includes the full Humanizer self-audit; a separate rewrite is only a repair.
 humanize_only_on_violation = true

@@ -70,9 +70,16 @@ def language(text: str | None) -> str:
     return "unknown"
 
 
-def lane_for(signal: dict[str, Any], cfg: dict[str, Any]) -> str:
+def lane_for(signal: dict[str, Any], cfg: dict[str, Any], now: datetime | None = None) -> str:
     direct = signal.get("source_kind") == "x_profile" or signal.get("target_mode") == "VERIFIED_X_TARGET"
-    if direct and language(str(signal.get("title") or "") + " " + str(signal.get("excerpt") or "")) == "zh":
+    is_chinese = language(str(signal.get("title") or "") + " " + str(signal.get("excerpt") or "")) == "zh"
+    if direct and is_chinese:
+        published = parse_time(signal.get("published_at"))
+        current = now or datetime.now(timezone.utc)
+        if published is not None:
+            age_minutes = max(0.0, (current - published).total_seconds() / 60.0)
+            if age_minutes > float(cfg.get("reply_max_age_minutes", 180)):
+                return "POST"
         return "REPLY"
     return "POST"
 
@@ -110,7 +117,7 @@ def preflight(con: sqlite3.Connection, signal: dict[str, Any], cfg: dict[str, An
         return False, "not_qualified", None
     if not focus_matches(signal):
         return False, "outside_ai_building_scope", None
-    lane = signal.get("operating_lane") or lane_for(signal, cfg)
+    lane = signal.get("operating_lane") or lane_for(signal, cfg, current)
     pub = parse_time(signal.get("published_at"))
     if pub is None:
         return False, "publication_time_unknown", None
@@ -130,23 +137,31 @@ def preflight(con: sqlite3.Connection, signal: dict[str, Any], cfg: dict[str, An
         if int(signal.get("distribution_score") or 0) < int(cfg.get("reply_min_distribution_score", 6)):
             return False, "awaiting_distribution_evidence", utc_iso(current + timedelta(minutes=5))
         creator = str(signal.get("author") or "").casefold().lstrip("@")
-        recent = con.execute("SELECT editorial_packet_json FROM alert WHERE status='SENT' AND sent_at>=? AND json_extract(editorial_packet_json,'$.decision')='REPLY'", (utc_iso(current-timedelta(hours=24)),)).fetchall()
-        for row in recent:
+        rows = con.execute(
+            """SELECT sent_at,editorial_packet_json FROM alert
+                 WHERE status='SENT' AND sent_at>=?
+                   AND json_extract(editorial_packet_json,'$.decision')='REPLY'""",
+            (utc_iso(current-timedelta(days=7)),),
+        ).fetchall()
+        matching_times = []
+        for row in rows:
             try:
-                target = str(json.loads(row[0] or "{}").get("target_account") or "").casefold().lstrip("@")
-                if creator and target == creator:
-                    return False, "creator_attention_cooldown", utc_iso(current+timedelta(hours=1))
+                target = str(json.loads(row["editorial_packet_json"] or "{}").get("target_account") or "").casefold().lstrip("@")
             except (ValueError, TypeError):
-                pass
-        weekly = con.execute("SELECT editorial_packet_json FROM alert WHERE status='SENT' AND sent_at>=? AND json_extract(editorial_packet_json,'$.decision')='REPLY'",(utc_iso(current-timedelta(days=7)),)).fetchall()
-        matches = 0
-        for row in weekly:
-            try:
-                matches += str(json.loads(row[0] or '{}').get('target_account') or '').casefold().lstrip('@') == creator
-            except (ValueError,TypeError):
-                pass
-        if creator and matches >= int(cfg.get('max_p1_replies_per_creator_7d',3)):
-            return False, 'creator_weekly_attention_cap', None
+                continue
+            if creator and target == creator:
+                sent = parse_time(row["sent_at"])
+                if sent:
+                    matching_times.append(sent)
+        hard_cooldown = float(cfg.get("creator_hard_cooldown_hours",6))
+        if matching_times:
+            last = max(matching_times)
+            elapsed = (current-last).total_seconds()/3600
+            if elapsed < hard_cooldown:
+                retry = last + timedelta(hours=hard_cooldown)
+                return False, "creator_hard_safety_cooldown", utc_iso(retry)
+        if creator and len(matching_times) >= int(cfg.get("creator_hard_weekly_cap",5)):
+            return False, "creator_hard_weekly_cap", None
         window = con.execute("SELECT count(*) FROM alert WHERE status='SENT' AND sent_at>=? AND json_extract(editorial_packet_json,'$.decision')='REPLY'", (utc_iso(current-timedelta(hours=float(cfg.get("p1_reply_window_hours",4)))),)).fetchone()[0]
         if window >= int(cfg.get("max_p1_reply_packets_per_window",3)):
             return False, "reply_attention_window_full", utc_iso(current+timedelta(minutes=30))
@@ -159,6 +174,37 @@ def preflight(con: sqlite3.Connection, signal: dict[str, Any], cfg: dict[str, An
         return False, "daypart_attention_reserved", next_release(cfg, current)
     return True, "daytime_chinese_acquisition", None
 
+
+
+def creator_attention_penalty(con: sqlite3.Connection, signal: dict[str, Any], cfg: dict[str, Any], now: datetime | None = None) -> int:
+    """Soft diversity prior. It changes ordering, not admission, until safety caps are hit."""
+    creator = str(signal.get("author") or "").strip().casefold().lstrip("@")
+    if not creator:
+        return 0
+    current = now or datetime.now(timezone.utc)
+    rows = con.execute(
+        """SELECT sent_at,editorial_packet_json FROM alert
+             WHERE status='SENT' AND sent_at>=?
+               AND json_extract(editorial_packet_json,'$.decision')='REPLY'""",
+        (utc_iso(current-timedelta(days=7)),),
+    ).fetchall()
+    recent_24h = weekly = 0
+    for row in rows:
+        try:
+            packet = json.loads(row["editorial_packet_json"] or "{}")
+            target = str(packet.get("target_account") or "").casefold().lstrip("@")
+        except (ValueError, TypeError):
+            continue
+        if target != creator:
+            continue
+        weekly += 1
+        sent = parse_time(row["sent_at"])
+        if sent and (current-sent).total_seconds() < 24*3600:
+            recent_24h += 1
+    return (
+        (int(cfg.get("creator_recent_penalty_points",2)) if recent_24h else 0)
+        + (int(cfg.get("creator_weekly_penalty_points",1)) if weekly >= int(cfg.get("max_p1_replies_per_creator_7d",3)) else 0)
+    )
 
 def packet_violations(signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
     if not active(cfg) or packet.get("decision") == "SKIP":

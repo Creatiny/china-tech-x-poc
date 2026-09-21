@@ -437,8 +437,8 @@ acquisition_role = "chinese_acquisition"
 china_focused = false
 audience_focused = true
 source_weight = 5
-max_candidate_age_minutes = 120
-p1_max_age_minutes = 120
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1087,8 +1087,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1145,8 +1145,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1197,8 +1197,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1377,8 +1377,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 # Reply-acquisition expansion batch 2 — 2026-09-16
@@ -1450,8 +1450,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1468,8 +1468,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 5
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1618,8 +1618,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1636,8 +1636,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1654,8 +1654,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1672,8 +1672,8 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
 
 [[source]]
@@ -1690,6 +1690,63 @@ audience_focused = true
 require_title_topic = true
 source_weight = 4
 p1_min_score = 6
-max_candidate_age_minutes = 180
-p1_max_age_minutes = 180
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
 enabled = true
+
+[[source]]
+id = "x_chenchengpro"
+kind = "x_profile"
+name = "X @chenchengpro — 中文 AI 实战探索"
+handle = "chenchengpro"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+acquisition_role = "chinese_exploration"
+poll_minutes = 6
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission note: high current AI-coding/Jev test reach
+
+[[source]]
+id = "x_meathill1"
+kind = "x_profile"
+name = "X @meathill1 — 中文 AI 实战探索"
+handle = "meathill1"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+acquisition_role = "chinese_exploration"
+poll_minutes = 8
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission note: builder / AI coding practice
+
+[[source]]
+id = "x_axtonliu"
+kind = "x_profile"
+name = "X @AxtonLiu — 中文 AI 实战探索"
+handle = "AxtonLiu"
+creator_role = "chinese_ai_building"
+creator_quality = "expansion_technical"
+acquisition_role = "chinese_exploration"
+poll_minutes = 8
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission note: AI coding / personal AI practice

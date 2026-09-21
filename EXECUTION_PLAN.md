@@ -1,7 +1,7 @@
 # China Tech X POC — Execution Plan v2.0
 
 **Status:** `APPROVED / ACTIVE`  
-**Authority:** `PROJECT_SPEC.md` v3.8
+**Authority:** `PROJECT_SPEC.md` v3.9
 **Effective:** `2026-09-09`
 
 ## 1. Current Mode

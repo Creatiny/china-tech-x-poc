@@ -1,6 +1,6 @@
 # Daily Runbook v3.0
 
-Authority: `PROJECT_SPEC.md` v3.8 and `EXECUTION_PLAN.md` v2.0.
+Authority: `PROJECT_SPEC.md` v3.9 and `EXECUTION_PLAN.md` v2.0.
 
 ## Daily Objective
 
@@ -100,7 +100,7 @@ For Reply acquisition, do not judge a target by parent views alone. Prefer high 
 
 Production Collector, Editorial Worker, daily review, manual integrated diagnostics, and local reporting must all use the same service runtime SQLite database. Never create or point production at a second `china-tech-x.db`.
 
-## Current operator-aware workflow (v3.8)
+## Current operator-aware workflow (v3.9)
 
 08–22 Beijing: prioritize Chinese conversations with evidence of real reach; use English official material for Chinese originals. Keep the user's attention and model budgets available through the afternoon/evening. Outside that window collect only; do not draft/send or bypass for P0.
 

@@ -260,7 +260,7 @@ def load_spec_guardrails(root: Path) -> str:
     except Exception as exc:
         raise RuntimeError(f"project_spec_unreadable:{exc}") from exc
     parts: list[str] = []
-    for section in (2, 4, 19, 20, 23, 33):
+    for section in (2, 4, 19, 20, 23, 33, 35):
         match = re.search(rf"(?ms)^## {section}\. .*?(?=^## \d+\.|\Z)", text)
         if not match:
             raise RuntimeError(f"project_spec_missing_section:{section}")

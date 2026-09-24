@@ -94,3 +94,35 @@ For each original, record qualitatively:
 
 One strong, memorable post may be better than several weak posts.
 No activity metric can override that rule.
+
+
+## 9. Traction / Bullseye Review
+
+Growth work is managed as experiments under `00_Governance/TRACTION_OPERATING_SYSTEM.md`.
+
+Daily review must identify:
+- the first broken funnel stage;
+- the current Critical Path bottleneck;
+- one primary growth variable to test next;
+- what evidence would change the decision.
+
+A low Post or Reply count is never itself a bottleneck.
+
+At sufficient sample size or at least weekly, compare active Bullseye tests and classify each:
+- `SCALE` — repeatable evidence materially moves the North Star;
+- `ITERATE` — promising but a specific variable needs another test;
+- `KILL` — consumes attention without useful conversion/relationship evidence;
+- `INCONCLUSIVE` — insufficient valid observations.
+
+## 10. Channel and Asset Evidence
+
+Track channel/tactic evidence separately where possible:
+- owned first-hand content;
+- targeted Creator/Reply acquisition;
+- Engineering as Marketing asset;
+- community / collaboration;
+- other explicitly approved tests.
+
+A durable tool, benchmark, dataset, checker or scorecard may be a Traction asset even when its immediate impressions are modest. Evaluate whether it creates repeated discovery, citations, profile interest, relevant follows, or qualified relationships over time.
+
+Do not infer causality from follower deltas when attribution is incomplete.

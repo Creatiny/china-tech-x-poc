@@ -290,8 +290,8 @@ def cmd_review(args: argparse.Namespace) -> int:
                 f"Status: {review['status']} | Day {review['gate']['experiment_day']}\n"
                 f"Alerts: {m['qualified_alerts_total']} | Worth: {m['review_worth_rate']} | Executable: {m['executable_opportunities_total']} | Posted: {m['published_actions_total']}\n"
                 f"Max impressions: {m['max_impressions']} | Followers: {m['followers_total']} (delta {m['follower_delta']})\n"
-                f"Bottleneck: {d['bottleneck']}\n"
-                f"Next: {d['actions'][0]}"
+                f"Critical Path: {d['bottleneck']}\n"
+                f"Next experiment: {d['actions'][0]}"
             )
         else:
             text = f"[China Tech X Daily Review] {as_of.isoformat()}\n{review.get('status')}: {review.get('reason')}"

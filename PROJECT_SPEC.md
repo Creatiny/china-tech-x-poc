@@ -1,9 +1,9 @@
-# China Tech X POC — Canonical Project Spec v3.9
+# China Tech X POC — Canonical Project Spec v4.0
 
 ## 0. Authority
 
 **Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
-**Effective:** `2026-09-16`
+**Effective:** `2026-09-24`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
 If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.
@@ -589,3 +589,57 @@ The pinned post is the conversion layer between borrowed Reply reach and a follo
 3. what a follower will repeatedly get from this account.
 
 Do not pin a generic AI news post or an old English long-form article as the primary profile promise. The owner selects the pinned-post theme; the runtime must not change the pin automatically.
+
+
+## 35. Traction / Bullseye / Critical Path
+
+`00_Governance/TRACTION_OPERATING_SYSTEM.md` is the canonical growth-experiment operating layer for this project. It does not replace the editorial gates above; it decides where growth attention goes.
+
+### Traction Goal
+
+The current objective is not output volume. It is to prove a repeatable acquisition loop in which first-hand evidence or a differentiated thesis reaches the right AI/Agent/productivity audience, creates profile interest, and converts into relevant follows or durable creator/community relationships.
+
+Follower milestones remain directional checkpoints. Missing a milestone triggers diagnosis and a new test, not generic extra posting.
+
+### Critical Path
+
+Until outcome evidence changes it, prioritize:
+
+```text
+real project evidence
+ -> strong owned thesis/content asset
+ -> best-fit X distribution surface
+ -> measured outcome
+ -> repeat the winning topic/creator/format pattern
+```
+
+Work that does not remove the current acquisition bottleneck is secondary.
+
+### Bullseye discipline
+
+- **Outer Ring:** maintain plausible acquisition hypotheses; do not operationalize all of them.
+- **Middle Ring:** run roughly three cheap, measurable tests when evidence permits.
+- **Bullseye:** when one loop materially outperforms the others, concentrate resources there and stop weak parallel activity.
+- Reopen exploration when the winner saturates, stops moving the needle, or the audience changes.
+
+Current channel thesis:
+- core: X + owned first-hand Content Marketing + targeted Creator/Reply distribution;
+- high-priority adjacent test: **Engineering as Marketing** using useful public tools, benchmarks, checkers, scorecards, datasets or calculators created from real project work;
+- evidence-gated later channels: Community Building, Spaces/podcasts/guest content, newsletter, publicity and paid acquisition.
+
+### Editorial implication
+
+A candidate becomes more valuable when it can create a durable acquisition asset, not merely a disposable post. Prefer:
+
+```text
+real project evidence
+> benchmark / experiment / failure + recovery
+> distinctive thesis
+> consequential verified change
+> ordinary news commentary
+```
+
+Reply remains a high-touch creator-acquisition tactic, not a quota. A low daily Reply count is acceptable when few opportunities can add first-hand evidence, a key number, a correction, a useful comparison, or a real operating judgment.
+
+Every final editorial draft must freshly load this section together with the existing mandatory guardrails.
+

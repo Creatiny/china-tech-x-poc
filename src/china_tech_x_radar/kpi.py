@@ -234,6 +234,18 @@ def diagnose(metrics: dict[str, Any], gate: dict[str, Any]) -> dict[str, Any]:
         return {"bottleneck": "RUNTIME_OR_MEASUREMENT", "actions": ["Restore live collection/review evidence before changing growth strategy.", "Do not add unrelated infrastructure."]}
     if metrics["cycle_success_rate"] < float(t.get("cycle_success_rate_min", 0)):
         return {"bottleneck": "RUNTIME_RELIABILITY", "actions": ["Fix only the recurring runtime/source error while healthy collectors continue.", "Do not change content strategy until signal delivery is reliable."]}
+    if (
+        t.get("review_worth_rate_min") is not None
+        and "reviewed_total" in metrics
+        and int(metrics.get("reviewed_total") or 0) < 3
+    ):
+        return {
+            "bottleneck": "MEASUREMENT_GAP",
+            "actions": [
+                "Collect worth-reviewing decisions on at least 3 current alerts before changing alert filters.",
+                "Do not treat one or two samples as an alert-precision result.",
+            ],
+        }
     if t.get("review_worth_rate_min") is not None and metrics.get("review_worth_rate") is not None and metrics["review_worth_rate"] < float(t["review_worth_rate_min"]):
         return {"bottleneck": "ALERT_PRECISION", "actions": ["Tighten only the false-positive rule/source pattern evidenced by today's review.", "Do not increase alert volume until precision improves."]}
 
@@ -285,7 +297,7 @@ def render_markdown(as_of: date, metrics: dict[str, Any], gate: dict[str, Any], 
         f"- Experiment day: **{gate['experiment_day']}**",
         f"- KPI status: **{gate['status']}**",
         f"- Evaluated milestone: **Day {gate['evaluated_milestone_day']}**",
-        f"- Primary bottleneck: **{diagnosis['bottleneck']}**",
+        f"- Critical Path bottleneck: **{diagnosis['bottleneck']}**",
         "",
         "## Funnel Metrics",
         "",
@@ -305,14 +317,14 @@ def render_markdown(as_of: date, metrics: dict[str, Any], gate: dict[str, Any], 
     for k, v in gate["business_checks"].items():
         lines.append(f"- growth.{k}: `{v}`")
     lines.append(f"- business_pass: `{gate['business_pass']}`")
-    lines += ["", "## Corrective Action", ""]
+    lines += ["", "## Next Traction Experiment", ""]
     for a in diagnosis["actions"][:2]:
         lines.append(f"- {a}")
     lines += [
         "",
         "## Operating Rule",
         "",
-        "If KPI is GREEN, continue the proven direction. If it is AMBER/RED, diagnose the first broken funnel stage and change at most one business variable plus one instrumentation fix before the next review. Business evidence outranks infrastructure completion.",
+        "Use Bullseye discipline: identify the first broken funnel stage, treat it as the current Critical Path, and change at most one major growth variable plus one instrumentation fix. SCALE only with repeatable outcome evidence; otherwise ITERATE, KILL, or mark INCONCLUSIVE. Business evidence outranks infrastructure completion.",
         "",
     ]
     return "\n".join(lines)

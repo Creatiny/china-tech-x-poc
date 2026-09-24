@@ -289,6 +289,28 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(out["priority"], "DROP")
 
 
+    def test_alert_precision_requires_minimum_review_sample(self):
+        metrics = {
+            "cycle_count": 100, "cycle_success_rate": 1.0,
+            "reviewed_total": 1, "review_worth_rate": 0.0,
+            "reply_actions_total": 10, "original_posts_total": 3,
+            "published_actions_total": 13, "actions_with_outcome": 13,
+            "max_impressions": 1000, "followers_total": 34,
+        }
+        gate = {
+            "milestone_is_due": True, "evaluated_milestone_day": 15, "experiment_day": 25,
+            "process_pass": False, "business_pass": False,
+            "targets": {
+                "cycle_success_rate_min": 0.98,
+                "review_worth_rate_min": 0.70,
+                "followers_total_min": 40,
+            },
+            "business_checks": {"followers_total": False},
+        }
+        d = diagnose(metrics, gate)
+        self.assertEqual(d["bottleneck"], "MEASUREMENT_GAP")
+        self.assertIn("at least 3", d["actions"][0])
+
     def test_pre_gate_diagnosis_does_not_require_reply_volume(self):
         metrics = {
             "cycle_count": 2, "cycle_success_rate": 1.0, "review_worth_rate": 0.8,
@@ -752,6 +774,7 @@ class CoreTests(unittest.TestCase):
         self.assertIn("Mandatory Human Voice Gate", spec)
         self.assertIn("Single Reply Standard", spec)
         self.assertIn("Pre-Draft SPEC Check and Brevity Gate", spec)
+        self.assertIn("Traction / Bullseye / Critical Path", spec)
         prompt = final_prompt({"priority":"P1","title":"AI agent","excerpt":"x","source_name":"S","canonical_url":"u","reason":"r","topic":"agent","target_mode":"VERIFIED_X_TARGET"}, spec)
         self.assertIn("MANDATORY PRE-DRAFT SPEC CHECK", prompt)
         self.assertIn("fewest words", prompt)

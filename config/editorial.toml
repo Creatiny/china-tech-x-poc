@@ -29,6 +29,7 @@ render_editorial_cards = true
 # Operator-notification policy. These are attention-protection ceilings, NOT publishing quotas.
 p0_min_confidence = 0.75
 p1_min_confidence = 0.88
+p1_post_min_confidence = 0.80
 p1_post_min_score = 10
 p1_reply_min_score = 6
 max_post_packets_per_day = 2

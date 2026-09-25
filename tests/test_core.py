@@ -547,6 +547,99 @@ class CoreTests(unittest.TestCase):
             self.assertFalse(allowed)
             self.assertEqual(reason,"p1_post_daily_slot_used")
 
+    def test_active_policy_uses_separate_post_confidence_threshold(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "post-confidence.db")
+            cfg = {
+                "operator_aware_policy": True,
+                "operator_timezone": "UTC",
+                "operator_active_start": "00:00",
+                "operator_active_end": "23:59",
+                "p1_min_confidence": 0.88,
+                "p1_post_min_confidence": 0.80,
+                "p1_post_min_score": 10,
+                "max_post_packets_per_day": 2,
+            }
+            signal = {
+                "priority": "P1", "score": 12, "source_kind": "rss",
+                "title": "DeepSeek agent harness improves coding workflow",
+                "excerpt": "measured workflow change for developers",
+                "published_at": iso(),
+                "operating_lane": "POST",
+            }
+            packet = {
+                "decision": "POST", "confidence": 0.86, "final_copy": "DeepSeek Harness 这次真正降低的是安装和切换成本。",
+                "content_bucket": "WHAT_CHANGES", "subject_name": "DeepSeek Harness",
+                "added_evidence": {"detail": "官方桌面版提供安装与模式切换能力。", "source_url": "https://example.com/source"},
+            }
+            allowed, reason = notification_policy(con, signal, packet, cfg)
+            self.assertTrue(allowed)
+            self.assertEqual(reason, "daytime_chinese_evidence_checked")
+
+    def test_active_policy_blocks_low_confidence_post_below_separate_floor(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "post-confidence-low.db")
+            cfg = {
+                "operator_aware_policy": True,
+                "operator_timezone": "UTC",
+                "operator_active_start": "00:00",
+                "operator_active_end": "23:59",
+                "p1_min_confidence": 0.88,
+                "p1_post_min_confidence": 0.80,
+                "p1_post_min_score": 10,
+                "max_post_packets_per_day": 2,
+            }
+            signal = {
+                "priority": "P1", "score": 12, "source_kind": "rss",
+                "title": "DeepSeek agent harness improves coding workflow",
+                "excerpt": "measured workflow change for developers",
+                "published_at": iso(),
+                "operating_lane": "POST",
+            }
+            packet = {
+                "decision": "POST", "confidence": 0.79,
+                "final_copy": "DeepSeek Harness 这次真正降低的是安装和切换成本。",
+                "content_bucket": "WHAT_CHANGES", "subject_name": "DeepSeek Harness",
+                "added_evidence": {"detail": "官方桌面版提供安装与模式切换能力。", "source_url": "https://example.com/source"},
+            }
+            allowed, reason = notification_policy(con, signal, packet, cfg)
+            self.assertFalse(allowed)
+            self.assertTrue(reason.startswith("confidence_below_threshold:0.79<0.80"))
+
+    def test_active_policy_keeps_reply_confidence_at_p1_floor(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "reply-confidence.db")
+            cfg = {
+                "operator_aware_policy": True,
+                "operator_timezone": "UTC",
+                "operator_active_start": "00:00",
+                "operator_active_end": "23:59",
+                "p1_min_confidence": 0.88,
+                "p1_post_min_confidence": 0.85,
+                "reply_min_observed_views": 300,
+                "reply_min_distribution_score": 4,
+                "max_reply_packets_per_day": 10,
+                "p1_reply_window_hours": 4,
+                "max_p1_reply_packets_per_window": 3,
+                "creator_hard_weekly_cap": 5,
+            }
+            signal = {
+                "priority": "P1", "score": 9, "source_kind": "x_profile",
+                "target_mode": "VERIFIED_X_TARGET", "canonical_url": "https://x.com/test/status/1",
+                "author": "@test", "title": "这个 Agent 工作流的实测结果值得看",
+                "excerpt": "有具体数据和工作流变化", "published_at": iso(),
+                "operating_lane": "REPLY", "observed_views": 1000, "distribution_score": 6,
+            }
+            packet = {
+                "decision": "REPLY", "confidence": 0.86, "target_url": "https://x.com/test/status/1",
+                "final_copy": "这个数据点更值得看，实际瓶颈已经从模型转到执行链路。",
+                "content_bucket": "WHAT_CHANGES",
+                "added_evidence": {"detail": "父帖给出了实际工作流变化和量化结果。", "source_url": "https://x.com/test/status/1"},
+            }
+            allowed, reason = notification_policy(con, signal, packet, cfg)
+            self.assertFalse(allowed)
+            self.assertTrue(reason.startswith("confidence_below_threshold:0.86<0.88"))
+
     def test_reply_rolling_window_blocks_burst_but_not_old_replies(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "rolling.db")
@@ -785,6 +878,9 @@ class CoreTests(unittest.TestCase):
         self.assertIn("replies ONLY to Chinese-language parent posts", prompt)
         self.assertIn("WHAT_I_BELIEVE", prompt)
         self.assertIn("News is raw material", prompt)
+        self.assertIn("NOT a universal admission requirement", prompt)
+        self.assertIn('"added_evidence"', prompt)
+        self.assertIn('"subject_name"', prompt)
 
     def test_chinese_template_is_rejected_by_language_gate(self):
         packet = {

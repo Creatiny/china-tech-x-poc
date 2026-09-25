@@ -145,8 +145,16 @@ def notification_policy(con: sqlite3.Connection, signal: dict[str, Any], packet:
         if violations:
             return False, ",".join(violations)
         confidence = float(packet.get("confidence") or 0)
-        if confidence < float(cfg.get("p1_min_confidence", .88)):
-            return False, "confidence_below_threshold"
+        priority = str(signal.get("priority") or "P1").upper()
+        decision = str(packet.get("decision") or "SKIP").upper()
+        if priority == "P0":
+            threshold = float(cfg.get("p0_min_confidence", 0.75))
+        elif decision == "POST":
+            threshold = float(cfg.get("p1_post_min_confidence", cfg.get("p1_min_confidence", 0.88)))
+        else:
+            threshold = float(cfg.get("p1_min_confidence", 0.88))
+        if confidence < threshold:
+            return False, f"confidence_below_threshold:{confidence:.2f}<{threshold:.2f}"
         return True, "daytime_chinese_evidence_checked"
     priority = str(signal.get("priority") or "P1").upper()
     decision = str(packet.get("decision") or "SKIP").upper()

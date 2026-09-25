@@ -421,6 +421,7 @@ For a direct X target, treat distribution opportunity as timing evidence only: a
 Decision rules:
 - REPLY only when a strong current target exists, timing is useful, and the reply adds one of: primary-source fact, key number/factual correction, corresponding case/comparison, or real practice result.
 - POST only when the topic deserves owned distribution and contains a clear thesis + evidence/reasoning + concrete consequence for the target audience.
+- First-hand Kenny evidence is the strongest input but NOT a universal admission requirement. A credible external primary source, benchmark, release, measured case, or technical discussion may qualify as WHAT_CHANGES or support a Kenny thesis when the facts are verifiable and the consequence for builders is concrete. Do not SKIP solely because Kenny has not personally tested the item yet.
 - SKIP weak, late, duplicative, generic, off-audience, headline-restatement, or me-too commentary.
 
 Language rules:
@@ -451,7 +452,7 @@ Visual decision:
 - POST: EDITORIAL_CARD only when 2-3 verified facts/data points materially improve comprehension.
 
 Return ONLY one-line JSON. Include added_evidence as an object with detail and source_url (or local_evidence_path for an actually supplied local source), and subject_name. Required base keys:
-{{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
+{{"decision":"REPLY|POST|SKIP","content_bucket":"WHAT_I_BELIEVE|WHAT_I_LEARNED|WHAT_CHANGES","confidence":0.0,"reason":"short editorial reason","core_position":null,"target_url":null,"target_account":null,"final_copy":null,"source_url":null,"angle_type":"PRIMARY_SOURCE|KEY_NUMBER|CORRESPONDING_CASE|FIRSTHAND_PRACTICE|PRODUCTIVITY_IMPACT|THESIS|OTHER","added_evidence":{{"detail":"specific verified fact/result/check","source_url":"https://...","local_evidence_path":null}},"subject_name":"exact model/tool/project name for POST, or null for REPLY","article_seed":null,"urgency_minutes":0,"image_mode":"NONE|EDITORIAL_CARD","image_title":null,"image_points":[],"publish_note":"one short direct instruction"}}'''
 
 
 def humanize_copy_prompt(signal: dict[str, Any], packet: dict[str, Any], humanizer_path: str, kenny_voice: str, recent_openers: list[str]) -> str:

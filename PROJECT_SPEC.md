@@ -1,9 +1,9 @@
-# China Tech X POC — Canonical Project Spec v4.0
+# China Tech X POC — Canonical Project Spec v4.1
 
 ## 0. Authority
 
 **Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
-**Effective:** `2026-09-24`
+**Effective:** `2026-09-25`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
 If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.
@@ -629,7 +629,7 @@ Current channel thesis:
 
 ### Editorial implication
 
-A candidate becomes more valuable when it can create a durable acquisition asset, not merely a disposable post. Prefer:
+A candidate becomes more valuable when it can create a durable acquisition asset, not merely a disposable post. This ordering is a ranking preference, not a universal veto: credible external primary sources, benchmarks, releases and measured technical cases may still qualify when they support a concrete WHAT_CHANGES or a defensible Kenny thesis. Lack of prior Kenny first-hand testing alone is not a SKIP reason. Prefer:
 
 ```text
 real project evidence

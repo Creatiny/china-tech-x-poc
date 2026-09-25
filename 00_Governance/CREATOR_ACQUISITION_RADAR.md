@@ -72,3 +72,12 @@ After Batch 2, the pool contains 90 configured X profiles / 81 enabled. Cadence 
 ## Reply Surface layer
 
 Creator reach is now evaluated together with per-post reply competition. The runtime ranks comparable direct-X opportunities by Reply Acquisition Score (distribution + reply surface + mature creator feedback). Future outcome analysis can compare `target_views_per_reply_at_reply` and `target_reply_surface_score_at_reply` against Kenny's actual Reply impressions.
+
+
+## 2026-09-25 Chinese acquisition coverage gap
+
+Production audit after a zero-delivery day found only **15 enabled sources** tagged for Chinese acquisition/exploration (12 chinese_acquisition + 3 chinese_exploration) against the current staged target of **25 core/acquisition + 20 exploration**.
+
+Because automatic Reply recommendations intentionally require a Chinese-language parent conversation, this shortfall reduces the supply of valid Reply opportunities even when the global reference collector is healthy.
+
+This is a discovery-coverage gap, not permission to lower Reply quality. Expansion must continue through evidence-gated discovery of additional Chinese AI/Agent/building creators; do not fill the target with weak accounts merely to hit a count.

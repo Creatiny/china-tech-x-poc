@@ -113,6 +113,27 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(items[0]["metrics"]["views"], 2048)
         self.assertIn("Factory deployment", items[0]["excerpt"])
 
+    def test_parse_x_profile_current_timeline_ssr(self):
+        tid = "2103830914103169089"
+        body = (
+            f'href="/vista8/status/{tid}" '
+            f'tweet_results:$R[1]={{rest_id:"{tid}",result:$R[2]={{__isTweetResult:"Tweet",'
+            f'counts:$R[3]={{bookmark_count:7,favorite_count:8,quote_count:0,reply_count:3,retweet_count:2}},'
+            f'details:$R[4]={{created_at_ms:1790427351000,full_text:"今天测试 Agent 工作流，结果很稳定。\\n第二行。"}},'
+            f'legacy:$R[5]={{lang:"zh"}},views:$R[6]={{count:"2231"}}}}}},entry_id:"tweet-{tid}"'
+        ).encode()
+        items = parse_x_profile_html(body, "vista8")
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["canonical_url"], f"https://x.com/vista8/status/{tid}")
+        self.assertEqual(items[0]["metrics"]["views"], 2231)
+        self.assertEqual(items[0]["metrics"]["replies"], 3)
+        self.assertIn("Agent 工作流", items[0]["excerpt"])
+
+    def test_parse_x_profile_raises_when_status_links_exist_but_tweet_blocks_do_not_parse(self):
+        body = b'href="/vista8/status/2103830914103169089" unrelated markup only'
+        with self.assertRaisesRegex(ValueError, "x_profile_parse_empty:vista8"):
+            parse_x_profile_html(body, "vista8")
+
     def test_classify_material_china_ai(self):
         item = {"title": "Zhipu AI launches GLM-5.3 model benchmark", "excerpt": "China AI model release", "published_at": datetime.now(timezone.utc)}
         source = {"china_focused": True, "source_weight": 5}

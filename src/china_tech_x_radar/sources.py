@@ -223,18 +223,75 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
             text,
             re.DOTALL,
         )
-        if not details:
+        counts_block: str | None = None
+        views_block: str | None = None
+
+        if details:
+            full_text_raw = details.group(1)
+            created_at_ms = details.group(2)
+            legacy_key = re.escape(f"client:{encoded}:legacy")
+            legacy = re.search(legacy_key + r'.{0,1200}?retweeted_status_results:([^,}]+)', text, re.DOTALL)
+            if legacy and legacy.group(1).strip() != "null":
+                continue
+            counts_key = re.escape(f"client:{encoded}:counts")
+            counts = re.search(counts_key + r'.{0,1800}', text, re.DOTALL)
+            counts_block = counts.group(0) if counts else None
+            views_key = re.escape(f"client:{encoded}:views")
+            views = re.search(views_key + r'.{0,500}?count:"?(\d+)"?', text, re.DOTALL)
+            views_block = views.group(0) if views else None
+        else:
+            # X changed its public SSR shape in Sep 2026: the same fields now
+            # live inside TimelineTweet result blocks rather than client:Tweet cache keys.
+            entry_end = text.find(f'entry_id:"tweet-{tweet_id}"')
+            if entry_end < 0:
+                continue
+            block_start = text.rfind("tweet_results:", max(0, entry_end - 24000), entry_end)
+            if block_start < 0:
+                block_start = max(0, entry_end - 18000)
+            block = text[block_start : min(len(text), entry_end + 800)]
+
+            retweet = re.search(r"retweeted_status_results:\s*([^,}]+)", block)
+            if retweet and retweet.group(1).strip() != "null":
+                continue
+
+            current_details = re.search(
+                r'created_at_ms:(\d+).{0,3500}?full_text:"((?:\\.|[^"\\])*)"',
+                block,
+                re.DOTALL,
+            )
+            if current_details:
+                created_at_ms = current_details.group(1)
+                full_text_raw = current_details.group(2)
+            else:
+                reverse_details = re.search(
+                    r'full_text:"((?:\\.|[^"\\])*)".{0,3500}?created_at_ms:(\d+)',
+                    block,
+                    re.DOTALL,
+                )
+                if not reverse_details:
+                    continue
+                full_text_raw = reverse_details.group(1)
+                created_at_ms = reverse_details.group(2)
+
+            # Long posts can expose a fuller NoteTweet body than details.full_text.
+            note = re.search(
+                r'note_tweet:.{0,9000}?result:.{0,5000}?text:"((?:\\.|[^"\\])*)"',
+                block,
+                re.DOTALL,
+            )
+            if note:
+                full_text_raw = note.group(1)
+
+            counts_match = re.search(r"counts:.{0,1200}", block, re.DOTALL)
+            counts_block = counts_match.group(0) if counts_match else None
+            views_match = re.search(r'views:.{0,500}?count:"?(\d+)"?', block, re.DOTALL)
+            views_block = views_match.group(0) if views_match else None
+
+        full_text = clean_text(_decode_js_string(full_text_raw), 1600)
+        if not full_text or full_text.startswith("RT @"):
             continue
 
-        legacy_key = re.escape(f"client:{encoded}:legacy")
-        legacy = re.search(legacy_key + r'.{0,1200}?retweeted_status_results:([^,}]+)', text, re.DOTALL)
-        if legacy and legacy.group(1).strip() != "null":
-            continue
-
-        full_text = clean_text(_decode_js_string(details.group(1)), 1600)
-        if not full_text:
-            continue
-        published_at = datetime.fromtimestamp(int(details.group(2)) / 1000.0, tz=timezone.utc)
+        published_at = datetime.fromtimestamp(int(created_at_ms) / 1000.0, tz=timezone.utc)
         item: dict[str, Any] = {
             "source_item_id": tweet_id,
             "canonical_url": f"https://x.com/{handle}/status/{tweet_id}",
@@ -244,10 +301,7 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
             "published_at": published_at,
         }
 
-        counts_key = re.escape(f"client:{encoded}:counts")
-        counts = re.search(counts_key + r'.{0,1800}', text, re.DOTALL)
-        if counts:
-            block = counts.group(0)
+        if counts_block:
             metric_fields = {
                 "bookmarks": "bookmark_count",
                 "likes": "favorite_count",
@@ -257,16 +311,23 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
             }
             parsed_metrics: dict[str, int] = {}
             for out_key, raw_key in metric_fields.items():
-                match = re.search(rf"{raw_key}:(\d+)", block)
+                match = re.search(rf"{raw_key}:(\d+)", counts_block)
                 if match:
                     parsed_metrics[out_key] = int(match.group(1))
             if parsed_metrics:
                 item["metrics"] = parsed_metrics
-        views_key = re.escape(f"client:{encoded}:views")
-        views = re.search(views_key + r'.{0,500}?count:"?(\d+)"?', text, re.DOTALL)
-        if views:
-            item.setdefault("metrics", {})["views"] = int(views.group(1))
+
+        if views_block:
+            views = re.search(r'count:"?(\d+)"?', views_block)
+            if views:
+                item.setdefault("metrics", {})["views"] = int(views.group(1))
+
         out.append(item)
+
+    # A 200 response with visible status links but zero parsed posts is a parser
+    # failure, not a healthy empty poll. Fail closed so runtime health is truthful.
+    if not out:
+        raise ValueError(f"x_profile_parse_empty:{handle}")
     return out
 
 

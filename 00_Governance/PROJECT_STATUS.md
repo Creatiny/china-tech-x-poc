@@ -147,3 +147,15 @@ Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-gr
 - Chinese direct-X material older than the 180-minute Reply window can route to Chinese ORIGINAL consideration until 12h.
 - Initial exploration additions: @chenchengpro, @meathill1, @AxtonLiu. Only @chenchengpro currently has strong recent reach evidence, so all enter at exploration/low cadence except future outcome-based promotion.
 - Profile is already aligned; pinned-post topic awaits owner selection.
+
+
+## 2026-09-27 acquisition/runtime repair and measured iteration
+
+- X public profile SSR changed from the prior client:Tweet cache-key shape to TimelineTweet result blocks. Production parser now supports both forms and fails closed when a 200 response contains no parseable posts.
+- Quote-post outcome parsing now anchors the outer tweet by status ID + author and excludes nested quoted-tweet metrics. Recent public outcomes were refreshed after this repair.
+- Clean Sep20+ evidence: Reply median 131 impressions (7 measured, max 2,019); original median 35 (9 measured, max 70). Reply is the current cold-start distribution lane; originals remain profile-conversion / owned-evidence assets.
+- Creator feedback now supports a conservative two-mature-sample provisional prior only when both samples clear a strong acquisition floor; a single breakout cannot change ranking. @vista8 currently qualifies (+1 provisional; 2 samples, median 1,811.5).
+- Operator adoption is recorded as a usability/tie-break signal, not follower attribution.
+- Classifier and Editorial now share one AI-building scope. Generic macro/politics/business candidates are kept as observations (P2) instead of entering realtime editorial merely because they mention AI.
+- Chinese creator discovery remains evidence-gated. Sep27 added @arvin17x, @AI_Jasonyu, and @yanhua1010 to exploration, bringing the enabled Chinese pool to 18 (12 acquisition + 6 exploration).
+- Subject grounding no longer requires brittle contiguous-string matching; named products/projects must still be recognizable in standalone copy.

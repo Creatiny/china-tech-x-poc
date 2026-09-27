@@ -6,12 +6,14 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from china_tech_x_radar.classify import classify, distribution_opportunity, reply_surface_opportunity
+from china_tech_x_radar.scope import ai_building_scope_matches
 from china_tech_x_radar.db import connect, insert_signal, update_signal_observation, iso
 from china_tech_x_radar.sources import parse_feed, parse_x_profile_html, parse_x_profile_stats_html
 from china_tech_x_radar.kpi import diagnose, evaluate_gate
 from china_tech_x_radar.formula import age_bucket, follower_tier, reply_surface_bucket, build_formula_report, build_creator_feedback_map, creator_acquisition_report
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, _effective_poll_minutes, process_pending_alerts
+from china_tech_x_radar.operating_policy import subject_grounded_in_copy
 from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
@@ -118,6 +120,7 @@ class CoreTests(unittest.TestCase):
         body = (
             f'href="/vista8/status/{tid}" '
             f'tweet_results:$R[1]={{rest_id:"{tid}",result:$R[2]={{__isTweetResult:"Tweet",'
+            f'core:$R[20]={{user_results:$R[21]={{result:$R[22]={{core:$R[23]={{name:"向阳乔木",screen_name:"vista8"}}}}}}}},'
             f'counts:$R[3]={{bookmark_count:7,favorite_count:8,quote_count:0,reply_count:3,retweet_count:2}},'
             f'details:$R[4]={{created_at_ms:1790427351000,full_text:"今天测试 Agent 工作流，结果很稳定。\\n第二行。"}},'
             f'legacy:$R[5]={{lang:"zh"}},views:$R[6]={{count:"2231"}}}}}},entry_id:"tweet-{tid}"'
@@ -128,6 +131,32 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(items[0]["metrics"]["views"], 2231)
         self.assertEqual(items[0]["metrics"]["replies"], 3)
         self.assertIn("Agent 工作流", items[0]["excerpt"])
+
+    def test_parse_x_profile_quote_post_keeps_outer_text_and_metrics(self):
+        tid = "2103028225991729367"
+        quoted = "2102786814633464159"
+        body = (
+            f'href="/KennyChinaTech/status/{tid}" '
+            f'tweet_results:$R[1]={{rest_id:"{tid}",result:$R[2]={{__isTweetResult:"Tweet",'
+            f'core:$R[3]={{user_results:$R[4]={{result:$R[5]={{core:$R[6]={{name:"Kenny",screen_name:"KennyChinaTech"}}}}}}}},'
+            f'counts:$R[7]={{bookmark_count:0,favorite_count:1,quote_count:0,reply_count:1,retweet_count:0}},'
+            f'details:$R[8]={{created_at_ms:1790235976000,full_text:"Cursor 报告 token 成本降了 7%。"}},'
+            f'quoted_tweet_results:$R[9]={{rest_id:"{quoted}",result:$R[10]={{'
+            f'core:$R[11]={{user_results:$R[12]={{result:$R[13]={{core:$R[14]={{name:"Cursor",screen_name:"cursor_ai"}}}}}}}},'
+            f'counts:$R[15]={{bookmark_count:595,favorite_count:4613,quote_count:89,reply_count:241,retweet_count:194}},'
+            f'details:$R[16]={{created_at_ms:1790178419000,full_text:"We have reduced token costs in Cursor by 7%."}},'
+            f'views:$R[17]={{count:"294344"}}}}}},'
+            f'rest_id:"{tid}",url_entities:$R[18]=[],views:$R[19]={{count:"40"}}}}}},'
+            f'entry_id:"tweet-{tid}"'
+        ).encode()
+        items = parse_x_profile_html(body, "KennyChinaTech")
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["source_item_id"], tid)
+        self.assertIn("Cursor 报告", items[0]["excerpt"])
+        self.assertNotIn("We have reduced", items[0]["excerpt"])
+        self.assertEqual(items[0]["metrics"]["views"], 40)
+        self.assertEqual(items[0]["metrics"]["likes"], 1)
+        self.assertEqual(items[0]["metrics"]["replies"], 1)
 
     def test_parse_x_profile_raises_when_status_links_exist_but_tweet_blocks_do_not_parse(self):
         body = b'href="/vista8/status/2103830914103169089" unrelated markup only'
@@ -149,6 +178,50 @@ class CoreTests(unittest.TestCase):
         out = classify(item, source, rules)
         self.assertIn(out["priority"], ("P0", "P1"))
         self.assertIn("x.com/search", out["x_search_url"])
+
+    def test_ai_building_scope_is_shared_and_excludes_generic_ai_mentions(self):
+        self.assertTrue(ai_building_scope_matches("Hamel: record eval failures even when the model is not at fault"))
+        self.assertTrue(ai_building_scope_matches("Noam Brown on recursive self-improvement and AI models doing AI research"))
+        self.assertTrue(ai_building_scope_matches("用 Codex Computer Use 观察 Claude Code 工作流"))
+        self.assertFalse(ai_building_scope_matches("China and US agree to tariff cut and AI dialogue"))
+        self.assertFalse(ai_building_scope_matches("US lawmakers debate datacenter procurement policy"))
+        self.assertFalse(ai_building_scope_matches("A company changes its subscription business model"))
+        self.assertFalse(ai_building_scope_matches("这家公司正在调整商业模型和订阅价格"))
+
+    def test_classifier_keeps_outside_scope_observation_but_does_not_alert_it(self):
+        now=datetime.now(timezone.utc)
+        rules={
+            "china_entities":["china"],
+            "topic_terms":["ai","datacenter"],
+            "high_impact_terms":["billion"],
+            "noise_terms":[],
+            "p0_max_age_minutes":30,
+            "p1_max_age_minutes":360,
+            "max_candidate_age_minutes":1440,
+        }
+        item={"title":"China and US agree to $30 billion tariff cut, AI dialogue","excerpt":"diplomacy update","published_at":now}
+        source={"china_focused":True,"source_weight":5}
+        out=classify(item,source,rules,now)
+        self.assertEqual(out["priority"],"P2")
+        self.assertEqual(out["reason"],"outside_ai_building_scope")
+
+    def test_classifier_keeps_model_eval_content_in_scope(self):
+        now=datetime.now(timezone.utc)
+        rules={
+            "china_entities":[],
+            "topic_terms":["model","eval"],
+            "high_impact_terms":[],
+            "noise_terms":[],
+            "p0_max_age_minutes":30,
+            "p1_max_age_minutes":360,
+            "max_candidate_age_minutes":1440,
+            "x_distribution_min_score":0,
+        }
+        item={"title":"Should I record eval problems that are not the model's fault?","excerpt":"Yes, record product failures too","published_at":now,
+              "metrics":{"views":2500,"likes":20,"replies":2}}
+        source={"kind":"x_profile","audience_focused":True,"source_weight":5,"p1_min_score":5}
+        out=classify(item,source,rules,now)
+        self.assertIn(out["priority"],{"P0","P1"})
 
     def test_distribution_opportunity_rewards_fast_rising_x_post(self):
         fast = distribution_opportunity({"metrics": {"views": 1200, "likes": 30, "replies": 8, "reposts": 10, "quotes": 4}}, 2)
@@ -409,6 +482,37 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(creator['reply_samples'],3)
             self.assertEqual(creator['median_reply_impressions'],180.0)
 
+    def test_creator_feedback_allows_two_consistent_high_reach_replies_as_provisional_prior(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "feedback-provisional.db")
+            now = iso()
+            for i, imp in enumerate((1400, 2000), start=1):
+                cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ((str(i)*64)[:64],'x_vista','V','x_profile',f'T{i}','@vista',now,'P1',8,'r',now))
+                sid=cur.lastrowid
+                cur=con.execute("INSERT INTO published_action(signal_id,action_type,target_account,published_url,published_text,posted_at) VALUES(?,'REPLY','@vista',?,?,?)", (sid,f'https://x.com/me/{i}','text',iso(datetime.now(timezone.utc)-timedelta(days=2))))
+                aid=cur.lastrowid
+                con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions) VALUES(?,?,?)", (aid,now,imp))
+            con.commit()
+            fb=build_creator_feedback_map(con,min_samples=3)['vista']
+            self.assertEqual(fb['samples'],2)
+            self.assertEqual(fb['score'],1)
+            self.assertTrue(fb['provisional_feedback'])
+
+    def test_single_reply_breakout_never_changes_creator_feedback_score(self):
+        with tempfile.TemporaryDirectory() as d:
+            con=connect(Path(d)/"feedback-one.db")
+            now=iso()
+            cur=con.execute("INSERT INTO signal(fingerprint,source_id,source_name,source_kind,title,author,discovered_at,priority,score,reason,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)", ('z'*64,'x_one','O','x_profile','T','@one',now,'P1',8,'r',now))
+            sid=cur.lastrowid
+            cur=con.execute("INSERT INTO published_action(signal_id,action_type,target_account,published_url,published_text,posted_at) VALUES(?,'REPLY','@one',?,?,?)", (sid,'https://x.com/me/1','text',iso(datetime.now(timezone.utc)-timedelta(days=2))))
+            aid=cur.lastrowid
+            con.execute("INSERT INTO outcome_snapshot(action_id,captured_at,impressions) VALUES(?,?,?)", (aid,now,5000))
+            con.commit()
+            fb=build_creator_feedback_map(con,min_samples=3)['one']
+            self.assertEqual(fb['samples'],1)
+            self.assertEqual(fb['score'],0)
+            self.assertFalse(fb['provisional_feedback'])
+
     def test_follower_gap_is_not_falsely_attributed(self):
         with tempfile.TemporaryDirectory() as d:
             con = connect(Path(d) / "followers.db")
@@ -464,7 +568,7 @@ class CoreTests(unittest.TestCase):
             self.assertIsNone(report['daily_follower_cohorts'][0]['follower_delta'])
 
 
-    def test_curated_source_can_promote_known_entity_without_generic_topic_word(self):
+    def test_curated_china_tech_entity_without_ai_building_scope_stays_out_of_realtime_queue(self):
         item = {"title": "Chinese court freezes Nexperia assets in Wingtech case", "excerpt": "", "published_at": datetime.now(timezone.utc)}
         source = {"china_focused": False, "source_weight": 5, "allow_entity_only": True, "default_topic": "china_tech"}
         rules = {
@@ -473,7 +577,8 @@ class CoreTests(unittest.TestCase):
             "p1_max_age_minutes": 360, "max_candidate_age_minutes": 1440,
         }
         out = classify(item, source, rules)
-        self.assertEqual(out["priority"], "P1")
+        self.assertEqual(out["priority"], "P2")
+        self.assertEqual(out["reason"], "outside_ai_building_scope")
         self.assertEqual(out["topic"], "china_tech")
 
 
@@ -567,6 +672,28 @@ class CoreTests(unittest.TestCase):
             allowed, reason = notification_policy(con,{"priority":"P1","score":12},{"decision":"POST","confidence":0.95},cfg)
             self.assertFalse(allowed)
             self.assertEqual(reason,"p1_post_daily_slot_used")
+
+    def test_subject_grounding_accepts_acronym_and_natural_token_separation(self):
+        self.assertTrue(subject_grounded_in_copy(
+            "AVO（Agentic Variation Operators）",
+            "AVO 在 NVIDIA B200 上连续跑了 7 天。"
+        ))
+        self.assertTrue(subject_grounded_in_copy(
+            "Claude Code plugin eval",
+            "Claude Code 新增的 plugin eval，会跑一组测试再做对照。"
+        ))
+        self.assertTrue(subject_grounded_in_copy(
+            "Claude   Code   plugin eval",
+            "Claude Code 新增的 plugin eval，会跑一组测试再做对照。"
+        ))
+        self.assertFalse(subject_grounded_in_copy(
+            "OpenAI Computer Use",
+            "这个案例是让 Codex 盯 Claude Code 的进度，完成后继续发布插件。"
+        ))
+        self.assertFalse(subject_grounded_in_copy(
+            "Claude software factory",
+            "Claude 一天给主分支加了 9.48 万行代码。"
+        ))
 
     def test_active_policy_uses_separate_post_confidence_threshold(self):
         with tempfile.TemporaryDirectory() as d:

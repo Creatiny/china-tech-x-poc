@@ -81,3 +81,15 @@ Production audit after a zero-delivery day found only **15 enabled sources** tag
 Because automatic Reply recommendations intentionally require a Chinese-language parent conversation, this shortfall reduces the supply of valid Reply opportunities even when the global reference collector is healthy.
 
 This is a discovery-coverage gap, not permission to lower Reply quality. Expansion must continue through evidence-gated discovery of additional Chinese AI/Agent/building creators; do not fill the target with weak accounts merely to hit a count.
+
+
+## 2026-09-27 evidence-gated expansion batch
+
+After restoring X SSR collection, creator expansion resumed from current evidence rather than target-count filling.
+
+Added to chinese_exploration:
+- @arvin17x: current Chinese Codex multi-worker / Goal migration case; visible post around 18K views.
+- @AI_Jasonyu: 4/5 currently visible posts Chinese; coding/product-building practice; median visible views around 6.8K.
+- @yanhua1010: 3/3 currently visible posts Chinese; Codex/Opus workflow content; median visible views around 5.3K.
+
+The enabled Chinese pool is now 18 (12 acquisition + 6 exploration). The 25 + 20 target remains a discovery target, not a quota. Candidates that are English-dominant, promo-only, link-only, or currently outside AI-building scope are not admitted merely to fill the list.

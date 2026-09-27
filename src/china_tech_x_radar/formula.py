@@ -198,13 +198,29 @@ def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3,
         if creator:
             growth_by_creator[creator].append(int(delta))
 
+    recommendation_rows = con.execute(
+        """SELECT lower(ltrim(coalesce(json_extract(a.editorial_packet_json,'$.target_account'),s.author,''),'@')) AS creator,
+                  COUNT(*) AS recommendations,
+                  SUM(CASE WHEN a.matched_published_url IS NOT NULL THEN 1 ELSE 0 END) AS adopted
+             FROM alert a JOIN signal s ON s.id=a.signal_id
+            WHERE a.status='SENT'
+              AND json_extract(a.editorial_packet_json,'$.decision')='REPLY'
+            GROUP BY creator"""
+    ).fetchall()
+    recommendation_by_creator: dict[str, tuple[int, int]] = {}
+    for row in recommendation_rows:
+        creator = str(row["creator"] or "").strip()
+        if creator:
+            recommendation_by_creator[creator] = (int(row["recommendations"] or 0), int(row["adopted"] or 0))
+
     out: dict[str, dict[str, Any]] = {}
-    for creator in sorted(set(grouped) | set(growth_by_creator)):
+    for creator in sorted(set(grouped) | set(growth_by_creator) | set(recommendation_by_creator)):
         items = grouped.get(creator, [])
         imps = [int(x["impressions"]) for x in items if x.get("impressions") is not None]
         med = float(statistics.median(imps)) if imps else None
         samples = len(imps)
         impression_score = 0
+        provisional = False
         if samples >= min_samples and med is not None:
             if med >= 300:
                 impression_score = 2
@@ -212,13 +228,25 @@ def build_creator_feedback_map(con: sqlite3.Connection, *, min_samples: int = 3,
                 impression_score = 1
             elif med < 30:
                 impression_score = -1
+        elif samples >= 2 and med is not None:
+            # Cold-start bridge: two independently mature replies can earn only a
+            # small positive prior when BOTH cleared a strong acquisition floor.
+            # One breakout post can never change ranking by itself.
+            if med >= 500 and min(imps) >= 300:
+                impression_score = 1
+                provisional = True
         growth = growth_by_creator.get(creator, [])
         growth_score = 0  # Incomplete publication coverage cannot justify creator-level follower attribution.
         score = max(-1, min(3, impression_score + growth_score))
+        recommendations, adopted = recommendation_by_creator.get(creator, (0, 0))
         out[creator] = {
             "score": score,
             "samples": samples,
             "median_impressions": round(med, 1) if med is not None else None,
+            "provisional_feedback": provisional,
+            "recommendations": recommendations,
+            "adopted_recommendations": adopted,
+            "operator_adoption_rate": round(adopted / recommendations, 3) if recommendations >= 2 else None,
             "growth_days": len(growth),
             "follower_gain_on_clean_days": sum(growth),
         }
@@ -326,6 +354,8 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
         acquisitions = [int(x.get("reply_acquisition_score") or 0) for x in items if int(x.get("reply_acquisition_score") or 0) > 0]
         vprs = [float(x.get("views_per_reply")) for x in items if x.get("views_per_reply") is not None]
         fb = feedback.get(creator, {})
+        recommendations = int(fb.get("recommendations", 0))
+        adopted = int(fb.get("adopted_recommendations", 0))
         out.append({
             "creator": creator,
             "observed_posts": len(items),
@@ -340,6 +370,10 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
             "reply_samples": int(fb.get("samples", 0)),
             "median_reply_impressions": fb.get("median_impressions"),
             "feedback_score": int(fb.get("score", 0)),
+            "provisional_feedback": bool(fb.get("provisional_feedback", False)),
+            "recommendations_sent": recommendations,
+            "recommendations_adopted": adopted,
+            "operator_adoption_rate": round(adopted / recommendations, 3) if recommendations >= 2 else None,
             "growth_days": int(fb.get("growth_days", 0)),
             "follower_gain_on_clean_days": int(fb.get("follower_gain_on_clean_days", 0)),
             "last_observed_at": max((str(x.get("discovered_at") or "") for x in items), default=None),
@@ -349,6 +383,7 @@ def creator_acquisition_report(con: sqlite3.Connection, *, days: int = 30, min_f
         key=lambda x: (
             x["feedback_score"],
             x["median_reply_impressions"] if x["median_reply_impressions"] is not None else -1,
+            x["operator_adoption_rate"] if x["operator_adoption_rate"] is not None else -1,
             x["median_reply_acquisition_score"] if x["median_reply_acquisition_score"] is not None else -1,
             x["median_views_per_reply"] if x["median_views_per_reply"] is not None else -1,
             x["median_parent_views"] if x["median_parent_views"] is not None else -1,

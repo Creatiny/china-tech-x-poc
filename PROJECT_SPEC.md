@@ -1,9 +1,9 @@
-# China Tech X POC — Canonical Project Spec v4.1
+# China Tech X POC — Canonical Project Spec v4.2
 
 ## 0. Authority
 
 **Status:** `APPROVED / ACTIVE / SINGLE SOURCE OF TRUTH`  
-**Effective:** `2026-09-25`
+**Effective:** `2026-09-27`
 
 This file is the top-level product and operating authority for `Creatiny/china-tech-x-poc`.
 If another repository document, old issue, old PR, conversation, historical change proposal, runtime comment, or old KPI conflicts with this file, **this file wins** unless the human owner explicitly approves a newer revision.

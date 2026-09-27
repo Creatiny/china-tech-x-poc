@@ -240,23 +240,36 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
             views = re.search(views_key + r'.{0,500}?count:"?(\d+)"?', text, re.DOTALL)
             views_block = views.group(0) if views else None
         else:
-            # X changed its public SSR shape in Sep 2026: the same fields now
-            # live inside TimelineTweet result blocks rather than client:Tweet cache keys.
-            entry_end = text.find(f'entry_id:"tweet-{tweet_id}"')
-            if entry_end < 0:
+            # X changed its public SSR shape in Sep 2026. Anchor the outer tweet by
+            # BOTH rest_id and author; quote/reply payloads can contain nested Tweet
+            # objects whose metrics must never be attributed to the outer status.
+            marker = f'rest_id:"{tweet_id}",result:'
+            marker_positions = [m.start() for m in re.finditer(re.escape(marker), text)]
+            block = None
+            for marker_pos in marker_positions:
+                candidate = text[marker_pos : min(len(text), marker_pos + 30000)]
+                author_region = candidate[:6500]
+                if re.search(
+                    r'screen_name:"' + re.escape(handle) + r'"',
+                    author_region,
+                    re.IGNORECASE,
+                ):
+                    block = candidate
+                    break
+            if block is None:
                 continue
-            block_start = text.rfind("tweet_results:", max(0, entry_end - 24000), entry_end)
-            if block_start < 0:
-                block_start = max(0, entry_end - 18000)
-            block = text[block_start : min(len(text), entry_end + 800)]
 
-            retweet = re.search(r"retweeted_status_results:\s*([^,}]+)", block)
+            # Main counts/details/note live before a quoted tweet payload when one exists.
+            quote_pos = block.find("quoted_tweet_results:")
+            primary = block if quote_pos < 0 else block[:quote_pos]
+
+            retweet = re.search(r"retweeted_status_results:\s*([^,}]+)", primary)
             if retweet and retweet.group(1).strip() != "null":
                 continue
 
             current_details = re.search(
                 r'created_at_ms:(\d+).{0,3500}?full_text:"((?:\\.|[^"\\])*)"',
-                block,
+                primary,
                 re.DOTALL,
             )
             if current_details:
@@ -265,7 +278,7 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
             else:
                 reverse_details = re.search(
                     r'full_text:"((?:\\.|[^"\\])*)".{0,3500}?created_at_ms:(\d+)',
-                    block,
+                    primary,
                     re.DOTALL,
                 )
                 if not reverse_details:
@@ -273,19 +286,33 @@ def parse_x_profile_html(body: bytes, handle: str) -> list[dict[str, Any]]:
                 full_text_raw = reverse_details.group(1)
                 created_at_ms = reverse_details.group(2)
 
-            # Long posts can expose a fuller NoteTweet body than details.full_text.
+            # Long posts can expose a fuller NoteTweet body than details.full_text,
+            # but only inspect the outer tweet segment, never a quoted tweet.
             note = re.search(
                 r'note_tweet:.{0,9000}?result:.{0,5000}?text:"((?:\\.|[^"\\])*)"',
-                block,
+                primary,
                 re.DOTALL,
             )
             if note:
                 full_text_raw = note.group(1)
 
-            counts_match = re.search(r"counts:.{0,1200}", block, re.DOTALL)
+            counts_match = re.search(r"counts:.{0,1200}", primary, re.DOTALL)
             counts_block = counts_match.group(0) if counts_match else None
-            views_match = re.search(r'views:.{0,500}?count:"?(\d+)"?', block, re.DOTALL)
-            views_block = views_match.group(0) if views_match else None
+
+            # For quote posts the outer views field appears after the nested quoted
+            # object. X repeats the outer rest_id directly before url_entities/views.
+            outer_views = re.search(
+                re.escape(f'rest_id:"{tweet_id}",url_entities:')
+                + r'.{0,2200}?views:.{0,500}?count:"?(\d+)"?',
+                block,
+                re.DOTALL,
+            )
+            if outer_views:
+                views_block = outer_views.group(0)
+            else:
+                # Non-quote timeline items normally keep views in the primary segment.
+                views_match = re.search(r'views:.{0,1200}?count:"?(\d+)"?', primary, re.DOTALL)
+                views_block = views_match.group(0) if views_match else None
 
         full_text = clean_text(_decode_js_string(full_text_raw), 1600)
         if not full_text or full_text.startswith("RT @"):

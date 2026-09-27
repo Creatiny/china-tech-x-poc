@@ -39,7 +39,8 @@ topic_terms = [
   "robot", "robotics", "humanoid", "ev", "electric vehicle", "battery", "autonomous",
   "manufacturing", "data center", "datacenter", "cloud", "ipo", "raises", "earnings",
   "launch", "benchmark", "eval", "evals", "evaluation", "reasoning", "world model", "world models", "reinforcement learning", "rl", "coding agent", "agentic coding",
-  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "智能体", "编程", "工作流", "上下文",
+  "code", "developer", "software development", "automation", "productivity", "computer use", "tool use", "verification", "reliability", "memory", "orchestration", "runtime", "prompt", "token", "mcp", "rag", "fine-tuning", "fine tuning", "local model", "local llm",
+  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "gpt", "opus", "gemini", "grok", "mimo", "glm", "astra", "fable", "智能体", "编程", "代码", "开发者", "软件开发", "自动化", "工作流", "生产力", "评测", "验证", "可靠性", "上下文", "记忆", "多智能体", "提示词", "微调", "本地模型", "本地部署",
   "export", "sanction", "supply chain",
   "人工智能", "大模型", "芯片", "半导体", "算力", "机器人", "人形", "电动车", "电动汽车", "电池", "自动驾驶", "智驾", "数据中心", "云计算", "开源", "基准", "量产", "存储", "内存"
 ]
@@ -50,16 +51,16 @@ productivity_terms = [
   "eval", "evals", "evaluation", "verification", "reliability", "reasoning", "inference",
   "context window", "memory", "multi-agent", "multi agent", "orchestration", "runtime",
   "AI coding", "coding agent", "AI agent", "AI agents", "world model", "world models",
-  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "智能体", "编程", "工作流", "上下文", "workflows",
+  "openai", "anthropic", "claude", "codex", "agentkit", "cursor", "devin", "hermes", "harness", "subagent", "subagents", "jev", "gpt", "opus", "gemini", "grok", "mimo", "glm", "astra", "fable", "智能体", "编程", "工作流", "上下文", "workflows",
   "智能体", "代理", "编程", "代码", "开发者", "软件开发", "自动化", "工作流", "生产力",
   "评测", "验证", "可靠性", "推理", "推理成本", "上下文", "记忆", "多智能体", "世界模型"
 ]
 
 high_impact_terms = [
-  "launch", "release", "open-source", "open source", "raises", "funding", "ipo", "earnings",
-  "chip", "gpu", "semiconductor", "benchmark", "million", "billion", "export", "sanction",
-  "production", "mass production", "tape out", "tape-out", "acquisition", "partnership",
-  "采购", "量产", "投产", "突破", "融资", "收购"
+  "launch", "release", "open-source", "open source",
+  "chip", "gpu", "semiconductor", "benchmark", "export", "sanction",
+  "production", "mass production", "tape out", "tape-out",
+  "采购", "量产", "投产", "突破"
 ]
 
 noise_terms = [

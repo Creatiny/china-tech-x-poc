@@ -5,6 +5,8 @@ from urllib.parse import quote_plus
 from typing import Any
 import re
 
+from .scope import ai_building_scope_matches
+
 
 def _match_terms(text: str, terms: list[str]) -> list[str]:
     text = text.casefold()
@@ -218,6 +220,11 @@ def classify(item: dict[str, Any], source: dict[str, Any], rules: dict[str, Any]
     elif published is not None and age > float(source.get("max_candidate_age_minutes", rules.get("max_candidate_age_minutes", 1440))):
         priority = "DROP"
         reason = f"stale:{age:.0f}m"
+    elif not ai_building_scope_matches(text):
+        # Keep the observation for research/analytics, but do not promote it into
+        # the realtime editorial queue. The same canonical scope is reused by preflight.
+        priority = "P2"
+        reason = "outside_ai_building_scope"
     else:
         weight = int(source.get("source_weight", 1))
         score = weight + min(len(entities), 2) * 2 + min(len(topics), 3) + min(len(productivity), 2) * 2 + min(len(high), 2) * 2

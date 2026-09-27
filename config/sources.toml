@@ -1750,3 +1750,61 @@ max_candidate_age_minutes = 720
 p1_max_age_minutes = 720
 enabled = true
 # admission note: AI coding / personal AI practice
+
+
+[[source]]
+id = "x_arvin17x"
+kind = "x_profile"
+name = "X @arvin17x — 中文 AI 实战探索"
+handle = "arvin17x"
+creator_role = "chinese_ai_building"
+creator_quality = "evidence_gated_exploration"
+acquisition_role = "chinese_exploration"
+poll_minutes = 6
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission 2026-09-27: current Chinese Codex multi-worker/Goal migration case; visible post ~18K views
+
+[[source]]
+id = "x_ai_jasonyu"
+kind = "x_profile"
+name = "X @AI_Jasonyu — 中文 AI 实战探索"
+handle = "AI_Jasonyu"
+creator_role = "chinese_ai_building"
+creator_quality = "evidence_gated_exploration"
+acquisition_role = "chinese_exploration"
+poll_minutes = 8
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission 2026-09-27: 4/5 visible posts Chinese; coding/product-building practice; median visible views ~6.8K
+
+[[source]]
+id = "x_yanhua1010"
+kind = "x_profile"
+name = "X @yanhua1010 — 中文 AI 实战探索"
+handle = "yanhua1010"
+creator_role = "chinese_ai_building"
+creator_quality = "evidence_gated_exploration"
+acquisition_role = "chinese_exploration"
+poll_minutes = 8
+china_focused = false
+audience_focused = true
+require_title_topic = true
+source_weight = 4
+p1_min_score = 6
+max_candidate_age_minutes = 720
+p1_max_age_minutes = 720
+enabled = true
+# admission 2026-09-27: 3/3 visible posts Chinese; Codex/Opus workflow content; median visible views ~5.3K

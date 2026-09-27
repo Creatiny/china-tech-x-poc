@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from .scope import ai_building_scope_matches
+
 
 def parse_time(value: str | None) -> datetime | None:
     try:
@@ -85,9 +87,8 @@ def lane_for(signal: dict[str, Any], cfg: dict[str, Any], now: datetime | None =
 
 
 def focus_matches(signal: dict[str, Any]) -> bool:
-    value = (str(signal.get("title") or "") + " " + str(signal.get("excerpt") or "")).casefold()
-    # Explicit editorial scope, not a claim of semantic-model confidence.
-    return bool(re.search(r"(?<![a-z0-9_])(agent(?:s|ic)?|coding|codex|claude|workflow|harness|jev|inference|llm|evals?|mcp|qwen|deepseek|kimi|glm|devin|cursor|automation)(?![a-z0-9_])|智能体|编程|代码|自动化|工作流|推理|评测|大模型|生产力|上下文|知识库|验收|交付", value))
+    value = str(signal.get("title") or "") + " " + str(signal.get("excerpt") or "")
+    return ai_building_scope_matches(value)
 
 
 def sent_counts(con: sqlite3.Connection, cfg: dict[str, Any], now: datetime | None = None) -> dict[str, int]:
@@ -206,6 +207,42 @@ def creator_attention_penalty(con: sqlite3.Connection, signal: dict[str, Any], c
         + (int(cfg.get("creator_weekly_penalty_points",1)) if weekly >= int(cfg.get("max_p1_replies_per_creator_7d",3)) else 0)
     )
 
+def subject_grounded_in_copy(subject: str | None, copy: str | None) -> bool:
+    """Require a POST subject to be recognizable in standalone copy without brittle phrase matching."""
+    subject_value = re.sub(r"\s+", " ", str(subject or "")).strip()
+    copy_value = re.sub(r"\s+", " ", str(copy or "")).strip()
+    if not subject_value or not copy_value:
+        return False
+    if subject_value.casefold() in copy_value.casefold():
+        return True
+
+    # A project acronym such as AVO is enough to identify a longer expanded subject.
+    acronyms = re.findall(r"(?<![A-Za-z0-9])([A-Z][A-Z0-9._-]{1,9})(?![A-Za-z0-9])", subject_value)
+    for token in acronyms:
+        if re.search(r"(?<![A-Za-z0-9])" + re.escape(token) + r"(?![A-Za-z0-9])", copy_value, re.IGNORECASE):
+            return True
+
+    # Multi-token product names survive natural Chinese insertions such as
+    # "Claude Code 新增的 plugin eval". Require at least two meaningful Latin tokens.
+    latin = [
+        token for token in re.findall(r"[A-Za-z][A-Za-z0-9._+-]{1,}", subject_value)
+        if token.casefold() not in {"the", "and", "for", "with", "from"}
+    ]
+    if latin:
+        hits = sum(
+            bool(re.search(r"(?<![A-Za-z0-9])" + re.escape(token) + r"(?![A-Za-z0-9])", copy_value, re.IGNORECASE))
+            for token in latin
+        )
+        required = 1 if len(latin) == 1 else 2
+        if hits >= required:
+            return True
+
+    # For a Chinese-only named subject, require the full meaningful CJK phrase.
+    cjk = "".join(re.findall(r"[㐀-鿿]+", subject_value))
+    copy_cjk = "".join(re.findall(r"[㐀-鿿]+", copy_value))
+    return len(cjk) >= 2 and cjk in copy_cjk
+
+
 def packet_violations(signal: dict[str, Any], packet: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
     if not active(cfg) or packet.get("decision") == "SKIP":
         return []
@@ -223,7 +260,7 @@ def packet_violations(signal: dict[str, Any], packet: dict[str, Any], cfg: dict[
     elif not evidence.get("source_url") and not evidence.get("local_evidence_path"):
         issues.append("evidence_provenance_required")
     subject = str(packet.get("subject_name") or "").strip()
-    if decision == "POST" and (not subject or subject.casefold() not in str(packet.get("final_copy") or "").casefold()):
+    if decision == "POST" and not subject_grounded_in_copy(subject, packet.get("final_copy")):
         issues.append("standalone_subject_required")
     try:
         confidence = float(packet.get("confidence"))

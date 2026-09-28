@@ -84,7 +84,14 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
         except Exception as exc:
             message=str(exc)
             capacity=not send_attempted and ('editorial_budget_exhausted' in message or 'operator_asleep' in message)
-            provider=not send_attempted and ('usage limit' in message.lower() or 'rate limit' in message.lower() or 'codex_timeout' in message.lower() or 'timed out' in message.lower() or isinstance(exc,TimeoutError))
+            provider=not send_attempted and (
+                'usage limit' in message.lower()
+                or 'rate limit' in message.lower()
+                or 'codex_timeout' in message.lower()
+                or 'timed out' in message.lower()
+                or 'codex_not_found' in message.lower()
+                or isinstance(exc,(TimeoutError,FileNotFoundError))
+            )
             retry=next_release(cfg) if capacity else utc_iso(datetime.now(timezone.utc)+timedelta(minutes=60)) if provider else None
             reason='operator_or_daypart_budget_deferred' if capacity else 'provider_unavailable_backoff' if provider else type(exc).__name__+':'+message[:700]
             if not delivered:

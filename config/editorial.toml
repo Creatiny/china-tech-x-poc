@@ -1,6 +1,6 @@
 # ChatGPT OAuth / Codex editorial enrichment. No Platform API key is used.
 enabled = true
-codex_path = "/Users/jh/.codex/plugins/.plugin-appserver/codex"
+codex_path = "/opt/homebrew/bin/codex"
 model = "gpt-5.6-luna"
 reasoning_effort = "low"
 call_timeout_seconds = 90

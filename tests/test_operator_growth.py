@@ -44,6 +44,19 @@ class GrowthPolicyTests(unittest.TestCase):
         with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.enrich_signal') as model,patch('china_tech_x_radar.runner.FeishuSender') as sender:
             result=process(self.con,ROOT,CFG,3)
         self.assertEqual(result['state'],'QUIET_HOURS');model.assert_not_called();sender.assert_not_called()
+    def test_missing_codex_binary_is_deferred_with_provider_backoff(self):
+        signal=self.queue()
+        with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.FeishuSender') as sender,patch('china_tech_x_radar.runner.enrich_signal',side_effect=FileNotFoundError('codex_not_found')):
+            sender.return_value.available.return_value=True
+            result=process(self.con,ROOT,CFG,1)
+        row=self.con.execute("SELECT status,error,retry_at FROM alert WHERE id=?",(signal['alert_id'],)).fetchone()
+        self.assertEqual(row['status'],'EDITORIAL_DEFERRED')
+        self.assertEqual(row['error'],'provider_unavailable_backoff')
+        self.assertIsNotNone(row['retry_at'])
+        self.assertEqual(result['deferred'],1)
+        breaker=self.con.execute("SELECT reason FROM editorial_runtime_state WHERE name='provider_backoff'").fetchone()
+        self.assertEqual(breaker['reason'],'provider_unavailable_backoff')
+
     def test_budgets_are_reserved_for_later_dayparts(self):
         for hour,limit in [(1,20),(6,40),(11,50)]:
             self.assertEqual(policy.paced_limits(CFG,NOW.replace(hour=hour))['max_final_calls_per_day'],limit)

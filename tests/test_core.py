@@ -14,7 +14,7 @@ from china_tech_x_radar.formula import age_bucket, follower_tier, reply_surface_
 from china_tech_x_radar.alerts import format_publish_packet
 from china_tech_x_radar.runner import notification_policy, _reply_copy_score, _outcome_due, _limit_due_x_profiles, _effective_poll_minutes, process_pending_alerts
 from china_tech_x_radar.operating_policy import subject_grounded_in_copy
-from china_tech_x_radar.editorial import _reserve_model_call, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
+from china_tech_x_radar.editorial import _reserve_model_call, _resolve_codex_path, language_gate_violations, model_usage_today, final_prompt, load_spec_guardrails, require_humanizer_skill, recent_reply_openers, _reply_opener_shape, load_kenny_voice_profile
 
 
 class CoreTests(unittest.TestCase):
@@ -56,7 +56,7 @@ class CoreTests(unittest.TestCase):
             )
             con.commit()
             root=Path(__file__).resolve().parents[1]
-            with patch("china_tech_x_radar.runner.FeishuSender.available", return_value=False):
+            with patch("china_tech_x_radar.daytime_editorial.operator_available", return_value=True), patch("china_tech_x_radar.operating_policy.operator_available", return_value=True), patch("china_tech_x_radar.runner.FeishuSender.available", return_value=False):
                 result=process_pending_alerts(con,root,max_alerts=1)
             row=con.execute("select status,error from alert where signal_id=?",(sid,)).fetchone()
             self.assertEqual(result["recovered_stale_processing"],1)
@@ -866,6 +866,29 @@ class CoreTests(unittest.TestCase):
 
     def test_reply_copy_score_rejects_unrelated_reply(self):
         self.assertLess(_reply_copy_score("AI capacity planning needs the whole system", "Great post, thanks for sharing"), 0.3)
+
+    def test_failed_model_call_does_not_consume_future_budget(self):
+        with tempfile.TemporaryDirectory() as d:
+            con = connect(Path(d) / "failed-budget.db")
+            cfg={"budget_revision":"failed-v1","max_gate_calls_per_day":1,"max_final_calls_per_day":1,"max_tokens_per_day":10000,"gate_token_reserve":1000,"final_token_reserve":5000}
+            rid=_reserve_model_call(con,cfg,"GATE","test-model")
+            con.execute("UPDATE model_usage SET success=0,error='FileNotFoundError' WHERE id=?",(rid,))
+            con.commit()
+            usage=model_usage_today(con,"failed-v1")
+            self.assertEqual(usage["gate_calls"],0)
+            self.assertEqual(usage["tokens"],0)
+            second=_reserve_model_call(con,cfg,"GATE","test-model")
+            self.assertGreater(second,rid)
+
+    def test_codex_path_falls_back_when_configured_binary_disappears(self):
+        import os
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as d:
+            fake=Path(d)/"codex"
+            fake.write_text("#!/bin/sh\nexit 0\n")
+            fake.chmod(0o755)
+            with patch.dict(os.environ,{"CHINA_TECH_CODEX_PATH":str(fake)},clear=False), patch("china_tech_x_radar.editorial.shutil.which",return_value=None):
+                self.assertEqual(_resolve_codex_path({"codex_path":"/definitely/missing/codex"}),str(fake))
 
     def test_atomic_budget_reservation_blocks_second_call(self):
         with tempfile.TemporaryDirectory() as d:

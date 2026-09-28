@@ -159,3 +159,14 @@ Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-gr
 - Classifier and Editorial now share one AI-building scope. Generic macro/politics/business candidates are kept as observations (P2) instead of entering realtime editorial merely because they mention AI.
 - Chinese creator discovery remains evidence-gated. Sep27 added @arvin17x, @AI_Jasonyu, and @yanhua1010 to exploration, bringing the enabled Chinese pool to 18 (12 acquisition + 6 exploration).
 - Subject grounding no longer requires brittle contiguous-string matching; named products/projects must still be recognizable in standalone copy.
+
+
+## 2026-09-28 editorial outage repair
+
+- Sep 28 produced 908 signals and 54 current P0/P1 candidates, but zero notifications because the configured Codex binary path had disappeared after a Codex installation/update.
+- Root cause: config still pointed at /Users/jh/.codex/plugins/.plugin-appserver/codex; current Codex is available at /opt/homebrew/bin/codex (codex-cli 0.157.1).
+- Production now resolves Codex through configured path, CHINA_TECH_CODEX_PATH, PATH, Homebrew/local standard locations, and the legacy plugin path.
+- Failed model calls remain auditable but no longer consume daily call/token budget. The 80 failed Gate attempts from Sep 28 therefore do not block later valid work.
+- Missing binary / provider infrastructure failures now defer with provider backoff instead of permanently becoming EDITORIAL_ERROR on the first attempt.
+- Live health check with gpt-5.6-luna succeeded after the repair.
+- Because the repair completed after the 22:00 Beijing notification cutoff, no old packet was force-sent. Only four still-valid outage candidates were restored for the Sep 29 08:00 window; stale failures remain audit history.

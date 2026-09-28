@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import signal
 import sqlite3
 import subprocess
@@ -66,12 +67,16 @@ def model_usage_today(con: sqlite3.Connection, budget_revision: str | None = Non
     if budget_revision is not None:
         where += " AND budget_revision=?"
         params.append(budget_revision)
+    # Failed infrastructure/provider calls remain in the audit log but do NOT
+    # consume future call/token capacity. success=-1 is an in-flight reservation;
+    # success=1 is completed usage; success=0 is failed and excluded.
     row = con.execute(
-        f"""SELECT COUNT(*) calls,
-                  SUM(CASE WHEN purpose='GATE' THEN 1 ELSE 0 END) gate_calls,
-                  SUM(CASE WHEN purpose='FINAL' THEN 1 ELSE 0 END) final_calls,
-                  SUM(CASE WHEN purpose='HUMANIZE' THEN 1 ELSE 0 END) humanize_calls,
-                  COALESCE(SUM(tokens_used),0) tokens
+        f"""SELECT
+                  SUM(CASE WHEN success IN (-1,1) THEN 1 ELSE 0 END) calls,
+                  SUM(CASE WHEN purpose='GATE' AND success IN (-1,1) THEN 1 ELSE 0 END) gate_calls,
+                  SUM(CASE WHEN purpose='FINAL' AND success IN (-1,1) THEN 1 ELSE 0 END) final_calls,
+                  SUM(CASE WHEN purpose='HUMANIZE' AND success IN (-1,1) THEN 1 ELSE 0 END) humanize_calls,
+                  COALESCE(SUM(CASE WHEN success IN (-1,1) THEN tokens_used ELSE 0 END),0) tokens
            FROM model_usage WHERE {where}""",
         params,
     ).fetchone()
@@ -149,6 +154,31 @@ def _extract_json(text: str) -> dict[str, Any]:
     raise ValueError("Codex final message was not a JSON object")
 
 
+def _resolve_codex_path(cfg: dict[str, Any]) -> str:
+    """Resolve Codex across plugin-appserver, Homebrew and local installs."""
+    configured = str(cfg.get("codex_path") or "").strip()
+    env_override = str(os.environ.get("CHINA_TECH_CODEX_PATH") or "").strip()
+    candidates: list[str] = []
+    for value in (
+        configured,
+        env_override,
+        shutil.which("codex") or "",
+        "/opt/homebrew/bin/codex",
+        "/usr/local/bin/codex",
+        str(Path.home() / ".local/bin/codex"),
+        str(Path.home() / ".codex/plugins/.plugin-appserver/codex"),
+    ):
+        if value and value not in candidates:
+            candidates.append(value)
+    for value in candidates:
+        path = Path(value).expanduser()
+        if path.exists() and os.access(path, os.X_OK):
+            return str(path)
+    raise FileNotFoundError(
+        "codex_not_found:" + ",".join(candidates or ["no_candidates"])
+    )
+
+
 def _run_codex(
     con: sqlite3.Connection,
     root: Path,
@@ -158,7 +188,7 @@ def _run_codex(
     *,
     search: bool,
 ) -> dict[str, Any]:
-    codex = str(cfg.get("codex_path") or "/Users/jh/.codex/plugins/.plugin-appserver/codex")
+    codex = _resolve_codex_path(cfg)
     model = str(cfg.get("model") or "gpt-5.6-luna")
     effort = str(cfg.get("reasoning_effort") or "low")
     timeout = int(cfg.get("call_timeout_seconds", 90))

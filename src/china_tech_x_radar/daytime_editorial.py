@@ -90,6 +90,7 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
                 or 'codex_timeout' in message.lower()
                 or 'timed out' in message.lower()
                 or 'codex_not_found' in message.lower()
+                or ('codex_' in message.lower() and 'no such file or directory' in message.lower())
                 or isinstance(exc,(TimeoutError,FileNotFoundError))
             )
             retry=next_release(cfg) if capacity else utc_iso(datetime.now(timezone.utc)+timedelta(minutes=60)) if provider else None

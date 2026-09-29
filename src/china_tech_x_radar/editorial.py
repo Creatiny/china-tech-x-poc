@@ -206,6 +206,11 @@ def _run_codex(
             ]
             env = os.environ.copy()
             env["NO_COLOR"] = "1"
+            # launchd may provide an empty/minimal PATH. Homebrew's Codex entrypoint
+            # uses /usr/bin/env node, so make its runtime dependencies explicit.
+            default_path = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            inherited_path = str(env.get("PATH") or "").strip()
+            env["PATH"] = default_path + (":" + inherited_path if inherited_path else "")
             proxy = str(env.get("CHINA_TECH_HTTP_PROXY") or "").strip()
             if proxy:
                 env["HTTP_PROXY"] = proxy

@@ -170,3 +170,13 @@ Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-gr
 - Missing binary / provider infrastructure failures now defer with provider backoff instead of permanently becoming EDITORIAL_ERROR on the first attempt.
 - Live health check with gpt-5.6-luna succeeded after the repair.
 - Because the repair completed after the 22:00 Beijing notification cutoff, no old packet was force-sent. Only four still-valid outage candidates were restored for the Sep 29 08:00 window; stale failures remain audit history.
+
+
+## 2026-09-29 launchd Node runtime repair
+
+- Sep 29 morning still had zero delivered signals despite the Sep 28 Codex-path repair. The Homebrew Codex entrypoint is a Node script with shebang /usr/bin/env node, while the launchd job had an empty/minimal PATH.
+- Interactive shell health checks therefore passed, but the background Editorial worker failed with: codex_gate_failed: env: node: No such file or directory.
+- Production now prepends Homebrew/system binary paths in both run_editorial.sh and the child Codex process environment, so codex and node are resolvable under launchd.
+- Node-runtime-missing failures are classified as provider/infrastructure failures and deferred with backoff instead of permanently becoming EDITORIAL_ERROR.
+- Existing failed model calls remain audit records but do not consume budget. Sep 29 budget view correctly excludes the 64 failed Gate attempts.
+- Production proof: alert 2069 was successfully sent to Feishu at 2026-09-29T02:58:54Z with a valid Feishu receipt after the repair.

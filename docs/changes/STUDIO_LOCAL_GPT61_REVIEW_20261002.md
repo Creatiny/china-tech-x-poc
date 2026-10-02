@@ -1,0 +1,19 @@
+# Studio local generation + GPT6.1 high audit — approved pilot
+
+Owner instruction (2026-10-02): stop using GPT5.6 Luna; GPT tasks use `gpt-6.1-sol` with `high`. New X image and measured review flow uses the Studio local model and independent GPT audit.
+
+Problem: the existing X editorial configuration still selected GPT5.6 Luna, and its image renderer did not have a separate local generation / semantic-image audit stage. Native Easel validation previously used synthetic analytics.
+
+Decision: deploy the explicit GPT model/effort configuration and a manually triggered, file-based Studio pilot. ChatGPT uses the existing Mac bridges to move immutable requests; this does not add a scheduler. Existing collector, notification, quiet-hours and manual X publication remain governed by the current SPEC. The pilot itself cannot send or publish.
+
+Implementation: `src/china_tech_x_radar/studio_flow.py` freezes a read-only real-data request, deduplicates snapshots per published action at a cutoff, preserves nulls, uses 24-hour mature samples and maps canonical ORIGINAL into the POST cohort. `scripts/studio_local_worker.py` calls `qwen3.8-27b-4bit` on Studio, renders with the pinned Easel renderer, performs deterministic checks and then invokes Codex `gpt-6.1-sol/high`; only APPROVE with no issues produces an accepted receipt. Request, candidate and artifact hashes bind the audit. One explicit semantic repair is supported; deterministic layout failure stops before a GPT call.
+
+Measured validation: last seven days contained 12 unique published actions, 10 mature actions (8 ORIGINAL, 2 REPLY). Mature median cumulative impressions were 18.5 and 338.5 respectively; this is a small observational sample, not a causal result. Profile visits and per-post follower attribution remain unknown. Initial review candidates were independently rejected for cohort-count and time/significance errors. Versioned descriptive constraints produced an approved review. A layout correction preserved the original local factual draft; the final 1600×900 image passed Easel checks and independent GPT image review.
+
+Cost: local generation and the user's existing Codex subscription; actual per-task billed cost is unknown. No paid X API activation. Codex 0.159.2 is required for the verified GPT6.1 route; the installed Homebrew 0.157.1 rejected it. Pi model metadata was registered separately, with context window 272000 grounded in Codex's refreshed model cache. Reported Pi price values are not a verified bill.
+
+Checks: new pipeline regression tests pass; real Codex calls passed on Mini and Studio, and the Pi OAuth call returned the exact new model. The X full suite has one existing stale-claim test failure, reproduced against untouched baseline 66112c2. The OPC full suite also has an unrelated in-progress RF binding test failure; affected model-policy tests pass. No external message or X post was sent during validation.
+
+Success criterion: known runtime GPT entry points select exactly the requested model/effort, without automatic model fallback; a real local draft and image/review are rejected or accepted by the independent requested reviewer using immutable evidence. The pilot meets this criterion. It does not claim unattended production integration or a measured growth benefit.
+
+Follow-up scope: connect approved file results to the existing production delivery boundary, then extend the same request/audit interface for MomentGrid branding. ChatGPT scheduled-task APIs expose no model selection field: their outer model cannot be verified or forced by this change.

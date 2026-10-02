@@ -159,8 +159,8 @@ def _run_codex(
     search: bool,
 ) -> dict[str, Any]:
     codex = str(cfg.get("codex_path") or "/Users/jh/.codex/plugins/.plugin-appserver/codex")
-    model = str(cfg.get("model") or "gpt-5.6-luna")
-    effort = str(cfg.get("reasoning_effort") or "low")
+    model = str(cfg.get("model") or "gpt-6.1-sol")
+    effort = str(cfg.get("reasoning_effort") or "high")
     timeout = int(cfg.get("call_timeout_seconds", 90))
     reservation_id = _reserve_model_call(con, cfg, purpose, model)
     try:

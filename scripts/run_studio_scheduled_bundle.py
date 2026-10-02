@@ -6,6 +6,8 @@ import fcntl
 import json
 from pathlib import Path
 import re
+import os
+import signal
 import subprocess
 import sys
 
@@ -26,6 +28,19 @@ def validate_bundle(value):
     if value['requests']['review']['inputs'].get('method_revision') != 'observational-description-v2':
         raise ValueError('review method drift')
     return True
+
+def run_worker(command):
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            text=True, start_new_session=True)
+    try:
+        stdout, stderr = proc.communicate(timeout=800)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGTERM)
+        try: proc.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL); proc.communicate()
+        raise RuntimeError('worker timed out; process group stopped; no automatic replay')
+    return proc.returncode, stdout, stderr
 
 def main():
     p = argparse.ArgumentParser(description=__doc__); p.add_argument('--bundle', required=True); p.add_argument('--status', action='store_true'); a=p.parse_args()
@@ -57,11 +72,23 @@ def main():
             request_path=out/(kind+'-request.json');write_json(request_path,req)
             destination=out/kind
             try:
-                proc=subprocess.run([sys.executable,str(root/'scripts/studio_local_worker.py'),
-                    '--request',str(request_path),'--out',str(destination)],capture_output=True,text=True,timeout=650)
-                (out/(kind+'-stdout.log')).write_text(proc.stdout);(out/(kind+'-stderr.log')).write_text(proc.stderr)
+                command=[sys.executable,str(root/'scripts/studio_local_worker.py'),
+                    '--request',str(request_path),'--out',str(destination)]
+                code,stdout,stderr=run_worker(command)
+                (out/(kind+'-stdout.log')).write_text(stdout);(out/(kind+'-stderr.log')).write_text(stderr)
+                # One semantic repair only, using a hash-bound independent rejection.
+                # The existing worker verifies the parent/request/draft/auditor binding.
+                audit_path=destination/'audit.json'
+                if code and audit_path.exists() and json.loads(audit_path.read_text()).get('verdict',{}).get('decision')=='REJECT':
+                    parent=destination;destination=out/(kind+'-repair')
+                    write_json(out/(kind+'-repair-bound.json'),{'parent':str(parent),'round':1,
+                        'audit_sha256':digest(json.loads(audit_path.read_text()))})
+                    command=[sys.executable,str(root/'scripts/studio_local_worker.py'),
+                        '--request',str(request_path),'--out',str(destination),'--repair-from',str(parent)]
+                    code,stdout,stderr=run_worker(command)
+                    (out/(kind+'-repair-stdout.log')).write_text(stdout);(out/(kind+'-repair-stderr.log')).write_text(stderr)
                 accepted=destination/'accepted.json'
-                if proc.returncode or not accepted.exists():
+                if code or not accepted.exists():
                     raise RuntimeError('candidate rejected or execution failed; inspect '+str(destination))
                 receipt=json.loads(accepted.read_text())
                 if receipt['audit_model']!='gpt-6.1-sol' or receipt['audit_effort']!='high' or receipt['published'] is not False:

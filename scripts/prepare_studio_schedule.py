@@ -23,6 +23,9 @@ def bundle(con, as_of, run_id):
     m = inputs['metrics']
     def num(key):
         return '未知' if m[key] is None else str(m[key])
+    profile_fact = ('所有动作均缺少主页访问记录，主页访问数未知，不能表述成零。'
+                    if m['actions_with_profile_visits'] == 0 else
+                    '仅' + num('actions_with_profile_visits') + '个动作有主页访问记录；这是记录覆盖量，并非访问次数。')
     facts = [
         {'id': 'F1', 'text': '近7天原创成熟样本' + num('POST.mature_samples') +
          '条；累计曝光中位数' + num('POST.median_impressions') + '；曝光指标样本' + num('POST.impressions_samples') + '条。',
@@ -30,9 +33,9 @@ def bundle(con, as_of, run_id):
         {'id': 'F2', 'text': 'Reply成熟样本' + num('REPLY.mature_samples') +
          '条；累计曝光中位数' + num('REPLY.median_impressions') + '；曝光指标样本' + num('REPLY.impressions_samples') +
          '条。小样本且帖龄不同，只作描述，不能证明因果或运营效果。', 'source_label': 'X生产数据库最新快照'},
-        {'id': 'F3', 'text': '主页访问有记录的动作数' + num('actions_with_profile_visits') +
-         '；没有记录的值仍为未知；逐帖涨粉归因未知；尚未验证增长效果。', 'source_label': 'X生产数据库最新快照'}]
-    card = request('card', {'facts': facts,
+        {'id': 'F3', 'text': profile_fact +
+         '没有记录的值仍为未知；逐帖涨粉归因未知；尚未验证增长效果。', 'source_label': 'X生产数据库最新快照'}]
+    card = request('card', {'facts': facts, 'method_revision': 'profile-record-coverage-v2',
         'subtitle': '近7天真实运营快照 · ' + end.astimezone(ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%d'),
         'scope_note': '成熟≥24小时；每条动作仅一个最新快照。小样本、帖龄不同，非因果。主页访问缺失仍未知；逐帖涨粉未知。待人工审阅，未发布。'})
     value = {'schema': 'x-studio-scheduled-bundle-v1', 'run_id': run_id, 'as_of': fmt(end),

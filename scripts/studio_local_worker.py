@@ -72,7 +72,7 @@ def render(req, draft, out, easel_root):
                      for i, p in enumerate(draft["points"]))
     css = '''*{box-sizing:border-box}html,body{margin:0;width:1600px;height:900px;background:#fafaf8;color:#242424;font-family:"PingFang SC",sans-serif}main{padding:30px 64px}header{font:22px/1.2 monospace;letter-spacing:2px;color:#002fa7}h1{font-size:54px;line-height:1.1;font-weight:500;margin:18px 0 10px}.subtitle{font-size:25px;color:#707070;margin-bottom:22px}.points{display:grid;gap:12px}section{display:flex;gap:28px;align-items:center;height:160px;border-top:1px solid #d0d0cc;padding:15px 12px}section span{font-size:38px;color:#002fa7}section p{margin:0;font-size:40px;line-height:1.4}footer{font-size:22px;line-height:1.4;color:#606060;margin-top:22px;white-space:pre-line}.box{min-width:0}'''
     if len(draft["points"]) == 2:
-        css += "section{height:231px}"
+        css += "section{height:245px}section p{font-size:50px;line-height:1.35}.points{gap:0}"
     page = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><style>' + css + '</style><main><header>AI实战 · @KennyChinaTech</header><h1 class="box">' + escaped(draft["title"]) + '</h1><div class="subtitle box">' + escaped(req["inputs"].get("subtitle", "事实卡片 · 待人工发布")) + '</div><div class="points">' + points + '</div><footer class="box">来源：' + escaped(sources) + '\n' + escaped(req["inputs"].get("scope_note", "")) + '</footer></main></html>'
     path = out / "card.html"; path.write_text(page)
     png = out / "card.png"

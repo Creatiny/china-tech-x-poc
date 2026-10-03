@@ -180,3 +180,17 @@ Deployment evidence and audit data live in `00_Governance/evidence/2026-09-20-gr
 - Node-runtime-missing failures are classified as provider/infrastructure failures and deferred with backoff instead of permanently becoming EDITORIAL_ERROR.
 - Existing failed model calls remain audit records but do not consume budget. Sep 29 budget view correctly excludes the 64 failed Gate attempts.
 - Production proof: alert 2069 was successfully sent to Feishu at 2026-09-29T02:58:54Z with a valid Feishu receipt after the repair.
+
+
+## 2026-10-03 — GPT6.1 editorial timeout recovery
+
+Production switched from GPT5.6 Luna/low to GPT6.1 Sol/high but retained a shared 90-second deadline. Six FINAL calls hit that deadline; the old handler then stopped every candidate for one hour and discarded the child trace.
+
+- Keep the requested GPT6.1 Sol/high policy; give FINAL 300 seconds while GATE/HUMANIZE retain the 90-second default.
+- Defer only a timed-out candidate for five minutes. Continue other candidates; actual provider rate/usage limits retain the global breaker.
+- Retain private stdout, stderr, result and per-call receipts with exact model/effort verification under runtime/editorial-calls.
+- Use the already embedded fresh spec/voice text and read Humanizer once, avoiding duplicate reloads without changing quality rules.
+- Validation: all 110 unit tests pass, including cross-candidate progress after timeout, delayed retry, retained partial traces, provider breaker and ambiguous delivery safeguards.
+- Production deployed 2026-10-03 13:37 Shanghai, source code commit e6b4370e8c17dcd855fa4b8692626b214ec81dd0. Only the breaker directly linked to the recorded 90-second failure was released; no counters or historical queues were reset.
+- Real validation: FINAL call 1906 completed in 53.168 seconds with exact GPT6.1 Sol/high identity; alert 2582 was sent at 13:38:23 with a real channel receipt. Collection stayed healthy and subsequent queue work continued.
+- Rollback files and before/after evidence: runtime/timeout-fix-backups/20261003T133713/. X publishing remains manual.

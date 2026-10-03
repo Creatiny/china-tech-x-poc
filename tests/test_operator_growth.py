@@ -68,6 +68,52 @@ class GrowthPolicyTests(unittest.TestCase):
         breaker=self.con.execute("SELECT reason FROM editorial_runtime_state WHERE name='provider_backoff'").fetchone()
         self.assertEqual(breaker['reason'],'provider_unavailable_backoff')
 
+    def test_one_model_timeout_does_not_block_other_candidates(self):
+        slow=self.queue(index=1,reply_acquisition_score=12)
+        other=self.queue(index=2)
+        def draft(con,root,signal):
+            if signal['id']==slow['id']:
+                raise TimeoutError('codex_timeout:300s:purpose=FINAL:logs=/private/test')
+            return self.packet(signal)
+        with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.FeishuSender') as sender,patch('china_tech_x_radar.runner.enrich_signal',side_effect=draft) as model:
+            sender.return_value.available.return_value=True
+            sender.return_value.send_text.return_value='mock-receipt'
+            result=process(self.con,ROOT,{**CFG,'render_editorial_cards':False},3)
+        row=self.con.execute('SELECT status,error,retry_at FROM alert WHERE id=?',(slow['alert_id'],)).fetchone()
+        self.assertEqual(row['status'],'EDITORIAL_DEFERRED')
+        self.assertEqual(row['error'],'model_call_timeout')
+        self.assertEqual(row['retry_at'],iso(NOW+timedelta(minutes=5)))
+        self.assertEqual(result['deferred'],1)
+        self.assertEqual(result['sent'],1)
+        self.assertEqual(model.call_count,2)
+        self.assertIsNone(self.con.execute("SELECT * FROM editorial_runtime_state WHERE name='provider_backoff'").fetchone())
+        self.assertEqual(self.con.execute('SELECT status FROM alert WHERE id=?',(other['alert_id'],)).fetchone()[0],'SENT')
+
+    def test_model_timeout_retries_only_after_its_item_delay(self):
+        candidate=self.queue()
+        with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.FeishuSender') as sender,patch('china_tech_x_radar.runner.enrich_signal',side_effect=TimeoutError('codex_timeout:300s')) as model:
+            sender.return_value.available.return_value=True
+            process(self.con,ROOT,CFG,1)
+            result=process(self.con,ROOT,CFG,1)
+            self.assertEqual(result['processed'],0)
+            self.assertEqual(model.call_count,1)
+        Clock.current=NOW+timedelta(minutes=5)
+        with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.FeishuSender') as sender,patch('china_tech_x_radar.runner.enrich_signal',return_value=self.packet(candidate)):
+            sender.return_value.available.return_value=True
+            sender.return_value.send_text.return_value='mock-receipt'
+            result=process(self.con,ROOT,{**CFG,'render_editorial_cards':False},1)
+        self.assertEqual(result['sent'],1)
+
+    def test_actual_provider_rate_limit_still_stops_retry_storm(self):
+        self.queue(index=1);self.queue(index=2)
+        with patch('china_tech_x_radar.daytime_editorial.datetime',Clock),patch('china_tech_x_radar.operating_policy.datetime',Clock),patch('china_tech_x_radar.runner.FeishuSender') as sender,patch('china_tech_x_radar.runner.enrich_signal',side_effect=RuntimeError('codex_final_failed: rate limit reached')) as model:
+            sender.return_value.available.return_value=True
+            process(self.con,ROOT,CFG,3)
+            result=process(self.con,ROOT,CFG,3)
+            sender.return_value.send_text.assert_not_called()
+        self.assertEqual(result['state'],'PROVIDER_BACKOFF')
+        self.assertEqual(model.call_count,1)
+
     def test_budgets_are_reserved_for_later_dayparts(self):
         for hour,limit in [(1,20),(6,40),(11,50)]:
             self.assertEqual(policy.paced_limits(CFG,NOW.replace(hour=hour))['max_final_calls_per_day'],limit)

@@ -1,9 +1,13 @@
 # ChatGPT OAuth / Codex editorial enrichment. No Platform API key is used.
 enabled = true
-codex_path = "/opt/homebrew/bin/codex"
-model = "gpt-5.6-luna"
-reasoning_effort = "low"
+codex_path = "/Users/jh/.codex/plugins/.plugin-appserver/codex-cli/CodexCLI.app/Contents/MacOS/codex"
+model = "gpt-6.1-sol"
+reasoning_effort = "high"
 call_timeout_seconds = 90
+# FINAL includes high-effort reasoning, source verification and voice checks.
+final_call_timeout_seconds = 300
+# A single slow call must not stop unrelated candidates.
+model_timeout_retry_seconds = 300
 humanizer_skill_path = "/Users/jh/.codex/skills/humanizer/SKILL.md"
 kenny_voice_path = "00_Governance/KENNY_VOICE_FINGERPRINT.md"
 recent_reply_opener_limit = 12

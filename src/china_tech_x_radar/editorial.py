@@ -7,7 +7,8 @@ import shutil
 import signal
 import sqlite3
 import subprocess
-import tempfile
+import hashlib
+import time
 import textwrap
 import tomllib
 from datetime import datetime, timezone
@@ -189,56 +190,85 @@ def _run_codex(
     search: bool,
 ) -> dict[str, Any]:
     codex = _resolve_codex_path(cfg)
-    model = str(cfg.get("model") or "gpt-5.6-luna")
-    effort = str(cfg.get("reasoning_effort") or "low")
-    timeout = int(cfg.get("call_timeout_seconds", 90))
+    model = str(cfg.get("model") or "gpt-6.1-sol")
+    effort = str(cfg.get("reasoning_effort") or "high")
+    timeout = int(cfg.get(f"{purpose.lower()}_call_timeout_seconds", cfg.get("call_timeout_seconds", 90)))
     reservation_id = _reserve_model_call(con, cfg, purpose, model)
     try:
-        with tempfile.TemporaryDirectory(prefix="china-tech-editorial-") as td:
-            out_path = Path(td) / "last.json"
-            cmd = [codex]
-            if search:
-                cmd.append("--search")
-            cmd += [
-                "-a", "never", "exec", "--ignore-user-config", "--ignore-rules", "--ephemeral",
-                "--sandbox", "read-only", "-m", model, "-c", f'model_reasoning_effort="{effort}"',
-                "-C", str(root), "-o", str(out_path), prompt,
-            ]
-            env = os.environ.copy()
-            env["NO_COLOR"] = "1"
-            # launchd may provide an empty/minimal PATH. Homebrew's Codex entrypoint
-            # uses /usr/bin/env node, so make its runtime dependencies explicit.
-            default_path = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-            inherited_path = str(env.get("PATH") or "").strip()
-            env["PATH"] = default_path + (":" + inherited_path if inherited_path else "")
-            proxy = str(env.get("CHINA_TECH_HTTP_PROXY") or "").strip()
-            if proxy:
-                env["HTTP_PROXY"] = proxy
-                env["HTTPS_PROXY"] = proxy
-                env["http_proxy"] = proxy
-                env["https_proxy"] = proxy
+        # Reservation IDs are unique in the canonical database. Keep private traces
+        # after failures instead of deleting the only evidence with a temp directory.
+        call_dir = root / "runtime" / "editorial-calls" / utc_date() / f"{reservation_id}-{purpose.lower()}"
+        call_dir.mkdir(parents=True, mode=0o700, exist_ok=False)
+        out_path = call_dir / "result.json"
+        cmd = [codex]
+        if search:
+            cmd.append("--search")
+        cmd += [
+            "-a", "never", "exec", "--ignore-user-config", "--ignore-rules", "--ephemeral",
+            "--sandbox", "read-only", "-m", model, "-c", f'model_reasoning_effort="{effort}"',
+            "-C", str(root), "-o", str(out_path), prompt,
+        ]
+        env = os.environ.copy()
+        env["NO_COLOR"] = "1"
+        # launchd may provide an empty/minimal PATH. Homebrew's Codex entrypoint
+        # uses /usr/bin/env node, so make its runtime dependencies explicit.
+        default_path = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        inherited_path = str(env.get("PATH") or "").strip()
+        env["PATH"] = default_path + (":" + inherited_path if inherited_path else "")
+        proxy = str(env.get("CHINA_TECH_HTTP_PROXY") or "").strip()
+        if proxy:
+            env["HTTP_PROXY"] = proxy
+            env["HTTPS_PROXY"] = proxy
+            env["http_proxy"] = proxy
+            env["https_proxy"] = proxy
+        started = time.monotonic()
+        proc = None
+        stdout_text = stderr_text = ""
+        timed_out = False
+        timeout_cause = None
+        try:
             proc = subprocess.Popen(
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env, start_new_session=True
             )
             try:
                 stdout_text, stderr_text = proc.communicate(timeout=timeout)
             except subprocess.TimeoutExpired as exc:
+                timed_out = True
+                timeout_cause = exc
                 try:
                     os.killpg(proc.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
                 stdout_text, stderr_text = proc.communicate()
-                raise TimeoutError(f"codex_timeout:{timeout}s") from exc
-            final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else stdout_text
-            tokens = _parse_tokens(stderr_text)
-            con.execute(
-                "UPDATE model_usage SET tokens_used=?,success=?,error=? WHERE id=?",
-                (tokens if tokens is not None else 0, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else stderr_text[-1200:], reservation_id),
-            )
-            con.commit()
-            if proc.returncode != 0:
-                raise RuntimeError(f"codex_{purpose.lower()}_failed:{stderr_text[-500:]}")
-            return _extract_json(final)
+        finally:
+            (call_dir / "stdout.log").write_text(stdout_text or "", encoding="utf-8")
+            (call_dir / "stderr.log").write_text(stderr_text or "", encoding="utf-8")
+            receipt = {
+                "reservation_id": reservation_id, "purpose": purpose,
+                "model": model, "reasoning_effort": effort, "search": search,
+                "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                "timeout_seconds": timeout,
+                "duration_seconds": round(time.monotonic() - started, 3),
+                "exit_code": proc.returncode if proc is not None else None,
+                "state": "TIMED_OUT" if timed_out else "COMPLETED" if proc is not None and proc.returncode == 0 else "FAILED",
+                "invocation_identity_verified": bool(
+                    re.search(rf"(?m)^model: {re.escape(model)}$", stderr_text or "")
+                    and re.search(rf"(?m)^reasoning effort: {re.escape(effort)}$", stderr_text or "")
+                ),
+            }
+            (call_dir / "receipt.json").write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if timed_out:
+            raise TimeoutError(f"codex_timeout:{timeout}s:purpose={purpose}:logs={call_dir}") from timeout_cause
+        final = out_path.read_text(encoding="utf-8", errors="replace") if out_path.exists() else stdout_text
+        tokens = _parse_tokens(stderr_text)
+        con.execute(
+            "UPDATE model_usage SET tokens_used=?,success=?,error=? WHERE id=?",
+            (tokens if tokens is not None else 0, 1 if proc.returncode == 0 else 0, None if proc.returncode == 0 else stderr_text[-1200:], reservation_id),
+        )
+        con.commit()
+        if proc.returncode != 0:
+            raise RuntimeError(f"codex_{purpose.lower()}_failed:{stderr_text[-500:]}")
+        return _extract_json(final)
     except Exception as exc:
         con.execute("UPDATE model_usage SET success=0,error=? WHERE id=?", (f"{type(exc).__name__}: {exc}"[:1200], reservation_id))
         con.commit()
@@ -408,7 +438,7 @@ Original posts are ALWAYS Chinese. The automated acquisition lane recommends rep
 China technology is a differentiation source, not a mandatory boundary.
 
 MANDATORY PRE-DRAFT SPEC CHECK:
-The following text was freshly read from the current PROJECT_SPEC.md for this draft. Obey it before writing final_copy. If there is any conflict with generic writing habits, the SPEC wins.
+The required sections below were freshly read from the current PROJECT_SPEC.md for this draft. Obey them before writing final_copy. Do not reload PROJECT_SPEC.md or the voice profile: the current required text is already supplied here. Read the required Humanizer skill once, and do not reload it. If there is any conflict with generic writing habits, the SPEC wins.
 
 {spec_guardrails}
 

@@ -84,7 +84,8 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
         except Exception as exc:
             message=str(exc)
             capacity=not send_attempted and ('editorial_budget_exhausted' in message or 'operator_asleep' in message)
-            provider=not send_attempted and (
+            call_timeout=not send_attempted and 'codex_timeout' in message.lower()
+            provider=not send_attempted and not call_timeout and (
                 'usage limit' in message.lower()
                 or 'rate limit' in message.lower()
                 or 'codex_timeout' in message.lower()
@@ -93,12 +94,14 @@ def process(con: sqlite3.Connection, root: Path, cfg: dict[str,Any], limit: int)
                 or ('codex_' in message.lower() and 'no such file or directory' in message.lower())
                 or isinstance(exc,(TimeoutError,FileNotFoundError))
             )
-            retry=next_release(cfg) if capacity else utc_iso(datetime.now(timezone.utc)+timedelta(minutes=60)) if provider else None
-            reason='operator_or_daypart_budget_deferred' if capacity else 'provider_unavailable_backoff' if provider else type(exc).__name__+':'+message[:700]
+            retry=utc_iso(datetime.now(timezone.utc)+timedelta(seconds=int(cfg.get('model_timeout_retry_seconds',300)))) if call_timeout else next_release(cfg) if capacity else utc_iso(datetime.now(timezone.utc)+timedelta(minutes=60)) if provider else None
+            reason='model_call_timeout' if call_timeout else 'operator_or_daypart_budget_deferred' if capacity else 'provider_unavailable_backoff' if provider else type(exc).__name__+':'+message[:700]
             if not delivered:
                 con.execute("UPDATE alert SET status=?,editorial_status=?,retry_at=?,error=?,editorial_at=? WHERE id=? AND status='EDITORIAL_PROCESSING'",('DELIVERY_UNKNOWN' if send_attempted else 'EDITORIAL_DEFERRED' if retry else 'EDITORIAL_ERROR','HOLD' if send_attempted else 'DEFERRED' if retry else 'ERROR',retry,reason,utc_iso(datetime.now(timezone.utc)),signal['alert_id']));con.commit()
             if retry:
                 result['deferred']+=1
+                if call_timeout:
+                    continue  # Only this candidate waits; other work remains eligible.
                 con.execute("INSERT INTO editorial_runtime_state(name,retry_at,reason,updated_at) VALUES('provider_backoff',?,?,?) ON CONFLICT(name) DO UPDATE SET retry_at=excluded.retry_at,reason=excluded.reason,updated_at=excluded.updated_at",(retry,reason,utc_iso(datetime.now(timezone.utc))));con.commit();break
             result['errors']+=1
     return result
